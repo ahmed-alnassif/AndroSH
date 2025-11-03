@@ -34,6 +34,25 @@ AndroSH is a professional-grade tool that deploys **full Alpine Linux environmen
 
 ## 🎯 Features That Matter
 
+## 🚀 System Integration Superpower
+
+AndroSH isn't just another Linux container - it's **fully integrated with Android**:
+
+### Run Android System Commands from Linux:
+```bash
+# List all installed apps (requires Shizuku)
+pm list packages -f
+
+# Check Android version
+getprop ro.build.version.sdk
+
+# Access kernel information  
+cat /proc/version
+
+# System properties
+getprop | grep version
+```
+
 ### 🛠️ Professional Command Line Interface
 ```bash
 ❯ androsh --help
