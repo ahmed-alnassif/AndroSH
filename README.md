@@ -34,7 +34,7 @@ AndroSH is a professional-grade tool that deploys **full Alpine Linux environmen
 
 ## 🎯 Features That Matter
 
-## 🚀 System Integration Superpower
+### 🚀 System Integration Superpower
 
 AndroSH isn't just another Linux container - it's **fully integrated with Android**:
 
