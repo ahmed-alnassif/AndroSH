@@ -7,7 +7,7 @@
 [![GitHub Stars](https://img.shields.io/github/stars/ahmed-alnassif/AndroSH?style=for-the-badge)](https://github.com/ahmed-alnassif/AndroSH/stargazers)
 [![Version](https://img.shields.io/badge/version-2025.09.24-blue?style=for-the-badge)](https://github.com/ahmed-alnassif/AndroSH/releases)
 [![Python](https://img.shields.io/badge/python-3.8+-green?style=for-the-badge)](https://python.org)
-[![License](https://img.shields.io/badge/license-MIT-orange?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/license-GPLv3-orange?style=for-the-badge)](LICENSE)
 
 </div>
 
@@ -249,7 +249,7 @@ cd AndroSH
 
 ## 📜 License
 
-MIT License - feel free to use AndroSH in your own projects!
+GPLv3 License - feel free to use AndroSH in your own projects!
 
 ## 🏆 Credits
 
