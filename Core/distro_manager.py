@@ -182,7 +182,7 @@ class TermuxDistribution(Distribution):
 		if self.check_storage:
 			self.check_storage()
 
-		arch = self._get_architecture()
+		arch = self._map_architecture(self._get_architecture())
 
 		if not self.supports_architecture(arch):
 			raise ValueError(
