@@ -741,11 +741,11 @@ if __name__ == '__main__':
 	c = console()
 	try:
 		main = AndroSH()
-		c = main.console()
+		c = main.console
 	except KeyboardInterrupt:
 		print()
 		c.error("Operation cancelled by user")
 		sys.exit(1)
 	except Exception as e:
-		c.console.error(f"Unexpected error: {e}")
+		c.error(f"Unexpected error: {e}")
 		sys.exit(1)
