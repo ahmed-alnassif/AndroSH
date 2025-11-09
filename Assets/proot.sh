@@ -71,7 +71,7 @@ ARGS="$ARGS -b /proc/self/fd/2:/dev/stderr"
 ARGS="$ARGS -b $PROOT_MAIN"
 ARGS="$ARGS -b /sys"
 ARGS="$ARGS -b /acct"
-ARGS="$ARGS -b /cache"
+#ARGS="$ARGS -b /cache"
 
 if [ ! -d "$ROOTFS_DIR/tmp" ]; then
     mkdir -p "$ROOTFS_DIR/tmp"
@@ -83,6 +83,8 @@ ARGS="$ARGS -r $ROOTFS_DIR"
 ARGS="$ARGS -0"
 ARGS="$ARGS --link2symlink"
 ARGS="$ARGS --sysvipc"
+ARGS="$ARGS --ashmem-memfd"
+#ARGS="$ARGS -v -1"
 
 if [ -f "$PROOT_MAIN/libexec/proot_loader64" ] || [ -f "$PROOT_MAIN/libexec/proot_loader32" ]; then
     ARGS="$ARGS -L"
