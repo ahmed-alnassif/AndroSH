@@ -83,7 +83,9 @@ ARGS="$ARGS -r $ROOTFS_DIR"
 ARGS="$ARGS -0"
 ARGS="$ARGS --link2symlink"
 ARGS="$ARGS --sysvipc"
-ARGS="$ARGS --ashmem-memfd"
+if [ $(proot --ashmem-memfd echo "supported" 2> /dev/null || echo "unsupported") == "supported" ];then
+  ARGS="$ARGS --ashmem-memfd"
+fi
 #ARGS="$ARGS -v -1"
 
 if [ -f "$PROOT_MAIN/libexec/proot_loader64" ] || [ -f "$PROOT_MAIN/libexec/proot_loader32" ]; then
