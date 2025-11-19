@@ -756,5 +756,4 @@ if __name__ == '__main__':
 		sys.exit(1)
 	except Exception as e:
 		c.error(f"Unexpected error: {e}")
-		raise
 		sys.exit(1)
