@@ -394,7 +394,6 @@ We welcome contributors and security researchers to enhance the platform.
 
 ### Priority Development Areas
 
-- Additional distribution support (Arch Linux, Fedora)
 - Enhanced performance optimization
 - deployment tooling
 - Security hardening features
