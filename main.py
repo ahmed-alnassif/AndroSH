@@ -78,6 +78,7 @@ class AndroSH:
 		self.proot = "proot"
 		self.talloc = "libtalloc.so.2"
 		self.sandbox_script = "proot.sh"
+		self.launch_command = str()
 		self.distro_type = "alpine-minirootfs"
 		self.distro = "alpine"
 		self.rootfs_dir = "rootfs"
@@ -214,6 +215,7 @@ class AndroSH:
 		# Launch command
 		launch_parser = subparsers.add_parser('launch', help='Start an existing environment')
 		launch_parser.add_argument('name', help='Name of the environment to launch')
+		launch_parser.add_argument("-c", "--command", dest="launch_command", help="launch command and exit", default="")
 
 		# Clean command
 		clean_parser = subparsers.add_parser('clean', help='Clean environment temporary files')
@@ -231,7 +233,7 @@ class AndroSH:
 		subparsers.add_parser('list', help='Show available distributions')
 		subparsers.add_parser('lsd', help='List installed environments')
 
-		# Download command - NEW
+		# Download command
 		download_parser = subparsers.add_parser('download', help='Download distribution files')
 		download_parser.add_argument('distro',
 		                             choices=self.distros,
@@ -241,7 +243,7 @@ class AndroSH:
 		download_parser.add_argument('--file', '-f',
 		                             help='Custom filename for downloaded archive')
 
-		# Distro management command - NEW
+		# Distro management command
 		distro_parser = subparsers.add_parser('distro', help='Distribution management suite')
 		distro_subparsers = distro_parser.add_subparsers(dest='distro_command', help='Distro subcommand', required=True)
 
@@ -561,7 +563,8 @@ class AndroSH:
 
 		sandbox_script = f"{Path(self.resources) / self.sandbox_script}"
 		self.console.debug(f"Launching machine with script: {sandbox_script}")
-		self.rish.drun(sandbox_script)
+		command = f"{sandbox_script} {self.launch_command}" if self.launch_command else sandbox_script
+		self.rish.drun(command)
 
 	def _execute_setup(self) -> None:
 		self.console.divider()
@@ -645,6 +648,7 @@ class AndroSH:
 	def launch_distro(self, args) -> None:
 		self.console.debug(f"Launch distro called with args: {vars(args)}")
 		self.distro_dir = f"{Path(args.base_dir) / args.name}"
+		self.launch_command = args.launch_command
 
 		if not self.db.exists(self.distro_dir):
 			self.console.warning(f"Distro does not exist in {self.distro_dir}. Please setup first.")
