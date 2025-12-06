@@ -1,5 +1,6 @@
 #!/system/bin/sh
 
+# shellcheck disable=SC1083
 export LD_LIBRARY_PATH={{dir}}/lib
 export PROOT_TMP_DIR={{dir}}/tmp
 export TERM=xterm-256color
@@ -7,6 +8,7 @@ export TERM=xterm-256color
 
 PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/games:/usr/local/bin:/usr/local/sbin:{{dir}}/bin:/system/bin:/system/xbin:/vendor/bin:/product/bin:/odm/bin:/system_ext/bin:\$PATH"
 
+# shellcheck disable=SC1083
 PROOT_MAIN={{dir}}
 ROOTFS_DIR=$PROOT_MAIN/{{distro}}
 PROOT_BIN=$PROOT_MAIN/bin/proot
@@ -83,6 +85,8 @@ ARGS="$ARGS -r $ROOTFS_DIR"
 ARGS="$ARGS -0"
 ARGS="$ARGS --link2symlink"
 ARGS="$ARGS --sysvipc"
+# shellcheck disable=SC2046
+# shellcheck disable=SC3014
 if [ $($PROOT_BIN --ashmem-memfd echo "supported" 2> /dev/null || echo "unsupported") == "supported" ];then
   ARGS="$ARGS --ashmem-memfd"
 fi
@@ -93,13 +97,21 @@ if [ -f "$PROOT_MAIN/libexec/proot_loader64" ] || [ -f "$PROOT_MAIN/libexec/proo
 fi
 
 if [ ! -f $PROOT_MAIN/patched ]; then
+    # shellcheck disable=SC2129
     echo "export PATH=$PATH" >> $ROOTFS_DIR/etc/profile
     echo "export HOME=/root" >> $ROOTFS_DIR/etc/profile
     echo "export TERM=xterm-256color" >> $ROOTFS_DIR/etc/profile
     echo "export LANG=C.UTF-8" >> $ROOTFS_DIR/etc/profile
+    echo "export HOSTNAME=AndroSH" >> $ROOTFS_DIR/etc/profile
+    # shellcheck disable=SC2016
+    # shellcheck disable=SC2028
+    echo '#export PS1=$(echo "$PS1"|sed -e "s/\\\h/\${HOSTNAME}/g")' >> $ROOTFS_DIR/etc/profile
+    echo "AndroSH" > $ROOTFS_DIR/etc/hostname
+    echo "127.0.1.1       AndroSH" >> $ROOTFS_DIR/etc/hosts
     echo "nameserver 1.1.1.1" > $ROOTFS_DIR/etc/resolv.conf
     echo "nameserver 1.0.0.1" >> $ROOTFS_DIR/etc/resolv.conf
     # Android environment variables
+    # shellcheck disable=SC2129
     echo "export ANDROID_DATA=/data" >> $ROOTFS_DIR/etc/profile
     echo "export ANDROID_ROOT=/system" >> $ROOTFS_DIR/etc/profile
     echo "export ANDROID_STORAGE=/storage" >> $ROOTFS_DIR/etc/profile
@@ -108,7 +120,9 @@ if [ ! -f $PROOT_MAIN/patched ]; then
 fi
 
 if [ $# -gt 0 ]; then
+    # shellcheck disable=SC2086
     $PROOT_BIN $ARGS "$@"
 else
+    # shellcheck disable=SC2086
     $PROOT_BIN $ARGS /bin/bash --login
 fi
