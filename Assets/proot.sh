@@ -105,7 +105,7 @@ if [ ! -f $PROOT_MAIN/patched ]; then
     echo "export HOSTNAME=AndroSH" >> $ROOTFS_DIR/etc/profile
     # shellcheck disable=SC2016
     # shellcheck disable=SC2028
-    echo '#export PS1=$(echo "$PS1"|sed -e "s/\\\h/\${HOSTNAME}/g")' >> $ROOTFS_DIR/etc/profile
+    echo '#export PS1=$(echo "$PS1"|sed -e "s/\\\\\h/\${HOSTNAME}/g")' >> $ROOTFS_DIR/etc/profile
     echo "AndroSH" > $ROOTFS_DIR/etc/hostname
     echo "127.0.1.1       AndroSH" >> $ROOTFS_DIR/etc/hosts
     echo "nameserver 1.1.1.1" > $ROOTFS_DIR/etc/resolv.conf
