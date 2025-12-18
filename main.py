@@ -67,6 +67,7 @@ class AndroSH:
 	def __init__(self):
 
 		# Configuration
+		self.custom_shell = "bash"
 		self.hostname = name
 		self.force_setup = False
 		self.root = "/data/local/tmp"
@@ -95,7 +96,9 @@ class AndroSH:
 
 		parser = self._setup_argparse()
 		args = parser.parse_args()
+		self.resources = args.resources_dir
 		self.time_style = args.time_style
+		self.change_shell = args.chsh
 
 		self.log_level = self._determine_log_level(args)
 		self.console = console(self.log_level, self.time_style)
@@ -170,7 +173,7 @@ class AndroSH:
 		elif args.command == 'lsd':
 			self.list_distros(args)
 		elif args.command == 'distro':
-			self._handle_distro_command(args)  # New distro subcommand handler
+			self._handle_distro_command(args)
 		elif args.command == 'download':
 			self.download_distro(args)  # Direct download command
 
@@ -288,7 +291,10 @@ class AndroSH:
 		                    help='Base directory for environments (default: /data/local/tmp)')
 		parser.add_argument('--resources-dir', default=self.resources,
 		                    help=f'Resources directory for downloads (default: {self.resources})')
-		parser.add_argument("--time-style", action="store_true", help="Display time format")
+		parser.add_argument("--time-style", action="store_true",
+		                    help="Display time format")
+		parser.add_argument("--chsh", default=None,
+		                    help=f"Custom shell command (default: {self.custom_shell})")
 
 		return parser
 
@@ -562,7 +568,8 @@ class AndroSH:
 			f"{Path(self.resources) / self.sandbox_script}",
 			dir=self.distro_dir,
 			distro=self.rootfs_dir,
-			hostname=self.db.subget(self.distro_dir, "hostname") or name
+			hostname=self.db.subget(self.distro_dir, "hostname") or name,
+			chsh=self.change_shell or self.db.subget(self.distro_dir, "chsh") or self.custom_shell
 		)
 
 		sandbox_script = f"{Path(self.resources) / self.sandbox_script}"
@@ -591,7 +598,8 @@ class AndroSH:
 			f"{Path(self.resources) / self.sandbox_script}",
 			dir=self.distro_dir,
 			distro=self.rootfs_dir,
-			hostname=self.hostname
+			hostname=self.hostname,
+			chsh=self.change_shell
 		)
 
 		self.console.verbose("Updating database with distro information")
@@ -599,6 +607,7 @@ class AndroSH:
 			self.distro_dir: {
 				"name": self.dir_name,
 				"hostname": self.hostname,
+				"chsh": self.change_shell,
 				"distro_dir": self.rootfs_dir,
 				"distro": self.distro,
 				"base_dir": self.base_dir,
