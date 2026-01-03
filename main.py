@@ -780,8 +780,8 @@ class AndroSH:
 
 		# Additional info
 		self.console.info(f"Total installed: [bold]{len(installed_distros)}[/bold] distros")
-		self.console.info("Use: [cyan]androsh launch <name>[/cyan] to launch a distro")
-		self.console.info("Use: [cyan]androsh remove <name>[/cyan] to remove a distro")
+		self.console.info("Use: [cyan]androsh launch <name>[/cyan] or [cyan]<path>[/cyan] to launch a distro")
+		self.console.info("Use: [cyan]androsh remove <name>[/cyan] or [cyan]<path>[/cyan] to remove a distro")
 
 
 if __name__ == '__main__':
