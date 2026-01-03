@@ -357,6 +357,11 @@ class AndroSH:
 		expected_hash = self.BUSYBOX_CHECKSUMS[arch]
 		local_busybox_path = f"{self.resources}/busybox"
 
+		if self.adb.exists(self.busybox_path):
+			if self.adb.checksum(self.busybox_path) == expected_hash:
+				self.console.info("BusyBox already installed")
+				return True
+
 		if not self.adb.exists(local_busybox_path):
 			self.console.verbose(f"Downloading BusyBox for {arch}")
 			self.downloader.download_file(busybox_url, local_busybox_path)
