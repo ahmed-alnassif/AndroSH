@@ -34,7 +34,7 @@ class ADBFileManager:
 	def _log_operation(self, operation: str, path: str, success: bool, details: str = ""):
 		"""Log file operations with proper escaping"""
 		status = "✓" if success else "✗"
-		message = f"ADB File: {operation} {path} {status}"
+		message = f"ADB: {operation} {path} {status}"
 		if details:
 			message += f" - {details}"
 		self.console.debug(message)
