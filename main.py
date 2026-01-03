@@ -67,6 +67,7 @@ class AndroSH:
 	def __init__(self):
 
 		# Configuration
+		self.custom_rootfs = None
 		self.custom_shell = "bash"
 		self.hostname = name
 		self.force_setup = False
@@ -200,6 +201,8 @@ class AndroSH:
 		setup_parser = subparsers.add_parser('setup', help='Deploy a new Linux environment')
 		setup_parser.add_argument('name', default=name,
 		                          help=f'Environment name (default: {name})')
+		setup_parser.add_argument("-f", "--rootfs",
+		                          help="Custom rootfs file, when used you don't need to add -d/-t arguments", default=None)
 		setup_parser.add_argument('-d', '--distro', default=self.distro,
 		                          choices=self.distros,
 		                          help=f'Linux distribution (default: {self.distro})')
@@ -581,11 +584,17 @@ class AndroSH:
 		self.console.divider()
 		self.console.info("Starting setup process...")
 
+		if self.custom_rootfs:
+			self.console.info("Setting up using custom rootfs file")
+			if not self.fm.exists(self.custom_rootfs):
+				raise AndroSH_err("Custom rootfs file does not exist")
+			self.distro_file = self.custom_rootfs
 		self.console.info("Downloading distro and required resources:")
-		self.distro_file = self.distro_manager.download(self.distro, distro_type=self.distro_type)
-		if not self.distro_file:
-			self.console.error(f"Failed to download distro: {self.distro_file}")
-			sys.exit(1)
+		if not self.custom_rootfs:
+			self.distro_file = self.distro_manager.download(self.distro, distro_type=self.distro_type)
+			if not self.distro_file:
+				self.console.error(f"Failed to download distro: {self.distro_file}")
+				sys.exit(1)
 		self.download_assets()
 
 		self.console.divider()
@@ -629,6 +638,7 @@ class AndroSH:
 		self.is_setup = True
 		self.force_setup = args.resetup
 		self.hostname = args.hostname
+		self.custom_rootfs = args.rootfs
 
 		if args.verbose or args.debug:
 			self.console.status(f"Setting up distro in {self.distro_dir}")
