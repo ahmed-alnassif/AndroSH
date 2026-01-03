@@ -71,7 +71,7 @@ class AndroSH:
 		self.custom_shell = "bash"
 		self.hostname = name
 		self.force_setup = False
-		self.root = f"/data/local/tmp/{name}/rootfs"
+		self.root = f"/data/local/tmp/{name}/distros"
 		self.resources = f"/sdcard/Download/{name}"
 		self.busybox_dir = f"/data/local/tmp/{name}/busybox"
 		self.busybox_path = f"{self.busybox_dir}/busybox"
