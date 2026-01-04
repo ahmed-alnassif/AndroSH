@@ -84,16 +84,13 @@ ARGS="$ARGS -r $ROOTFS_DIR"
 ARGS="$ARGS -0"
 ARGS="$ARGS --link2symlink"
 ARGS="$ARGS --sysvipc"
+ARGS="$ARGS -L"
 # shellcheck disable=SC2046
 # shellcheck disable=SC3014
 if [ $($PROOT_BIN --ashmem-memfd echo "supported" 2> /dev/null || echo "unsupported") == "supported" ];then
   ARGS="$ARGS --ashmem-memfd"
 fi
 #ARGS="$ARGS -v -1"
-
-if [ -f "$PROOT_MAIN/libexec/proot_loader64" ] || [ -f "$PROOT_MAIN/libexec/proot_loader32" ]; then
-    ARGS="$ARGS -L"
-fi
 
 if [ ! -f $PROOT_MAIN/patched ]; then
     # shellcheck disable=SC2129
