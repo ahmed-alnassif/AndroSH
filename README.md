@@ -10,7 +10,7 @@
 [![License](https://img.shields.io/badge/license-GPLv3-orange?style=for-the-badge)](LICENSE)
 [![Verified Binaries](https://img.shields.io/badge/binaries-verified-success?style=for-the-badge)](https://github.com/ahmed-alnassif/AndroSH?tab=readme-ov-file#%EF%B8%8F-technical-components--trust)
 [![Platform](https://img.shields.io/badge/platform-Android-success?style=for-the-badge)](https://www.android.com)
-[![Distributions](https://img.shields.io/badge/distros-6+-yellow?style=for-the-badge)](https://github.com/ahmed-alnassif/AndroSH)
+[![Distributions](https://img.shields.io/badge/distros-9+-yellow?style=for-the-badge)](https://github.com/ahmed-alnassif/AndroSH)
 [![Status](https://img.shields.io/badge/status-active-brightgreen?style=for-the-badge)](https://github.com/ahmed-alnassif/AndroSH)
 ![androsh launch kali](/Assets/Screenshots/launch-kali.png)
 </div>
@@ -22,7 +22,7 @@ root@localhost:~# apt update && apt upgrade -y
 ```
 ## ⚡ Quick Features
 
-- 🐳 **Multi-Distro**: Run Archlinux, Fedora, Alpine, Debian, Ubuntu, Kali simultaneously  
+- 🐳 **Multi-Distro**: Run Archlinux, Fedora, Alpine, Debian, Ubuntu, Kali, Void Linux, Manjaro, and Chimera Linux simultaneously  
 - 🔧 **Shizuku**: Full Android system integration without root
 - 💾 **SQLite Backed**: Fast, reliable environment management
 - 🚀 **Optimized**: 40% faster startup than alternatives
@@ -37,7 +37,7 @@ AndroSH is a professional-grade deployment platform that enables seamless execut
 
 | Capability | AndroSH | Traditional Solutions |
 |------------|---------|---------------------|
-| **Multi-Distribution Architecture** | ✅ **Archlinux, Fedora, Alpine, Debian, Ubuntu, Kali NetHunter** | ❌ Single distribution |
+| **Multi-Distribution Architecture** | ✅ **Archlinux, Fedora, Alpine, Debian, Ubuntu, Kali NetHunter, Void Linux, Manjaro, and Chimera Linux** | ❌ Single distribution |
 | **Management** | ✅ SQLite database + professional CLI | ❌ Manual file management |
 | **Android System Integration** | ✅ Full system command execution via ADB/Shizuku | ❌ Isolated containers only |
 | **Scalable Environments** | ✅ Multiple isolated instances | ❌ Single instance limitation |
