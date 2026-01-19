@@ -92,7 +92,8 @@ class AndroSH:
 							"kali-nethunter",
 							"archlinux",
 							"fedora",
-							"void"
+							"void",
+							"manjaro"
 						]
 
 
