@@ -11,15 +11,17 @@ from rich.progress import (
 from rich.console import Console
 from pathlib import Path
 import time
+from Core.console import console
 
 class FileDownloader:
-	def __init__(self):
+	def __init__(self, custom_console = None):
 		self.chunk_size = 8192  # 8KB chunks
 		self.console = Console()
+		self.custom_console = custom_console if custom_console else console()
 		
 		# Configure the progress display - FIXED layout
 		self.progress = Progress(
-			TextColumn("[bold blue]{task.fields[filename]}"),
+			#TextColumn("[bold blue]{task.fields[filename]}"),
 			BarColumn(bar_width=40),
 			"[progress.percentage]{task.percentage:>3.1f}%",
 			"•",
@@ -74,13 +76,14 @@ class FileDownloader:
 					# If we can't get file size, we'll download without known total
 					total_size = 0
 			
+			self.custom_console.info(f"File name: [bold blue]{filename}[/bold blue]")
 			# Start the progress display
 			self.progress.start()
 			
 			# Create download task - FIXED: removed description that showed "bytes"
 			task_id = self.progress.add_task(
 				"",  # Empty description to avoid showing "download"
-				filename=filename, 
+				#filename=filename, 
 				total=total_size,
 				start=False
 			)

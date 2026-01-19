@@ -109,7 +109,7 @@ class AndroSH:
 		self.fm = PyFManager()
 		self.db = DB()
 		self.request = create_session()
-		self.downloader = FileDownloader()
+		self.downloader = FileDownloader(self.console)
 		self.rish = Rish(self.console, self.resources)
 		self.adb = ADBFileManager(self.rish, self.console)
 		self.distro_manager = DistributionManager(self.fm, self.downloader,
