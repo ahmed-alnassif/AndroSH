@@ -91,7 +91,8 @@ class AndroSH:
 							"ubuntu",
 							"kali-nethunter",
 							"archlinux",
-							"fedora"
+							"fedora",
+							"void"
 						]
 
 
