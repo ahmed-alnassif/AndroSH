@@ -93,7 +93,8 @@ class AndroSH:
 							"archlinux",
 							"fedora",
 							"void",
-							"manjaro"
+							"manjaro",
+							"chimera"
 						]
 
 
