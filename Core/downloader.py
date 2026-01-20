@@ -111,22 +111,22 @@ class FileDownloader:
 			
 			# Verify file size if we knew the expected size
 			if total_size != 0 and os.path.getsize(destination) != total_size:
-				self.console.print(f"[yellow]Warning: Downloaded file size doesn't match expected size[/yellow]")
+				self.custom_console.warning(f"[yellow]Warning: Downloaded file size doesn't match expected size[/yellow]")
 				
-			self.console.print(f"[green]✓ Successfully downloaded [bold]{filename}[/bold][/green]")
+			self.custom_console.success(f"[green]✓ Successfully downloaded [bold]{filename}[/bold][/green]")
 			return destination
 			
 		except requests.exceptions.RequestException as e:
 			self.progress.stop()
-			self.console.print(f"[red]Error downloading file: {e}[/red]")
+			self.custom_console.error(f"[red]Error downloading file: {e}[/red]")
 			raise
 		except IOError as e:
 			self.progress.stop()
-			self.console.print(f"[red]Error saving file: {e}[/red]")
+			self.custom_console.error(f"[red]Error saving file: {e}[/red]")
 			raise
 		except Exception as e:
 			self.progress.stop()
-			self.console.print(f"[red]Unexpected error: {e}[/red]")
+			self.custom_console.error(f"[red]Unexpected error: {e}[/red]")
 			raise
 	
 	def download_multiple(self, urls: list, destinations: list = None):
