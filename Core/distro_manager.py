@@ -589,11 +589,23 @@ class AlpineDistribution(Distribution):
 
 		file_path = f"{self.resources}/{file_name}"
 
+
+		# Verify checksum (prefer sha512, fallback to sha256)
+		expected_hash = distro_metadata.get("sha512") or distro_metadata.get("sha256")
+		hash_type = "sha512" if distro_metadata.get("sha512") else "sha256"
+
 		# Check if already downloaded
 		if self.fm.exists(file_path):
-			self.console.info(f"Alpine {distro_type} already downloaded")
-			return file_name
-
+			download_needed = False
+			if expected_hash and\
+			not self._verify_checksum(file_path, expected_hash, hash_type):
+				self.console.warning(f"Checksum mismatch for [blue]{file_name}[/blue]")
+				self.console.warning("File may be corrupted or tampered with.")
+				download_needed = self.console.input("Do you want to download the file again? [cyan][Y|n]:[/cyan] ").strip().lower() in ["y", "yes"]
+			if not download_needed:
+				self.console.info(f"Alpine already downloaded")
+				return file_name
+		
 		# Build download URL
 		version = distro_metadata.get("version")
 		if not version:
@@ -612,10 +624,6 @@ class AlpineDistribution(Distribution):
 		try:
 			self.downloader.download_file(url, file_path)
 			self.console.verbose(f"Download completed: {file_path}")
-
-			# Verify checksum (prefer sha512, fallback to sha256)
-			expected_hash = distro_metadata.get("sha512") or distro_metadata.get("sha256")
-			hash_type = "sha512" if distro_metadata.get("sha512") else "sha256"
 
 			if expected_hash:
 				if not self._verify_checksum(file_path, expected_hash, hash_type):
