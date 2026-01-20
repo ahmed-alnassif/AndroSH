@@ -124,6 +124,9 @@ class FileDownloader:
 			self.progress.stop()
 			self.custom_console.error(f"[red]Error saving file: {e}[/red]")
 			raise
+		except KeyboardInterrupt:
+		    self.progress.stop()
+		    raise
 		except Exception as e:
 			self.progress.stop()
 			self.custom_console.error(f"[red]Unexpected error: {e}[/red]")
