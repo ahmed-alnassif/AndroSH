@@ -67,6 +67,9 @@ class console:
         if self.log_level.value >= LogLevel.NORMAL.value:
             self.console.rule(style="white")
     
+    def input(self, message: str):
+        return self.console.input(f"[bold yellow][{self.time("QUESTION")}][/bold yellow] {message}")
+    
     def table(self, data: dict, title: str = ""):
         if self.log_level.value >= LogLevel.NORMAL.value:
             table = Table(title=title, box=box.ROUNDED)
