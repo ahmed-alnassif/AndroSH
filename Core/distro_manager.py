@@ -216,13 +216,20 @@ class TermuxDistribution(Distribution):
 
 		file_path = f"{self.resources}/{file_name}"
 
-		# Check if already downloaded
-		if self.fm.exists(file_path):
-			self.console.info(f"{self.distro_data['name']} already downloaded")
-			return file_name
-
 		url = tarball_info['url']
 		expected_hash = tarball_info.get('sha256')
+
+		# Check if already downloaded
+		if self.fm.exists(file_path):
+			download_needed = False
+			if expected_hash and\
+			not self._verify_checksum(file_path, expected_hash, "sha256"):
+				self.console.warning(f"Checksum mismatch for [blue]{file_name}[/blue]")
+				self.console.warning("File may be corrupted or tampered with.")
+				download_needed = self.console.input("Do you want to download the file again? [cyan][Y|n]:[/cyan] ").strip().lower() in ["y", "yes"]
+			if not download_needed:
+				self.console.info(f"{self.distro_data['name']} already downloaded")
+				return file_name
 
 		self.console.verbose(f"Download URL: {url}")
 		self.console.verbose(f"Target file: {file_path}")
