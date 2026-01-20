@@ -603,7 +603,7 @@ class AlpineDistribution(Distribution):
 				self.console.warning("File may be corrupted or tampered with.")
 				download_needed = self.console.input("Do you want to download the file again? [cyan][Y|n]:[/cyan] ").strip().lower() in ["y", "yes"]
 			if not download_needed:
-				self.console.info(f"Alpine already downloaded")
+				self.console.info(f"Alpine {distro_type} already downloaded")
 				return file_name
 		
 		# Build download URL
