@@ -5,7 +5,7 @@
 **Professional-Grade Linux Distribution Management on Android Devices with ADB/Shizuku Integration**
 
 [![GitHub Stars](https://img.shields.io/github/stars/ahmed-alnassif/AndroSH?style=for-the-badge)](https://github.com/ahmed-alnassif/AndroSH/stargazers)
-[![Version](https://img.shields.io/badge/version-26.01.03-blue?style=for-the-badge)](https://github.com/ahmed-alnassif/AndroSH/releases)
+[![Version](https://img.shields.io/badge/version-26.01.21-blue?style=for-the-badge)](https://github.com/ahmed-alnassif/AndroSH/releases)
 [![Python](https://img.shields.io/badge/python-3.8+-green?style=for-the-badge)](https://python.org)
 [![License](https://img.shields.io/badge/license-GPLv3-orange?style=for-the-badge)](LICENSE)
 [![Verified Binaries](https://img.shields.io/badge/binaries-verified-success?style=for-the-badge)](https://github.com/ahmed-alnassif/AndroSH?tab=readme-ov-file#%EF%B8%8F-technical-components--trust)
