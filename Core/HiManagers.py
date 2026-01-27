@@ -532,7 +532,7 @@ class BusyBoxManager:
 			parts = output.split()
 			if parts:
 				checksum = parts[0]
-				self._log(f"checksum: {path} -> {checksum[:16]}... ({hash_type})", True)
+				self._log(f"checksum: {path} -> {checksum} ({hash_type})", True)
 				return checksum
 		self._log(f"checksum failed: {path}", False)
 		return None
