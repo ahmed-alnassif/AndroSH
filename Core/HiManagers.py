@@ -225,84 +225,59 @@ class ADBFileManager:
 
 
 class BusyBoxManager:
-	"""Enhanced BusyBox management with comprehensive file operations"""
-
 	def __init__(self, adb_file_manager: ADBFileManager, console_instance,
-	             busybox_path: str = "/data/local/tmp/busybox"):
+				 busybox_path: str = "/data/local/tmp/busybox"):
 		self.adb = adb_file_manager
 		self.console = console_instance
 		self.busybox_path = busybox_path
 		self.busybox_cmd = f"{busybox_path}/busybox"
 		self._available = True
 		self._applets = None
-		self.errors_list = ['error', 'failed', 'permission denied', 'cannot', 'no such']
-		self.has_error = False
 
 	def _log(self, message: str, success: bool = True):
-		"""Internal logging method"""
 		if self.console:
 			status = "✓" if success else "✗"
 			self.console.debug(f"BusyBox: {message} {status}")
 
-	def _run_command(self, command: str, use_busybox: bool = True, timeout: int = 30) -> str:
-		"""Run command and return combined output"""
-		self.has_error = False
+	def _run_command(self, command: str, use_busybox: bool = True, timeout: int = 30) -> Any:
 		try:
 			if use_busybox and self.is_available():
-				cmd = f"{self.busybox_cmd} {command} 2>&1"
+				cmd = f"{self.busybox_cmd} {command}"
 			else:
 				cmd = command
-
-			result = self.adb._run_command(cmd)
-			# Combine stdout and stderr, filtering actual errors
-			output = ""
-			if hasattr(result, 'stdout') and result.stdout:
-				output += result.stdout.strip()
-
-			if hasattr(result, 'stderr') and result.stderr:
-				stderr_text = result.stderr.strip()
-				# Only include stderr if it doesn't look like an actual error
-				if stderr_text:
-					if not any(error_indicator in stderr_text.lower()
-					for error_indicator in self.errors_list):
-						if output:
-							output += " " + stderr_text
-						else:
-							output = stderr_text
-					else:
-						self.has_error = True
-
-			return output
-
+			
+			return self.adb._run_command(cmd)
+			
 		except Exception as e:
-			self._log(f"Command failed: {command} - {e}", False)
-			return ""
+			class MockResult:
+				def __init__(self, error_msg):
+					self.stdout = ""
+					self.stderr = error_msg
+					self.returncode = 1
+			return MockResult(str(e))
 
 	def is_available(self) -> bool:
-		"""Check if BusyBox is available and executable"""
 		if self._available is not None:
 			return self._available
 
-		# Check if busybox exists and is executable
 		if not self.adb.exists(self.busybox_cmd):
 			self._available = False
 			self._log("BusyBox not found at specified path", False)
 			return False
 
-		# Test if busybox works
 		result = self._run_command(f"{self.busybox_cmd} --help", use_busybox=False)
-		success = "BusyBox" in result
+		success = result.returncode == 0 and "BusyBox" in (result.stdout or "")
 
 		self._available = success
 		if success:
-			self._log(f"Available - {result.splitlines()[0] if result else 'Unknown version'}")
+			version_line = (result.stdout or "").splitlines()[0] if result.stdout else 'Unknown version'
+			self._log(f"Available - {version_line}")
 		else:
 			self._log("Not executable or broken", False)
 
 		return success
 
 	def get_applets(self) -> List[str]:
-		"""Get list of available BusyBox applets"""
 		if self._applets is not None:
 			return self._applets
 
@@ -310,29 +285,25 @@ class BusyBoxManager:
 			return []
 
 		result = self._run_command(f"{self.busybox_cmd} --list", use_busybox=False)
-		self._applets = [applet.strip() for applet in result.splitlines() if applet.strip()]
+		output = result.stdout or ""
+		self._applets = [applet.strip() for applet in output.splitlines() if applet.strip()]
 		return self._applets
 
 	def has_applet(self, applet: str) -> bool:
-		"""Check if specific BusyBox applet is available"""
 		return applet in self.get_applets()
 
-	# ========== DIRECTORY OPERATIONS ==========
-
 	def mkdir(self, path: str, parents: bool = False, mode: str = None) -> bool:
-		"""Create directory using BusyBox"""
 		cmd = f"mkdir {'-p ' if parents else ''}"
 		if mode and self.has_applet('mkdir'):
 			cmd += f"-m {mode} "
 		cmd += f"{repr(path)}"
 
 		result = self._run_command(cmd)
-		success = not any(error in result.lower() for error in self.errors_list)
+		success = result.returncode == 0
 		self._log(f"mkdir: {path} (parents={parents}, mode={mode})", success)
 		return success
 
 	def mkdirs(self, *paths: str) -> bool:
-		"""Create multiple directories"""
 		success = True
 		for path in paths:
 			if not self.mkdir(path, parents=True):
@@ -341,65 +312,53 @@ class BusyBoxManager:
 		return success
 
 	def rmdir(self, path: str, recursive: bool = False) -> bool:
-		"""Remove directory"""
 		if recursive:
 			return self.remove(path, recursive=True)
 		else:
 			result = self._run_command(f"rmdir {repr(path)}")
-			success = "error" not in result.lower()
+			success = result.returncode == 0
 			self._log(f"rmdir: {path} (recursive={recursive})", success)
 			return success
 
-	# ========== FILE OPERATIONS ==========
-
 	def remove(self, path: str, recursive: bool = False, force: bool = True) -> bool:
-		"""Remove file or directory using BusyBox"""
 		cmd = f"rm {'-r ' if recursive else ''}{'-f ' if force else ''}{repr(path)}"
 		result = self._run_command(cmd)
-		success = "error" not in result.lower() or "no such file" in result.lower()
+		success = result.returncode == 0
 		self._log(f"remove: {path} (recursive={recursive}, force={force})", success)
 		return success
 
 	def copy(self, src: str, dst: str, recursive: bool = False, preserve: bool = True) -> bool:
-		"""Copy file or directory using BusyBox"""
 		cmd = f"cp {'-r ' if recursive else ''}{'-p ' if preserve else ''}{repr(src)} {repr(dst)}"
 		result = self._run_command(cmd)
-		success = "error" not in result.lower()
+		success = result.returncode == 0
 		self._log(f"copy: {src} -> {dst} (recursive={recursive})", success)
 		return success
 
 	def move(self, src: str, dst: str, force: bool = True) -> bool:
-		"""Move file or directory using BusyBox with wildcard support"""
-		# If source contains wildcards, use shell expansion
 		if '*' in src or '?' in src:
 			cmd = f"sh -c 'mv {'-f ' if force else ''}{src} {dst}'"
 		else:
 			cmd = f"mv {'-f ' if force else ''}{repr(src)} {repr(dst)}"
 
 		result = self._run_command(cmd)
-		success = "error" not in result.lower()
+		success = result.returncode == 0
 		self._log(f"move: {src} -> {dst}", success)
 		return success
 
 	def rename(self, path: str, new_name: str) -> bool:
-		"""Rename file or directory"""
 		import os
 		dir_name = os.path.dirname(path)
 		new_path = os.path.join(dir_name, new_name) if dir_name else new_name
 		return self.move(path, new_path)
 
-	# ========== PERMISSIONS OPERATIONS ==========
-
 	def chmod(self, path: str, mode: str, recursive: bool = False) -> bool:
-		"""Change file permissions using BusyBox"""
 		cmd = f"chmod {'-R ' if recursive else ''}{mode} {repr(path)}"
 		result = self._run_command(cmd)
-		success = "error" not in result.lower()
+		success = result.returncode == 0
 		self._log(f"chmod: {path} {mode} (recursive={recursive})", success)
 		return success
 
 	def chown(self, path: str, owner: str, group: str = None, recursive: bool = False) -> bool:
-		"""Change file owner using BusyBox"""
 		if not self.has_applet('chown'):
 			self._log("chown applet not available", False)
 			return False
@@ -407,75 +366,66 @@ class BusyBoxManager:
 		ownership = f"{owner}:{group}" if group else owner
 		cmd = f"chown {'-R ' if recursive else ''}{ownership} {repr(path)}"
 		result = self._run_command(cmd)
-		success = "error" not in result.lower()
+		success = result.returncode == 0
 		self._log(f"chown: {path} {ownership} (recursive={recursive})", success)
 		return success
 
 	def make_readonly(self, path: str) -> bool:
-		"""Make file read-only"""
 		return self.chmod(path, "444")
 
 	def make_writable(self, path: str) -> bool:
-		"""Make file writable"""
 		return self.chmod(path, "644")
 
 	def make_executable(self, path: str) -> bool:
-		"""Make file executable"""
 		return self.chmod(path, "755")
 
-	# ========== FILE INFORMATION ==========
-
 	def exists(self, path: str) -> bool:
-		"""Check if path exists"""
 		result = self._run_command(f"test -e {repr(path)} && echo exists || echo missing")
-		success = "exists" in result
+		success = result.returncode == 0 and "exists" in (result.stdout or "")
 		self._log(f"exists: {path}", success)
 		return success
 
 	def is_file(self, path: str) -> bool:
-		"""Check if path is a file"""
 		result = self._run_command(f"test -f {repr(path)} && echo file || echo not_file")
-		success = "file" in result
+		success = result.returncode == 0 and "file" in (result.stdout or "")
 		self._log(f"is_file: {path}", success)
 		return success
 
 	def is_dir(self, path: str) -> bool:
-		"""Check if path is a directory"""
 		result = self._run_command(f"test -d {repr(path)} && echo dir || echo not_dir")
-		success = "dir" in result
+		success = result.returncode == 0 and "dir" in (result.stdout or "")
 		self._log(f"is_dir: {path}", success)
 		return success
 
 	def get_size(self, path: str) -> Optional[int]:
-		"""Get file size in bytes"""
 		result = self._run_command(f"stat -c %s {repr(path)} 2>/dev/null || echo")
-		if result and result.strip().isdigit():
-			size = int(result.strip())
+		output = result.stdout or ""
+		if result.returncode == 0 and output.strip().isdigit():
+			size = int(output.strip())
 			self._log(f"get_size: {path} -> {size} bytes", True)
 			return size
 		self._log(f"get_size failed: {path}", False)
 		return None
 
 	def get_mtime(self, path: str) -> Optional[float]:
-		"""Get modification time"""
 		result = self._run_command(f"stat -c %Y {repr(path)} 2>/dev/null || echo")
-		if result and result.strip().isdigit():
-			mtime = float(result.strip())
+		output = result.stdout or ""
+		if result.returncode == 0 and output.strip().isdigit():
+			mtime = float(output.strip())
 			self._log(f"get_mtime: {path} -> {mtime}", True)
 			return mtime
 		self._log(f"get_mtime failed: {path}", False)
 		return None
 
 	def get_info(self, path: str) -> Optional[Dict[str, Any]]:
-		"""Get comprehensive file information"""
 		if not self.exists(path):
 			return None
 
 		try:
-			# Try to get detailed info using stat
 			result = self._run_command(f"stat -c '%n|%s|%F|%U|%G|%a|%Y|%X|%Z' {repr(path)}")
-			if result and '|' in result:
-				parts = result.strip().split('|')
+			output = result.stdout or ""
+			if result.returncode == 0 and '|' in output:
+				parts = output.strip().split('|')
 				if len(parts) == 9:
 					info = {
 						'name': parts[0],
@@ -493,7 +443,6 @@ class BusyBoxManager:
 					self._log(f"get_info: {path}", True)
 					return info
 
-			# Fallback to basic info
 			info = {
 				'path': path,
 				'exists': True,
@@ -509,14 +458,12 @@ class BusyBoxManager:
 			self._log(f"get_info failed: {path} - {e}", False)
 			return None
 
-	# ========== SEARCH AND LISTING ==========
-
 	def list_dir(self, path: str, pattern: str = "*") -> List[str]:
-		"""List directory contents with optional pattern matching"""
 		try:
 			cmd = f"ls -1 {repr(path)}/{pattern} 2>/dev/null || echo"
 			result = self._run_command(cmd)
-			items = [item for item in result.splitlines() if item.strip()]
+			output = result.stdout or ""
+			items = [item for item in output.splitlines() if item.strip()]
 			self._log(f"list_dir: {path} -> {len(items)} items", True)
 			return items
 		except Exception as e:
@@ -524,7 +471,6 @@ class BusyBoxManager:
 			return []
 
 	def find_files(self, root: str, pattern: str = "*", recursive: bool = True) -> List[str]:
-		"""Find files matching pattern"""
 		try:
 			if recursive:
 				cmd = f"find {repr(root)} -name {repr(pattern)} -type f 2>/dev/null || echo"
@@ -532,7 +478,8 @@ class BusyBoxManager:
 				cmd = f"find {repr(root)} -maxdepth 1 -name {repr(pattern)} -type f 2>/dev/null || echo"
 
 			result = self._run_command(cmd)
-			files = [file for file in result.splitlines() if file.strip()]
+			output = result.stdout or ""
+			files = [file for file in output.splitlines() if file.strip()]
 			self._log(f"find_files: {root} -> {len(files)} files", True)
 			return files
 		except Exception as e:
@@ -540,24 +487,19 @@ class BusyBoxManager:
 			return []
 
 	def glob(self, pattern: str) -> List[str]:
-		"""Find files matching glob pattern"""
 		return self.list_dir(".", pattern)
 
-	# ========== ARCHIVE OPERATIONS ==========
-
 	def tar_extract(self, archive: str, target_dir: str, preserve_permissions: bool = True) -> bool:
-		"""Extract tar archive using BusyBox"""
 		cmd = f"tar -xf {repr(archive)} -C {repr(target_dir)}"
 		if preserve_permissions:
 			cmd += " -p"
 		result = self._run_command(cmd)
-		success = not self.has_error
-		self.console.debug(f"tar_extract result: {result}")
+		success = result.returncode == 0
+		self.console.debug(f"tar_extract result: {result.stdout}")
 		self._log(f"tar_extract: {archive} -> {target_dir}", success)
 		return success
 
 	def tar_create(self, source: str, archive: str, compression: str = "") -> bool:
-		"""Create tar archive using BusyBox"""
 		compression_flag = {
 			"gz": "z", "gzip": "z",
 			"bz2": "j", "bzip2": "j",
@@ -567,14 +509,11 @@ class BusyBoxManager:
 
 		cmd = f"tar -c{compression_flag}f {repr(archive)} {repr(source)}"
 		result = self._run_command(cmd)
-		success = "error" not in result.lower()
+		success = result.returncode == 0
 		self._log(f"tar_create: {source} -> {archive} (compression={compression})", success)
 		return success
 
-	# ========== CHECKSUM AND HASHING ==========
-
 	def checksum(self, path: str, hash_type: str = "sha256") -> Optional[str]:
-		"""Calculate file checksum using BusyBox"""
 		supported_hashes = {
 			"md5": "md5sum",
 			"sha1": "sha1sum",
@@ -588,8 +527,9 @@ class BusyBoxManager:
 			return None
 
 		result = self._run_command(f"{hash_cmd} {repr(path)}")
-		if result and not any(error in result.lower() for error in ['error', 'no such file']):
-			parts = result.split()
+		if result.returncode == 0:
+			output = result.stdout or ""
+			parts = output.split()
 			if parts:
 				checksum = parts[0]
 				self._log(f"checksum: {path} -> {checksum[:16]}... ({hash_type})", True)
@@ -598,41 +538,37 @@ class BusyBoxManager:
 		return None
 
 	def verify_checksum(self, path: str, expected_hash: str, hash_type: str = "sha256") -> bool:
-		"""Verify file against expected checksum"""
 		actual_hash = self.checksum(path, hash_type)
 		return actual_hash == expected_hash if actual_hash else False
 
-	# ========== CONTENT OPERATIONS ==========
-
 	def read_text(self, path: str, encoding: str = "utf-8") -> Optional[str]:
-		"""Read text file content"""
 		result = self._run_command(f"cat {repr(path)}")
-		if result or result == "":  # Allow empty files
-			self._log(f"read_text: {path} -> {len(result)} chars", True)
-			return result
+		if result.returncode == 0:
+			output = result.stdout or ""
+			self._log(f"read_text: {path} -> {len(output)} chars", True)
+			return output
 		self._log(f"read_text failed: {path}", False)
 		return None
 
 	def write_text(self, path: str, content: str) -> bool:
-		"""Write text to file"""
-		# Escape content properly for shell
 		escaped_content = content.replace("'", "'\"'\"'")
-		result = self._run_command(f"echo '{escaped_content}' > {repr(path)}")
-		success = "error" not in result.lower()
+		cmd = f"echo '{escaped_content}' > {repr(path)}"
+		result = self._run_command(cmd)
+		success = result.returncode == 0
 		self._log(f"write_text: {path} -> {len(content)} chars", success)
 		return success
 
 	def read_bytes(self, path: str) -> Optional[bytes]:
-		"""Read binary file content (base64 encoded for transfer)"""
 		if not self.has_applet('base64'):
 			self._log("base64 applet not available for binary read", False)
 			return None
 
 		result = self._run_command(f"base64 {repr(path)}")
-		if result:
+		if result.returncode == 0:
+			output = result.stdout or ""
 			try:
 				import base64
-				content = base64.b64decode(result)
+				content = base64.b64decode(output)
 				self._log(f"read_bytes: {path} -> {len(content)} bytes", True)
 				return content
 			except Exception as e:
@@ -640,17 +576,14 @@ class BusyBoxManager:
 		return None
 
 	def append_text(self, path: str, content: str) -> bool:
-		"""Append text to file"""
 		escaped_content = content.replace("'", "'\"'\"'")
-		result = self._run_command(f"echo '{escaped_content}' >> {repr(path)}")
-		success = "error" not in result.lower()
+		cmd = f"echo '{escaped_content}' >> {repr(path)}"
+		result = self._run_command(cmd)
+		success = result.returncode == 0
 		self._log(f"append_text: {path} -> +{len(content)} chars", success)
 		return success
 
-	# ========== BATCH OPERATIONS ==========
-
 	def bulk_copy(self, sources: List[str], target_dir: str) -> bool:
-		"""Copy multiple files to target directory"""
 		success = True
 		for src in sources:
 			dst = f"{target_dir.rstrip('/')}/{src.split('/')[-1]}"
@@ -660,7 +593,6 @@ class BusyBoxManager:
 		return success
 
 	def bulk_remove(self, paths: List[str]) -> bool:
-		"""Remove multiple files/directories"""
 		success = True
 		for path in paths:
 			if not self.remove(path, recursive=True, force=True):
@@ -669,77 +601,75 @@ class BusyBoxManager:
 		return success
 
 	def clean_dir(self, path: str) -> bool:
-		"""Clean directory contents without removing the directory itself"""
-		result = self._run_command(f"rm -rf {repr(path)}/* {repr(path)}/.* 2>/dev/null && echo cleaned")
-		success = "cleaned" in result or "error" not in result.lower()
+		cmd = f"rm -rf {repr(path)}/* {repr(path)}/.* 2>/dev/null && echo cleaned"
+		result = self._run_command(cmd)
+		success = result.returncode == 0 or "cleaned" in (result.stdout or "")
 		self._log(f"clean_dir: {path}", success)
 		return success
 
-	# ========== SYMLINK OPERATIONS ==========
-
 	def create_symlink(self, target: str, link_path: str) -> bool:
-		"""Create symbolic link"""
 		if not self.has_applet('ln'):
 			self._log("ln applet not available", False)
 			return False
 
-		result = self._run_command(f"ln -sf {repr(target)} {repr(link_path)}")
-		success = "error" not in result.lower()
+		cmd = f"ln -sf {repr(target)} {repr(link_path)}"
+		result = self._run_command(cmd)
+		success = result.returncode == 0
 		self._log(f"create_symlink: {target} -> {link_path}", success)
 		return success
 
 	def read_symlink(self, link_path: str) -> Optional[str]:
-		"""Read symbolic link target"""
 		if not self.has_applet('readlink'):
 			self._log("readlink applet not available", False)
 			return None
 
 		result = self._run_command(f"readlink {repr(link_path)}")
-		if result and "error" not in result.lower():
-			self._log(f"read_symlink: {link_path} -> {result}", True)
-			return result.strip()
+		if result.returncode == 0:
+			output = result.stdout or ""
+			self._log(f"read_symlink: {link_path} -> {output}", True)
+			return output.strip()
 		return None
 
-	# ========== SYSTEM INFORMATION ==========
-
 	def get_disk_usage(self, path: str = "/") -> Optional[Dict[str, Any]]:
-		"""Get disk usage information"""
 		if not self.has_applet('df'):
 			return None
 
 		result = self._run_command(f"df -k {repr(path)}")
-		if result and len(result.splitlines()) > 1:
-			lines = result.splitlines()
-			parts = lines[1].split()
-			if len(parts) >= 6:
-				return {
-					'filesystem': parts[0],
-					'total_blocks': int(parts[1]),
-					'used_blocks': int(parts[2]),
-					'available_blocks': int(parts[3]),
-					'use_percent': parts[4],
-					'mount_point': parts[5]
-				}
+		if result.returncode == 0:
+			output = result.stdout or ""
+			if len(output.splitlines()) > 1:
+				lines = output.splitlines()
+				parts = lines[1].split()
+				if len(parts) >= 6:
+					return {
+						'filesystem': parts[0],
+						'total_blocks': int(parts[1]),
+						'used_blocks': int(parts[2]),
+						'available_blocks': int(parts[3]),
+						'use_percent': parts[4],
+						'mount_point': parts[5]
+					}
 		return None
 
 	def get_memory_info(self) -> Optional[Dict[str, Any]]:
-		"""Get memory information"""
 		if not self.has_applet('free'):
 			return None
 
 		result = self._run_command("free -k")
-		if result and len(result.splitlines()) > 1:
-			lines = result.splitlines()
-			parts = lines[1].split()
-			if len(parts) >= 7:
-				return {
-					'total': int(parts[1]),
-					'used': int(parts[2]),
-					'free': int(parts[3]),
-					'shared': int(parts[4]),
-					'buffers': int(parts[5]),
-					'available': int(parts[6])
-				}
+		if result.returncode == 0:
+			output = result.stdout or ""
+			if len(output.splitlines()) > 1:
+				lines = output.splitlines()
+				parts = lines[1].split()
+				if len(parts) >= 7:
+					return {
+						'total': int(parts[1]),
+						'used': int(parts[2]),
+						'free': int(parts[3]),
+						'shared': int(parts[4]),
+						'buffers': int(parts[5]),
+						'available': int(parts[6])
+					}
 		return None
 
 class PyFManager:
