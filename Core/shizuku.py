@@ -64,10 +64,54 @@ class Rish:
 		)
 		return result
 	
-	def run(self, command_string, timeout = None):
+	def run(self, command_string, timeout=None):
 		self.timeout = timeout
-		args = shlex.split(command_string)
+		
+		wrapped_cmd = f"{command_string}; echo RISH_EXIT_CODE:$? 2>&1"
+		args = ['-c', wrapped_cmd]
 		result = self.rish(args)
+		
+		output = result.stdout + result.stderr
+		
+		if 'RISH_EXIT_CODE:' in output:
+			parts = output.split('RISH_EXIT_CODE:', 1)
+			
+			before = parts[0].rstrip()
+			
+			after = parts[1].strip()
+	
+			exit_code = 0
+			if after:
+				exit_code_str = after.split()[0]
+				try:
+					exit_code = int(exit_code_str)
+				except ValueError:
+					self.console.error(f"RISH_EXIT_CODE: {exit_code_str}")
+					exit_code = 1
+	
+			if after and exit_code_str:
+				rest_start = len(exit_code_str)
+				rest = after[rest_start:].lstrip()
+			else:
+				rest = ""
+	
+			if before and rest:
+				clean_output = f"{before}\n{rest}"
+			elif before:
+				clean_output = before
+			else:
+				clean_output = rest
+	
+		else:
+			clean_output = output.rstrip()
+			exit_code = 0
+	
+		result.returncode = exit_code
+		result.stdout = clean_output if exit_code == 0 else ""
+		result.stderr = clean_output if exit_code != 0 else ""
+		
+		self.console.debug(f"_run_command result: {result}")
+		
 		return result
 
 	def drun(self, command_string):
@@ -109,7 +153,7 @@ class Rish:
 
 	def check_rish(self):
 		self.console.verbose("Checking rish application")
-		result = self.run("-c id")
+		result = self.run("id")
 		self.console.debug(escape(repr(result)))
 		if result.returncode != 0:
 			self.console.error(f"[red]Failed to establish connection with Shizuku API[/red]: {escape(repr(result.stderr))}")
@@ -128,8 +172,8 @@ class Rish:
 			sys.exit(0)
 
 	def __init__(self, console_instance = None,
-	    r_path = None,
-	    app_id: str = "com.termux",
+		r_path = None,
+		app_id: str = "com.termux",
 		app_id_bool: bool = False):
 		from Core.HiManagers import PyFManager
 		self.console = console_instance if console_instance else console()
