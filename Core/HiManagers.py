@@ -495,7 +495,7 @@ class BusyBoxManager:
 			cmd += " -p"
 		result = self._run_command(cmd)
 		success = result.returncode == 0
-		self.console.debug(f"tar_extract result: {result.stdout}")
+		self.console.debug(f"tar_extract result: {result.stdout}, error message: {result.stderr}")
 		self._log(f"tar_extract: {archive} -> {target_dir}", success)
 		return success
 
