@@ -11,100 +11,71 @@ from Core.shizuku import Rish
 
 
 class ADBFileManager:
-	"""ADB/Rish level file management operations with enhanced logging and error handling"""
-
 	def __init__(self, rish: Rish, console_instance):
 		self.rish = rish
 		self.console = console_instance
 
-	def _run_command(self, command: str, timeout: int = 30) -> Any:
-		"""Run command with proper quoting and timeout"""
+	def _run_command(self, command: str, timeout: Any = None) -> Any:
 		try:
-			return self.rish.run(f"-c {repr(command)}", timeout=timeout)
+			return self.rish.run(command, timeout=timeout)
 		except Exception as e:
-			# Return a mock result object for consistency
 			class MockResult:
 				def __init__(self, error_msg):
 					self.stdout = ""
 					self.stderr = error_msg
 					self.returncode = 1
-
 			return MockResult(str(e))
 
 	def _log_operation(self, operation: str, path: str, success: bool, details: str = ""):
-		"""Log file operations with proper escaping"""
 		status = "✓" if success else "✗"
 		message = f"ADB: {operation} {path} {status}"
 		if details:
 			message += f" - {details}"
 		self.console.debug(message)
 
-	def _get_output(self, result) -> str:
-		"""Get output from result, checking both stdout and stderr"""
-		output = ""
-		if hasattr(result, 'stdout') and result.stdout:
-			output += result.stdout.strip()
-		if hasattr(result, 'stderr') and result.stderr:
-			# Only append stderr if it doesn't look like an actual error
-			stderr_text = result.stderr.strip()
-			if stderr_text and not any(error_indicator in stderr_text.lower()
-			                           for error_indicator in ['error', 'failed', 'permission denied', 'no such file']):
-				if output:
-					output += " " + stderr_text
-				else:
-					output = stderr_text
-		return output
-
 	def exists(self, path: str) -> bool:
-		"""Check if path exists"""
 		if not path or not path.strip():
 			self._log_operation("exists", path or "empty", False, "empty path")
 			return False
 
 		try:
 			result = self._run_command(f"test -e {repr(path.strip())} && echo exists || echo missing")
-			output = self._get_output(result)
-			success = "exists" in output
-			self._log_operation("exists", path, success, f"output={output}")
+			success = (result.returncode == 0 and "exists" in (result.stdout or ""))
+			self._log_operation("exists", path, success)
 			return success
 		except Exception as e:
 			self._log_operation("exists", path, False, f"exception: {e}")
 			return False
 
 	def is_file(self, path: str) -> bool:
-		"""Check if path is a file"""
 		if not path or not path.strip():
 			self._log_operation("is_file", path or "empty", False, "empty path")
 			return False
 
 		try:
 			result = self._run_command(f"test -f {repr(path.strip())} && echo file || echo not_file")
-			output = self._get_output(result)
-			success = "file" in output
-			self._log_operation("is_file", path, success, f"output={output}")
+			success = (result.returncode == 0 and "file" in (result.stdout or ""))
+			self._log_operation("is_file", path, success)
 			return success
 		except Exception as e:
 			self._log_operation("is_file", path, False, f"exception: {e}")
 			return False
 
 	def is_dir(self, path: str) -> bool:
-		"""Check if path is a directory"""
 		if not path or not path.strip():
 			self._log_operation("is_dir", path or "empty", False, "empty path")
 			return False
 
 		try:
 			result = self._run_command(f"test -d {repr(path.strip())} && echo dir || echo not_dir")
-			output = self._get_output(result)
-			success = "dir" in output
-			self._log_operation("is_dir", path, success, f"output={output}")
+			success = (result.returncode == 0 and "dir" in (result.stdout or ""))
+			self._log_operation("is_dir", path, success)
 			return success
 		except Exception as e:
 			self._log_operation("is_dir", path, False, f"exception: {e}")
 			return False
 
 	def mkdir(self, path: str, parents: bool = False) -> bool:
-		"""Create directory"""
 		if not path or not path.strip():
 			self._log_operation("mkdir", path or "empty", False, "empty path")
 			return False
@@ -112,77 +83,70 @@ class ADBFileManager:
 		try:
 			cmd = f"mkdir {'-p ' if parents else ''}{repr(path.strip())}"
 			result = self._run_command(cmd)
-			# Check both stdout and stderr for success indicators
-			output = self._get_output(result)
-			# mkdir success when no error output OR when directory already exists and parents=True
-			success = (not result.stderr or
-			           ("File exists" in result.stderr and parents) or
-			           "exists" in output)
-			self._log_operation("mkdir", path, success, f"parents={parents}, output={output}")
+			success = result.returncode == 0
+			self._log_operation("mkdir", path, success, f"parents={parents}")
 			return success
 		except Exception as e:
 			self._log_operation("mkdir", path, False, f"exception: {e}")
 			return False
 
-	def remove(self, path: str, recursive: bool = False) -> bool:
-		"""Remove file or directory"""
+	def remove(self, path: str, recursive: bool = False, force: bool = False) -> bool:
 		if not path or not path.strip():
 			self._log_operation("remove", path or "empty", False, "empty path")
 			return False
 
 		try:
-			cmd = f"rm {'-rf ' if recursive else '-f '}{repr(path.strip())}"
+			flags = ""
+			if recursive:
+				flags += "r"
+			if force:
+				flags += "f"
+			cmd = f"rm {'-' + flags + ' ' if flags else ''}{repr(path.strip())}"
 			result = self._run_command(cmd)
-			# rm success when no error output OR when file doesn't exist (already removed)
-			success = (not result.stderr or
-			           "No such file" in result.stderr or
-			           "not found" in result.stderr.lower())
-			self._log_operation("remove", path, success, f"recursive={recursive}, stderr={result.stderr}")
+			success = result.returncode == 0
+			self._log_operation("remove", path, success, f"recursive={recursive}, force={force}")
 			return success
 		except Exception as e:
 			self._log_operation("remove", path, False, f"exception: {e}")
 			return False
 
-	def copy(self, src: str, dst: str) -> bool:
-		"""Copy file"""
+	def copy(self, src: str, dst: str, recursive: bool = False) -> bool:
 		if not src or not dst or not src.strip() or not dst.strip():
 			self._log_operation("copy", f"{src} -> {dst}", False, "empty source or destination")
 			return False
 
 		try:
-			result = self._run_command(f"cp {repr(src.strip())} {repr(dst.strip())}")
-			success = not result.stderr or "exists" in result.stderr
-			self._log_operation("copy", f"{src} -> {dst}", success, f"stderr={result.stderr}")
+			cmd = f"cp {'-r ' if recursive else ''}{repr(src.strip())} {repr(dst.strip())}"
+			result = self._run_command(cmd)
+			success = result.returncode == 0
+			self._log_operation("copy", f"{src} -> {dst}", success, f"recursive={recursive}")
 			return success
 		except Exception as e:
 			self._log_operation("copy", f"{src} -> {dst}", False, f"exception: {e}")
 			return False
 
-	def chmod(self, path: str, mode: str) -> bool:
-		"""Change file permissions"""
+	def chmod(self, path: str, mode: str, recursive: bool = False) -> bool:
 		if not path or not path.strip():
 			self._log_operation("chmod", path or "empty", False, "empty path")
 			return False
 
 		try:
-			result = self._run_command(f"chmod {mode} {repr(path.strip())}")
-			success = not result.stderr
-			self._log_operation("chmod", path, success, f"mode={mode}, stderr={result.stderr}")
+			cmd = f"chmod {'-R ' if recursive else ''}{mode} {repr(path.strip())}"
+			result = self._run_command(cmd)
+			success = result.returncode == 0
+			self._log_operation("chmod", path, success, f"mode={mode}, recursive={recursive}")
 			return success
 		except Exception as e:
 			self._log_operation("chmod", path, False, f"exception: {e}")
 			return False
 
 	def read(self, path: str) -> Optional[str]:
-		"""Read file content"""
 		if not path or not path.strip():
 			self._log_operation("read", path or "empty", False, "empty path")
 			return None
 
 		try:
 			result = self._run_command(f"cat {repr(path.strip())}")
-			# For read operations, we want to return content even if there's stderr
-			# as long as we got some stdout content
 			if result.stdout:
 				success = True
 				content = result.stdout
@@ -190,42 +154,36 @@ class ADBFileManager:
 				success = False
 				content = None
 
-			self._log_operation("read", path, success,
-			                    f"chars_read={len(content) if success else 0}, stderr={result.stderr}")
+			self._log_operation("read", path, success, f"chars_read={len(content) if success else 0}")
 			return content if success else None
 		except Exception as e:
 			self._log_operation("read", path, False, f"exception: {e}")
 			return None
 
 	def write(self, path: str, content: str) -> bool:
-		"""Write content to file"""
 		if not path or not path.strip():
 			self._log_operation("write", path or "empty", False, "empty path")
 			return False
 
 		try:
-			# More robust content escaping
 			escaped_content = content.replace("'", "'\"'\"'")
 			cmd = f"echo '{escaped_content}' > {repr(path.strip())}"
 			result = self._run_command(cmd)
-			success = not result.stderr
-			self._log_operation("write", path, success,
-			                    f"chars_written={len(content)}, stderr={result.stderr}")
+			success = result.returncode == 0
+			self._log_operation("write", path, success, f"chars_written={len(content)}")
 			return success
 		except Exception as e:
 			self._log_operation("write", path, False, f"exception: {e}")
 			return False
 
 	def list_dir(self, path: str) -> List[str]:
-		"""List directory contents"""
 		if not path or not path.strip():
 			self._log_operation("list_dir", path or "empty", False, "empty path")
 			return []
 
 		try:
 			result = self._run_command(f"ls -1 {repr(path.strip())} 2>/dev/null || echo")
-			# Combine both stdout and stderr for directory listing
-			output = self._get_output(result)
+			output = result.stdout or ""
 			items = [item for item in output.splitlines() if item.strip()]
 			self._log_operation("list_dir", path, True, f"items_count={len(items)}")
 			return items
@@ -234,39 +192,32 @@ class ADBFileManager:
 			return []
 
 	def checksum(self, path: str, hash_type: str = "sha512") -> Optional[str]:
-		"""Calculate file checksum"""
 		if not path or not path.strip():
 			self._log_operation("checksum", path or "empty", False, "empty path")
 			return None
 
 		try:
-			# Try the requested hash type first
-			result = self._run_command(f"{hash_type}sum {repr(path.strip())} 2>/dev/null || echo")
-			output = self._get_output(result)
+			result = self._run_command(f"{hash_type}sum {repr(path.strip())} 2>/dev/null")
+			output = result.stdout or ""
 
-			if output and not any(error_indicator in result.stderr.lower()
-			                      for error_indicator in ['error', 'failed', 'not found']
-			                      if result.stderr):
+			if result.returncode == 0 and output:
 				parts = output.split()
 				if parts:
 					checksum = parts[0]
-					self._log_operation("checksum", path, True, f"type={hash_type}, result={checksum[:16]}...")
+					self._log_operation("checksum", path, True, f"type={hash_type}, result={checksum}")
 					return checksum
 
-			# Fallback to md5sum if requested type fails
 			if hash_type != "md5":
-				result = self._run_command(f"md5sum {repr(path.strip())} 2>/dev/null || echo")
-				output = self._get_output(result)
-				if output and not any(error_indicator in result.stderr.lower()
-				                      for error_indicator in ['error', 'failed', 'not found']
-				                      if result.stderr):
+				result = self._run_command(f"md5sum {repr(path.strip())} 2>/dev/null")
+				output = result.stdout or ""
+				if result.returncode == 0 and output:
 					parts = output.split()
 					if parts:
 						checksum = parts[0]
-						self._log_operation("checksum", path, True, f"type=md5 (fallback), result={checksum[:16]}...")
+						self._log_operation("checksum", path, True, f"type=md5 (fallback), result={checksum}")
 						return checksum
 
-			self._log_operation("checksum", path, False, f"type={hash_type}, stderr={result.stderr}")
+			self._log_operation("checksum", path, False, f"type={hash_type}")
 			return None
 		except Exception as e:
 			self._log_operation("checksum", path, False, f"exception: {e}")
@@ -284,6 +235,8 @@ class BusyBoxManager:
 		self.busybox_cmd = f"{busybox_path}/busybox"
 		self._available = True
 		self._applets = None
+		self.errors_list = ['error', 'failed', 'permission denied', 'cannot', 'no such']
+		self.has_error = False
 
 	def _log(self, message: str, success: bool = True):
 		"""Internal logging method"""
@@ -293,14 +246,14 @@ class BusyBoxManager:
 
 	def _run_command(self, command: str, use_busybox: bool = True, timeout: int = 30) -> str:
 		"""Run command and return combined output"""
+		self.has_error = False
 		try:
 			if use_busybox and self.is_available():
-				cmd = f"{self.busybox_cmd} {command}"
+				cmd = f"{self.busybox_cmd} {command} 2>&1"
 			else:
 				cmd = command
 
 			result = self.adb._run_command(cmd)
-
 			# Combine stdout and stderr, filtering actual errors
 			output = ""
 			if hasattr(result, 'stdout') and result.stdout:
@@ -309,13 +262,15 @@ class BusyBoxManager:
 			if hasattr(result, 'stderr') and result.stderr:
 				stderr_text = result.stderr.strip()
 				# Only include stderr if it doesn't look like an actual error
-				if stderr_text and not any(error_indicator in stderr_text.lower()
-				                           for error_indicator in
-				                           ['error', 'failed', 'permission denied', 'cannot', 'no such']):
-					if output:
-						output += " " + stderr_text
+				if stderr_text:
+					if not any(error_indicator in stderr_text.lower()
+					for error_indicator in self.errors_list):
+						if output:
+							output += " " + stderr_text
+						else:
+							output = stderr_text
 					else:
-						output = stderr_text
+						self.has_error = True
 
 			return output
 
@@ -372,7 +327,7 @@ class BusyBoxManager:
 		cmd += f"{repr(path)}"
 
 		result = self._run_command(cmd)
-		success = not any(error in result.lower() for error in ['error', 'cannot', 'failed'])
+		success = not any(error in result.lower() for error in self.errors_list)
 		self._log(f"mkdir: {path} (parents={parents}, mode={mode})", success)
 		return success
 
@@ -596,7 +551,8 @@ class BusyBoxManager:
 		if preserve_permissions:
 			cmd += " -p"
 		result = self._run_command(cmd)
-		success = "error" not in result.lower()
+		success = not self.has_error
+		self.console.debug(f"tar_extract result: {result}")
 		self._log(f"tar_extract: {archive} -> {target_dir}", success)
 		return success
 
