@@ -67,7 +67,7 @@ class Rish:
 	def run(self, command_string, timeout=None):
 		self.timeout = timeout
 		
-		wrapped_cmd = f"{command_string}; echo RISH_EXIT_CODE:$? 2>&1"
+		wrapped_cmd = f"{command_string} 2>&1; echo RISH_EXIT_CODE:$?"
 		args = ['-c', wrapped_cmd]
 		result = self.rish(args)
 		
