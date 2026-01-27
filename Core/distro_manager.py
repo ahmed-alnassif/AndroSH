@@ -1023,9 +1023,9 @@ class DistributionManager:
 		# Create table
 		table = Table(title="🐧 Available Linux Distributions", box=box.ROUNDED)
 		table.add_column("Name", style="cyan", no_wrap=True)  # Distribution name
-		table.add_column("Distribution", style="green", no_wrap=True)  # Display name
+		table.add_column("Distribution", style="green")  # Display name
 		table.add_column("Type", style="magenta", no_wrap=True)
-		table.add_column("Size", style="blue", no_wrap=True)
+		table.add_column("Size", style="blue")
 
 		for distro_name, distro in supported_distros.items():
 			info = distro.get_display_info()
