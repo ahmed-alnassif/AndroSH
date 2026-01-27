@@ -110,7 +110,7 @@ class Rish:
 		result.stdout = clean_output if exit_code == 0 else ""
 		result.stderr = clean_output if exit_code != 0 else ""
 		
-		self.console.debug(f"_run_command result: {result}")
+		#self.console.debug(f"_run_command result: {result}")
 		
 		return result
 
