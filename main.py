@@ -681,13 +681,14 @@ class AndroSH:
 			sys.exit(1)
 
 		if not args.force:
-			confirm = input(f"[?] Are you sure you want to remove '{distro_dir}'? [y/N]: ")
+			confirm = self.console.input(f"Are you sure you want to remove '{distro_dir}'? [y/N]: ")
 			if confirm.lower() != 'y':
 				self.console.warning("Removal cancelled.")
 				sys.exit()
 
 		self.console.info(f"Removing distro: {distro_dir}")
 
+		self.busybox.chmod(distro_dir, 777, recursive=True)
 		if not self.busybox.remove(distro_dir, recursive=True):
 			self.console.error(f"Failed to remove distro: {distro_dir}")
 			sys.exit(1)
