@@ -374,7 +374,7 @@ class AndroSH:
 		if actual_hash != expected_hash:
 			self.console.warning("BusyBox checksum mismatch!")
 			if not self.args.force:
-				confirm = input(f"[?] BusyBox checksum doesn't match. Replace it? [y/N]: ")
+				confirm = self.console.input(f"[?] BusyBox checksum doesn't match. Replace it? [cyan]\\[y/N]:[/cyan] ")
 				if confirm.lower() != 'y':
 					self.console.warning("Using existing BusyBox despite checksum mismatch")
 				else:
@@ -681,7 +681,7 @@ class AndroSH:
 			sys.exit(1)
 
 		if not args.force:
-			confirm = self.console.input(f"Are you sure you want to remove '{distro_dir}'? [y/N]: ")
+			confirm = self.console.input(f"Are you sure you want to remove '{distro_dir}'? [red]\\[y/N]:[/red] ")
 			if confirm.lower() != 'y':
 				self.console.warning("Removal cancelled.")
 				sys.exit()
