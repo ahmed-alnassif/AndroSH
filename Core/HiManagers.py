@@ -226,13 +226,16 @@ class ADBFileManager:
 
 class BusyBoxManager:
 	def __init__(self, adb_file_manager: ADBFileManager, console_instance,
-				 busybox_path: str = "/data/local/tmp/busybox"):
+				 busybox_path: str = "/data/local/tmp/busybox",
+				 proot_cmd = None):
 		self.adb = adb_file_manager
 		self.console = console_instance
 		self.busybox_path = busybox_path
 		self.busybox_cmd = f"{busybox_path}/busybox"
 		self._available = True
 		self._applets = None
+		self.tar_err = None
+		self.proot_cmd = proot_cmd
 
 	def _log(self, message: str, success: bool = True):
 		if self.console:
@@ -242,7 +245,7 @@ class BusyBoxManager:
 	def _run_command(self, command: str, use_busybox: bool = True, timeout: int = 30) -> Any:
 		try:
 			if use_busybox and self.is_available():
-				cmd = f"{self.busybox_cmd} {command}"
+				cmd = f"{self.proot_cmd or str()}{self.busybox_cmd} {command}"
 			else:
 				cmd = command
 			
@@ -495,6 +498,7 @@ class BusyBoxManager:
 			cmd += " -p"
 		result = self._run_command(cmd)
 		success = result.returncode == 0
+		self.tar_err = result.stderr
 		self.console.debug(f"tar_extract result: {result.stdout}, error message: {result.stderr}")
 		self._log(f"tar_extract: {archive} -> {target_dir}", success)
 		return success
