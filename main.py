@@ -546,6 +546,7 @@ class AndroSH:
 			sys.exit(1)
 
 		self.console.verbose(f"Extracting {self.distro} rootfs: {linux_archive} -> {linux_target}")
+		rootfs_len = 1
 		if not self.busybox.tar_extract(linux_archive, linux_target):
 			if self.busybox.tar_err and \
 				"permission denied" in self.busybox.tar_err.lower():
@@ -554,6 +555,7 @@ class AndroSH:
 					self.busybox.mkdir(tmp, parents=True)
 					self.busybox.proot_cmd = f"LD_LIBRARY_PATH={lib} PROOT_TMP_DIR={tmp} {proot_path} -0 "
 					self.busybox.tar_err = None
+					rootfs_len = 2
 					if not self.busybox.tar_extract(linux_archive, linux_target):
 						self.console.error(f"Failed to extract {self.distro} using Proot + BusyBox")
 						sys.exit(1)
@@ -565,7 +567,7 @@ class AndroSH:
 		distro_root = list_dir[0]
 		distro_root_path = str(Path(linux_target) / distro_root)
 
-		if len(list_dir) == 1:
+		if len(list_dir) == rootfs_len:
 			self.console.verbose(f"Distro patch: {list_dir}")
 			content = " ".join([str(Path(distro_root_path) / _) for _ in self.busybox.list_dir(distro_root_path, pattern="")])
 			self.busybox._run_command(f"sh -c 'for i in {content}; do mv $i {linux_target}; done'")
