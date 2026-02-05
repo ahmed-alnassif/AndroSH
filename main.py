@@ -547,8 +547,19 @@ class AndroSH:
 
 		self.console.verbose(f"Extracting {self.distro} rootfs: {linux_archive} -> {linux_target}")
 		if not self.busybox.tar_extract(linux_archive, linux_target):
-			self.console.error(f"Failed to extract {self.distro} using BusyBox")
-			sys.exit(1)
+			if self.busybox.tar_err and \
+				"permission denied" in self.busybox.tar_err.lower():
+					self.console.info("Rootfs with root permissions detected.")
+					tmp = f"{linux_target / Path("tmp")}"
+					self.busybox.mkdir(tmp, parents=True)
+					self.busybox.proot_cmd = f"LD_LIBRARY_PATH={lib} PROOT_TMP_DIR={tmp} {proot_path} -0 "
+					self.busybox.tar_err = None
+					if not self.busybox.tar_extract(linux_archive, linux_target):
+						self.console.error(f"Failed to extract {self.distro} using Proot + BusyBox")
+						sys.exit(1)
+			else:
+				self.console.error(f"Failed to extract {self.distro} using BusyBox")
+				sys.exit(1)
 
 		list_dir = self.busybox.list_dir(linux_target, pattern="")
 		distro_root = list_dir[0]
