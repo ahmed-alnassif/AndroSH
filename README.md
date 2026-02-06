@@ -19,11 +19,6 @@
 
 ## ⚡ Quick Features
 
-```bash
-❯ androsh setup production --distro debian --type stable
-❯ androsh launch production
-root@localhost:~# apt update && apt upgrade -y
-```
 - 🐳 **Multi-Distro**: Run Archlinux, Fedora, Alpine, Debian, Ubuntu, Kali, Void Linux, Manjaro, and Chimera Linux simultaneously  
 - 🔧 **Shizuku**: Full Android system integration without root
 - 💾 **SQLite Backed**: Fast, reliable environment management
