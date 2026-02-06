@@ -559,6 +559,8 @@ class AndroSH:
 					if not self.busybox.tar_extract(linux_archive, linux_target):
 						self.console.error(f"Failed to extract {self.distro} using Proot + BusyBox")
 						sys.exit(1)
+			elif "can't create node" in self.busybox.tar_err.lower():
+				pass
 			else:
 				self.console.error(f"Failed to extract {self.distro} using BusyBox")
 				sys.exit(1)
