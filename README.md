@@ -12,18 +12,18 @@
 [![Platform](https://img.shields.io/badge/platform-Android-success?style=for-the-badge)](https://www.android.com)
 [![Distributions](https://img.shields.io/badge/distros-9+-yellow?style=for-the-badge)](https://github.com/ahmed-alnassif/AndroSH)
 [![Status](https://img.shields.io/badge/status-active-brightgreen?style=for-the-badge)](https://github.com/ahmed-alnassif/AndroSH)
-![androsh launch kali](/Assets/Screenshots/launch-kali.png)
+---
 ![AndroSH Mobile Showcase](/Assets/Screenshots/AndroSH-mobile.png)
 
 </div>
+
+## ⚡ Quick Features
 
 ```bash
 ❯ androsh setup production --distro debian --type stable
 ❯ androsh launch production
 root@localhost:~# apt update && apt upgrade -y
 ```
-## ⚡ Quick Features
-
 - 🐳 **Multi-Distro**: Run Archlinux, Fedora, Alpine, Debian, Ubuntu, Kali, Void Linux, Manjaro, and Chimera Linux simultaneously  
 - 🔧 **Shizuku**: Full Android system integration without root
 - 💾 **SQLite Backed**: Fast, reliable environment management
