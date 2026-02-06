@@ -13,6 +13,8 @@
 [![Distributions](https://img.shields.io/badge/distros-9+-yellow?style=for-the-badge)](https://github.com/ahmed-alnassif/AndroSH)
 [![Status](https://img.shields.io/badge/status-active-brightgreen?style=for-the-badge)](https://github.com/ahmed-alnassif/AndroSH)
 ![androsh launch kali](/Assets/Screenshots/launch-kali.png)
+![AndroSH Mobile Showcase](/Assets/Screenshots/AndroSH-mobile.png)
+
 </div>
 
 ```bash
