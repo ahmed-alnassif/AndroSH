@@ -232,8 +232,8 @@ class AndroSH:
 		launch_parser.add_argument("-c", "--command", dest="launch_command", help="launch command and exit", default="")
 
 		# Rish command
-		launch_parser = subparsers.add_parser('rish', help='Start adb shell/shizuku rish')
-		launch_parser.add_argument("-c", "--command", dest="rish_command", help="launch command and exit", default="")
+		rish_parser = subparsers.add_parser('rish', help='Start adb shell/shizuku rish')
+		rish_parser.add_argument("-c", "--command", dest="rish_command", help="launch command and exit", default="")
 
 
 		# Clean command
