@@ -352,6 +352,9 @@ androsh clean production
 androsh remove production --force
 ```
 
+### Termux:X11 support
+- Termux:X11 support for graphical user interface (GUI) and desktop environment (DE), [setup guide](https://github.com/ahmed-alnassif/AndroSH/discussions/6#discussioncomment-15720947)
+
 ## 💡 Use Cases
 
 ### 🎓 Educational Infrastructure
