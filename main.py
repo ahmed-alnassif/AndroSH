@@ -168,6 +168,8 @@ class AndroSH:
 		elif args.command == 'launch':
 			self.launch_distro(args)
 			self.launch()
+		elif args.command == 'rish':
+			self.rish_shell(args)
 		elif args.command == 'clean':
 			self.clean_distro(args)
 		elif args.command == 'install':
@@ -228,6 +230,11 @@ class AndroSH:
 		launch_parser = subparsers.add_parser('launch', help='Start an existing environment')
 		launch_parser.add_argument('name', help='Name of the environment to launch')
 		launch_parser.add_argument("-c", "--command", dest="launch_command", help="launch command and exit", default="")
+
+		# Rish command
+		launch_parser = subparsers.add_parser('rish', help='Start adb shell/shizuku rish')
+		launch_parser.add_argument("-c", "--command", dest="rish_command", help="launch command and exit", default="")
+
 
 		# Clean command
 		clean_parser = subparsers.add_parser('clean', help='Clean environment temporary files')
@@ -709,6 +716,15 @@ class AndroSH:
 			sys.exit(1)
 
 		self.db.setup(name=self.distro_dir)
+
+	def rish_shell(self, args) -> None:
+		self.console.debug(f"Starting rish shell called with args: {vars(args)}")
+		self.rish_command = args.rish_command
+		if self.rish_command:
+			self.rish.drun(f"-c {repr(self.rish_command)}")
+		else:
+			self.rish.drun("-c \"if command -v bash >/dev/null 2>&1; then exec bash; else exec sh; fi\"")
+
 
 	def clean_distro(self, args) -> None:
 		self.console.debug(f"Clean distro called with args: {vars(args)}")
