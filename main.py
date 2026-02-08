@@ -241,7 +241,7 @@ class AndroSH:
 		clean_parser.add_argument('name', help='Environment name to clean')
 
 		# Install command
-		path = f"{Path(os.environ["PREFIX"]) / "bin"}" if os.environ.get("PREFIX") else None
+		path = f"{Path(os.environ['PREFIX']) / 'bin'}" if os.environ.get("PREFIX") else None
 		install_parser = subparsers.add_parser('install', help='Install for global system access')
 		install_parser.add_argument('--path', default=path,
 		                            help=f'Installation directory for global script (default: {path})')
@@ -558,7 +558,7 @@ class AndroSH:
 			if self.busybox.tar_err and \
 				"permission denied" in self.busybox.tar_err.lower():
 					self.console.info("Rootfs with root permissions detected.")
-					tmp = f"{linux_target / Path("tmp")}"
+					tmp = f"{linux_target / Path('tmp')}"
 					self.busybox.mkdir(tmp, parents=True)
 					self.busybox.proot_cmd = f"LD_LIBRARY_PATH={lib} PROOT_TMP_DIR={tmp} {proot_path} -0 "
 					self.busybox.tar_err = None
