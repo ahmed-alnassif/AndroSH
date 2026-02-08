@@ -4,7 +4,7 @@
 
 **Professional-Grade Linux Distribution Management on Android Devices with ADB/Shizuku Integration**
 
-[![Tests](https://github.com/ahmed-alnassif/AndroSH/actions/workflows/python-package.yml/badge.svg)](https://github.com/ahmed-alnassif/AndroSH/actions/workflows/python-package.yml)
+[![Tests](https://github.com/ahmed-alnassif/AndroSH/actions/workflows/tests.yml/badge.svg)](https://github.com/ahmed-alnassif/AndroSH/actions/workflows/tests.yml)
 [![GitHub Stars](https://img.shields.io/github/stars/ahmed-alnassif/AndroSH)](https://github.com/ahmed-alnassif/AndroSH/stargazers)
 [![Version](https://img.shields.io/badge/version-26.02.05-blue)](https://github.com/ahmed-alnassif/AndroSH/releases)
 [![Python](https://img.shields.io/badge/python-3.8+-green)](https://python.org)
