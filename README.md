@@ -1,4 +1,4 @@
-# AndroSH - Multi-Distribution Linux Environments on Android with Elevated Privileges
+#  AndroSH - Run Linux Distributions on Android (No Root, ADB/Shizuku Powered)
 
 <div align="center">
 
@@ -9,7 +9,7 @@
 [![Version](https://img.shields.io/badge/version-26.02.05-blue)](https://github.com/ahmed-alnassif/AndroSH/releases)
 [![Python](https://img.shields.io/badge/python-3.8+-green)](https://python.org)
 [![License](https://img.shields.io/badge/license-GPLv3-orange)](LICENSE)
-[![Verified Binaries](https://img.shields.io/badge/binaries-verified-success)](https://github.com/ahmed-alnassif/AndroSH?tab=readme-ov-file#%EF%B8%8F-technical-components--trust)
+[![Verified Binaries](https://img.shields.io/badge/binaries-verified-success)](#-technical-components--trust)
 [![Platform](https://img.shields.io/badge/platform-Android-success)](https://www.android.com)
 [![Distributions](https://img.shields.io/badge/distros-9+-yellow)](https://github.com/ahmed-alnassif/AndroSH)
 [![Status](https://img.shields.io/badge/status-active-brightgreen)](https://github.com/ahmed-alnassif/AndroSH)
@@ -18,18 +18,97 @@
 
 </div>
 
+## 🚀 Quick Start
+
+```bash
+apt update; apt install -y python git # Termux
+git clone --depth 1 https://github.com/ahmed-alnassif/AndroSH.git
+cd AndroSH
+pip install -r requirements.txt
+python main.py install
+androsh setup demo --distro debian --type stable
+androsh launch demo
+```
+
+## 📑 Table of Contents
+
+- [🚀 Quick Start](#-quick-start)
+- [⚡ Quick Features](#-quick-features)
+- [🐧 Supported Linux Distributions](#-supported-linux-distributions)
+- [🚀 Overview](#-overview)
+  - [🏆 Competitive Advantage Matrix](#-competitive-advantage-matrix)
+- [🖼️ Visual Demo](#-visual-demo)
+- [🎯 Core Capabilities](#-core-capabilities)
+  - [🚀 Advanced Android System Integration](#-advanced-android-system-integration)
+  - [🛠️ Professional Command Line Interface](#-professional-command-line-interface)
+  - [📊 Database-Driven Architecture](#-database-driven-architecture)
+  - [🎪 Enhanced User Experience](#-enhanced-user-experience)
+  - [🔧 Advanced Management Suite](#-advanced-management-suite)
+- [🎨 Premium User Experience](#-premium-user-experience)
+- [🏗️ Technical Architecture](#-technical-architecture)
+  - [System Integration Framework](#system-integration-framework)
+  - [Technical Innovations](#technical-innovations)
+- [📥 Detailed Installation](#-detailed-installation)
+  - [System Requirements](#system-requirements)
+  - [Required packages (Termux)](#required-packages-termux)
+  - [Rapid Deployment](#rapid-deployment)
+- [🔄 Updates](#-updates)
+- [🚀 Usage Examples](#-usage-examples)
+  - [1. Environment Deployment](#1-environment-deployment)
+  - [2. Environment Initialization](#2-environment-initialization)
+  - [3. Professional Management](#3-professional-management)
+- [💡 Use Cases](#-use-cases)
+  - [🎓 Educational Infrastructure](#-educational-infrastructure)
+  - [🔍 Security Research & Penetration Testing](#-security-research--penetration-testing)
+  - [🛠️ Development & CI/CD Environments](#-development--cicd-environments)
+  - [📱 Field Operations & Mobile Workstations](#-field-operations--mobile-workstations)
+- [🛡️ Security & Compliance](#-security--compliance)
+  - [Security Architecture](#security-architecture)
+  - [Privacy Assurance](#privacy-assurance)
+- [🛠️ Technical Components & Trust](#-technical-components--trust)
+  - [Verified Binary Sources](#verified-binary-sources)
+  - [Component Rationale](#component-rationale)
+  - [Source Transparency](#source-transparency)
+  - [Security & Verification](#security--verification)
+- [🔧 Troubleshooting Guide](#-troubleshooting-guide)
+  - [Shizuku Service Management](#shizuku-service-management)
+- [🤝 Contribution Framework](#-contribution-framework)
+  - [Development Collaboration](#development-collaboration)
+  - [Priority Development Areas](#priority-development-areas)
+  - [Development Environment](#development-environment)
+- [📜 License & Compliance](#-license--compliance)
+- [🏆 Project Leadership](#-project-leadership)
+- [🌟 Support](#-support)
+  - [Project Engagement](#project-engagement)
+
 ## ⚡ Quick Features
 
-- 🐳 **Multi-Distro**: Run Archlinux, Fedora, Alpine, Debian, Ubuntu, Kali, Void Linux, Manjaro, and Chimera Linux simultaneously  
+- 🐳 **Multi-Distro**: Run multiple Linux distributions simultaneously (Arch, Fedora, Alpine, Debian, Ubuntu, Kali, Void, Manjaro, Chimera)
 - 🔧 **Shizuku**: Full Android system integration without root
 - 💾 **SQLite Backed**: Fast, reliable environment management
 - 🚀 **Optimized**: 40% faster startup than alternatives
 - 🛡️ **Secure**: Proot isolation + permission boundaries
 - 📱 **Mobile-First**: Designed for Android workflows
+-  🖼️ **Termux:X11 support** for graphical user interface (GUI) and desktop environment (DE), [setup guide](https://github.com/ahmed-alnassif/AndroSH/discussions/6#discussioncomment-15720947)
+
+## 🐧 Supported Linux Distributions
+
+![Debian](https://img.shields.io/badge/Debian-Supported-A81D33?logo=debian&logoColor=white)
+![Ubuntu](https://img.shields.io/badge/Ubuntu-Supported-E95420?logo=ubuntu&logoColor=white)
+![Arch Linux](https://img.shields.io/badge/Arch-Supported-1793D1?logo=archlinux&logoColor=white)
+![Kali Linux](https://img.shields.io/badge/Kali-Supported-557C94?logo=kalilinux&logoColor=white)
+![Alpine](https://img.shields.io/badge/Alpine-Supported-0D597F?logo=alpinelinux&logoColor=white)
+![Fedora](https://img.shields.io/badge/Fedora-Supported-51A2DA?logo=fedora&logoColor=white)
+![Void Linux](https://img.shields.io/badge/Void-Supported-478061?logo=voidlinux&logoColor=white)
+![Manjaro](https://img.shields.io/badge/Manjaro-Supported-35BF5C?logo=manjaro&logoColor=white)
+![Chimera Linux](https://img.shields.io/badge/Chimera-Supported-000000?logo=linux&logoColor=white)
+
+All listed distributions are fully supported using verified rootfs sources
+and run in isolated proot environments without requiring root access.
 
 ## 🚀 Overview
 
-AndroSH is a professional-grade deployment platform that enables seamless execution of **multiple Linux distributions** on Android devices through advanced `proot` virtualization and **Android System Integration via ADB/Shizuku**. This solution provides Professional-level Linux environment management without compromising device security.
+AndroSH is a deployment platform that enables seamless execution of **multiple Linux distributions** on Android devices through advanced `proot` virtualization and **Android System Integration via ADB/Shizuku**. This solution provides Professional-level Linux environment management without compromising device security.
 
 ### 🏆 Competitive Advantage Matrix
 
@@ -74,7 +153,7 @@ ip route show
 
 ### 🛠️ Professional Command Line Interface
 
-```bash
+```
 ❯ androsh --help
 usage: main.py [-h] [--verbose | --debug | --quiet]
                [--base-dir BASE_DIR]
@@ -99,7 +178,11 @@ positional arguments:
     lsd                 List installed environments
     download            Download distribution files
     distro              Distribution management suite
+```
+<details>
+<summary><strong>Show full command help</strong></summary>
 
+<pre>
 options:
   -h, --help            show this help message and exit
   --verbose, -v         Verbose output: detailed operation
@@ -197,7 +280,8 @@ positional arguments:
 
 options:
   -h, --help            show this help message and exit
-```
+</pre>
+</details>
 
 ### 📊 Database-Driven Architecture
 
@@ -287,7 +371,7 @@ graph TD
 - **Database-Backed Management**: Professional-Grade data persistence
 - **Self-Healing Deployment**: Automated error recovery and integrity verification
 
-## 📥 Installation & Deployment
+## 📥 Detailed Installation
 
 ### System Requirements
 
@@ -324,7 +408,7 @@ git pull
 pip install -r requirements.txt
 ```
 
-## 🚀 Quick Start Guide
+## 🚀 Usage Examples
 
 ### 1. Environment Deployment
 
@@ -352,9 +436,6 @@ androsh clean production
 # Environment removal
 androsh remove production --force
 ```
-
-### Termux:X11 support
-- Termux:X11 support for graphical user interface (GUI) and desktop environment (DE), [setup guide](https://github.com/ahmed-alnassif/AndroSH/discussions/6#discussioncomment-15720947)
 
 ## 💡 Use Cases
 
@@ -509,7 +590,7 @@ We welcome contributors and security researchers to enhance the platform.
 ### Priority Development Areas
 
 - Enhanced performance optimization
-- deployment tooling
+- Deployment Tooling
 - Security hardening features
 
 ### Development Environment
@@ -538,16 +619,16 @@ GPLv3 License - open source licensing for commercial and research use.
 
 ### Project Engagement
 
-- ⭐ **Repository Endorsement**
-- 🐛 **Production Issue Reporting**
-- 💡 **Feature Roadmap Contributions**
-- 🔄 **Deployment Sharing**
+- ⭐ **Star this Project**
+- 🐛 **Report Issues**
+- 💡 **Suggest Features**
+- 🔄 **Share Use Cases**
 
 ---
 
 <div align="center">
 
-**💻 Transform Your Android Device into an Professional-Grade Linux Workstation**
+**💻 Transform Your Android Device into a Professional-Grade Linux Workstation**
 
 </div>
 
@@ -563,3 +644,5 @@ cd AndroSH && androsh setup enterprise --distro debian --type stable
 **AndroSH Philosophy**
 
 </div>
+
+[📑 Back to ToC](#-table-of-contents)
