@@ -3,15 +3,15 @@
 <div align="center">
 
 **Professional-Grade Linux Distribution Management on Android Devices with ADB/Shizuku Integration**
-
-[![GitHub Stars](https://img.shields.io/github/stars/ahmed-alnassif/AndroSH?style=for-the-badge)](https://github.com/ahmed-alnassif/AndroSH/stargazers)
-[![Version](https://img.shields.io/badge/version-26.02.05-blue?style=for-the-badge)](https://github.com/ahmed-alnassif/AndroSH/releases)
-[![Python](https://img.shields.io/badge/python-3.8+-green?style=for-the-badge)](https://python.org)
-[![License](https://img.shields.io/badge/license-GPLv3-orange?style=for-the-badge)](LICENSE)
-[![Verified Binaries](https://img.shields.io/badge/binaries-verified-success?style=for-the-badge)](https://github.com/ahmed-alnassif/AndroSH?tab=readme-ov-file#%EF%B8%8F-technical-components--trust)
-[![Platform](https://img.shields.io/badge/platform-Android-success?style=for-the-badge)](https://www.android.com)
-[![Distributions](https://img.shields.io/badge/distros-9+-yellow?style=for-the-badge)](https://github.com/ahmed-alnassif/AndroSH)
-[![Status](https://img.shields.io/badge/status-active-brightgreen?style=for-the-badge)](https://github.com/ahmed-alnassif/AndroSH)
+[![Tests](https://github.com/ahmed-alnassif/AndroSH/actions/workflows/python-package.yml/badge.svg)](https://github.com/ahmed-alnassif/AndroSH/actions/workflows/python-package.yml)
+[![GitHub Stars](https://img.shields.io/github/stars/ahmed-alnassif/AndroSH)](https://github.com/ahmed-alnassif/AndroSH/stargazers)
+[![Version](https://img.shields.io/badge/version-26.02.05-blue)](https://github.com/ahmed-alnassif/AndroSH/releases)
+[![Python](https://img.shields.io/badge/python-3.8+-green)](https://python.org)
+[![License](https://img.shields.io/badge/license-GPLv3-orange)](LICENSE)
+[![Verified Binaries](https://img.shields.io/badge/binaries-verified-success)](https://github.com/ahmed-alnassif/AndroSH?tab=readme-ov-file#%EF%B8%8F-technical-components--trust)
+[![Platform](https://img.shields.io/badge/platform-Android-success)](https://www.android.com)
+[![Distributions](https://img.shields.io/badge/distros-9+-yellow)](https://github.com/ahmed-alnassif/AndroSH)
+[![Status](https://img.shields.io/badge/status-active-brightgreen)](https://github.com/ahmed-alnassif/AndroSH)
 ---
 ![AndroSH Mobile Showcase](/Assets/Screenshots/AndroSH-mobile.png)
 
