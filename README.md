@@ -1,4 +1,4 @@
-#  AndroSH - Run Linux Distributions on Android (No Root, ADB/Shizuku Powered)
+# AndroSH - Run Linux Distributions on Android (No Root, ADB/Shizuku Powered)
 
 <div align="center">
 
@@ -13,8 +13,9 @@
 [![Platform](https://img.shields.io/badge/platform-Android-success)](https://www.android.com)
 [![Distributions](https://img.shields.io/badge/distros-9+-yellow)](https://github.com/ahmed-alnassif/AndroSH)
 [![Status](https://img.shields.io/badge/status-active-brightgreen)](https://github.com/ahmed-alnassif/AndroSH)
+
 ---
-![AndroSH Mobile Showcase](/Assets/Screenshots/AndroSH-mobile.png)
+
 
 </div>
 
@@ -179,109 +180,7 @@ positional arguments:
     download            Download distribution files
     distro              Distribution management suite
 ```
-<details>
-<summary><strong>Show full command help</strong></summary>
-
-<pre>
-options:
-  -h, --help            show this help message and exit
-  --verbose, -v         Verbose output: detailed operation
-                        information
-  --debug, -d           Debug output: all operations
-                        including system commands
-  --quiet, -q           Quiet output: suppress non-essential
-                        information
-  --base-dir BASE_DIR   Base directory for environments
-                        (default:
-                        /data/local/tmp/AndroSH/distros)
-  --resources-dir RESOURCES_DIR
-                        Resources directory for downloads
-                        (default: /sdcard/Download/AndroSH)
-  --time-style          Display time format
-  --chsh CHSH           Custom shell command (default: bash)
-
-Complete Linux workstations with Android system integration -
-no root required
-
-❯ androsh -q setup --help
-usage: main.py setup [-h] [-f ROOTFS]
-                     [-d {alpine,debian,ubuntu,kali-nethunter,archlinux,fedora,void,manjaro,chimera}]
-                     [-t TYPE] [--hostname HOSTNAME]
-                     [--resetup] [--force]
-                     name
-
-positional arguments:
-  name                  Environment name (default: AndroSH)
-
-options:
-  -h, --help            show this help message and exit
-  -f ROOTFS, --rootfs ROOTFS
-                        Custom rootfs file, when used you
-                        don't need to add -d/-t arguments
-  -d {alpine,debian,ubuntu,kali-nethunter,archlinux,fedora,void,manjaro,chimera}, --distro {alpine,debian,ubuntu,kali-nethunter,archlinux,fedora,void,manjaro,chimera}
-                        Linux distribution (default: alpine)
-  -t TYPE, --type TYPE  Distribution variant (minimal, full,
-                        stable) - depends on distro (default:
-                        alpine-minirootfs)
-  --hostname HOSTNAME   Custom Hostname (default: AndroSH)
-  --resetup             Reinstall environment while
-                        preserving data
-  --force               Force overwrite without confirmation
-
-❯ androsh -q remove --help
-usage: main.py remove [-h] [--force] name
-
-positional arguments:
-  name        Name of the environment to remove
-
-options:
-  -h, --help  show this help message and exit
-  --force     Force removal without confirmation
-
-❯ androsh -q launch --help
-usage: main.py launch [-h] [-c LAUNCH_COMMAND] name
-
-positional arguments:
-  name                  Name of the environment to launch
-
-options:
-  -h, --help            show this help message and exit
-  -c LAUNCH_COMMAND, --command LAUNCH_COMMAND
-                        launch command and exit
-
-❯ androsh -q rish --help
-usage: main.py rish [-h] [-c RISH_COMMAND]
-
-options:
-  -h, --help            show this help message and exit
-  -c RISH_COMMAND, --command RISH_COMMAND
-                        launch command and exit
-
-❯ androsh -q install --help
-usage: main.py install [-h] [--path PATH] [--name NAME]
-
-options:
-  -h, --help   show this help message and exit
-  --path PATH  Installation directory for global script
-               (default: /data/data/com.termux/files/usr/bin)
-  --name NAME  Command name for global access (default:
-               androsh)
-
-❯ androsh -q distro --help
-usage: main.py distro [-h] {list,download,info,urls} ...
-
-positional arguments:
-  {list,download,info,urls}
-                        Distro subcommand
-    list                List available distributions
-    download            Download distribution
-    info                Get distribution information
-    urls                Show download URLs
-
-options:
-  -h, --help            show this help message and exit
-</pre>
-</details>
+[Show full command help](Assets/docs/AndroSH_Help.md)
 
 ### 📊 Database-Driven Architecture
 
