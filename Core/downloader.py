@@ -21,7 +21,7 @@ class FileDownloader:
 		
 		# Configure the progress display - FIXED layout
 		self.progress = Progress(
-			TextColumn(f"[cyan][{self.custom_console.time("STATUS")}][/cyan]"),
+			TextColumn(f"[cyan][{self.custom_console.time('STATUS')}][/cyan]"),
 			BarColumn(bar_width=40),
 			"[progress.percentage]{task.percentage:>3.1f}%",
 			"•",
