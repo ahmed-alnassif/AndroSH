@@ -3,6 +3,7 @@
 <div align="center">
 
 **Professional-Grade Linux Distribution Management on Android Devices with ADB/Shizuku Integration**
+
 [![Tests](https://github.com/ahmed-alnassif/AndroSH/actions/workflows/python-package.yml/badge.svg)](https://github.com/ahmed-alnassif/AndroSH/actions/workflows/python-package.yml)
 [![GitHub Stars](https://img.shields.io/github/stars/ahmed-alnassif/AndroSH)](https://github.com/ahmed-alnassif/AndroSH/stargazers)
 [![Version](https://img.shields.io/badge/version-26.02.05-blue)](https://github.com/ahmed-alnassif/AndroSH/releases)
