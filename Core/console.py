@@ -33,31 +33,31 @@ class console:
 
     def status(self, message: str):
         if self.log_level.value >= LogLevel.NORMAL.value:
-            self.console.print(f"[cyan][{self.time("STATUS")}][/cyan] {message}")
+            self.console.print(f"[cyan][{self.time('STATUS')}][/cyan] {message}")
     
     def error(self, message: str):
         if self.log_level.value >= LogLevel.QUIET.value:
-            self.console.print(f"[bold red][{self.time("ERROR")}][/bold red] {message}")
+            self.console.print(f"[bold red][{self.time('ERROR')}][/bold red] {message}")
     
     def warning(self, message: str):
         if self.log_level.value >= LogLevel.NORMAL.value:
-            self.console.print(f"[yellow][{self.time("WARNING")}][/yellow] {message}")
+            self.console.print(f"[yellow][{self.time('WARNING')}][/yellow] {message}")
     
     def success(self, message: str):
         if self.log_level.value >= LogLevel.NORMAL.value:
-            self.console.print(f"[green][{self.time("SUCCESS")}][/green] {message}")
+            self.console.print(f"[green][{self.time('SUCCESS')}][/green] {message}")
     
     def info(self, message: str):
         if self.log_level.value >= LogLevel.NORMAL.value:
-            self.console.print(f"[blue][{self.time("INFO")}][/blue] {message}")
+            self.console.print(f"[blue][{self.time('INFO')}][/blue] {message}")
     
     def verbose(self, message: str):
         if self.log_level.value >= LogLevel.VERBOSE.value:
-            self.console.print(f"[dim blue][{self.time("VERBOSE")}][/dim blue] {message}")
+            self.console.print(f"[dim blue][{self.time('VERBOSE')}][/dim blue] {message}")
         
     def debug(self, message: str):
         if self.log_level.value >= LogLevel.DEBUG.value:
-            self.console.print(f"[magenta][{self.time("DEBUG")}][/magenta] {message}")
+            self.console.print(f"[magenta][{self.time('DEBUG')}][/magenta] {message}")
     
     def header(self, title: str):
         if self.log_level.value >= LogLevel.NORMAL.value:
@@ -68,7 +68,7 @@ class console:
             self.console.rule(style="white")
     
     def input(self, message: str):
-        return self.console.input(f"[bold yellow][{self.time("QUESTION")}][/bold yellow] {message}")
+        return self.console.input(f"[bold yellow][{self.time('QUESTION')}][/bold yellow] {message}")
     
     def table(self, data: dict, title: str = ""):
         if self.log_level.value >= LogLevel.NORMAL.value:
@@ -89,8 +89,8 @@ class console:
             logo = fig.renderText(name)
             print(logo)
             d = \
-            f"Created by [bold green]{developer["name"]}[/bold green]\n"+\
-            f"[bold black]GitHub[/bold black]: [cyan]{developer["github"]}[/cyan]\n"+\
+            f"Created by [bold green]{developer['name']}[/bold green]\n"+\
+            f"[bold black]GitHub[/bold black]: [cyan]{developer['github']}[/cyan]\n"+\
             f"Version: [red]{version}[/red]\n"+\
             f"[underline white]{url}[/underline white]"
             
