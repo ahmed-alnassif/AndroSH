@@ -18,7 +18,7 @@ def create_session(user_agent: str = None, retries: int = 3, backoff_factor: flo
 	
 	# Set default user agent if none provided
 	if user_agent is None:
-		user_agent = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36"
+		user_agent = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Mobile Safari/537.36"
 	
 	session.headers.update({
 		"User-Agent": user_agent,
