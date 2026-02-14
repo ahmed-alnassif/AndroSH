@@ -6,7 +6,7 @@
 
 [![Tests](https://github.com/ahmed-alnassif/AndroSH/actions/workflows/tests.yml/badge.svg)](https://github.com/ahmed-alnassif/AndroSH/actions/workflows/tests.yml)
 [![GitHub Stars](https://img.shields.io/github/stars/ahmed-alnassif/AndroSH)](https://github.com/ahmed-alnassif/AndroSH/stargazers)
-[![Version](https://img.shields.io/badge/version-26.02.05-blue)](https://github.com/ahmed-alnassif/AndroSH/releases)
+[![Version](https://img.shields.io/badge/version-26.02.14-blue)](https://github.com/ahmed-alnassif/AndroSH/releases)
 [![Python](https://img.shields.io/badge/python-3.8+-green)](https://python.org)
 [![License](https://img.shields.io/badge/license-GPLv3-orange)](LICENSE)
 [![Verified Binaries](https://img.shields.io/badge/binaries-verified-success)](#-technical-components--trust)
