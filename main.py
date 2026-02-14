@@ -73,6 +73,7 @@ class AndroSH:
 		self.force_setup = False
 		self.root = f"/data/local/tmp/{name}/distros"
 		self.resources = f"/sdcard/Download/{name}"
+		self.backup_directory = f"{self.resources}/backups"
 		self.busybox_dir = f"/data/local/tmp/{name}/busybox"
 		self.busybox_path = f"{self.busybox_dir}/busybox"
 		self.assets_path = "Assets"
@@ -163,6 +164,8 @@ class AndroSH:
 		if args.command == 'setup':
 			self.setup_distro(args)
 			self._execute_setup()
+		elif args.command == 'backup':
+			self.backup_distro(args)
 		elif args.command == 'remove':
 			self.remove_distro(args)
 		elif args.command == 'launch':
@@ -219,6 +222,12 @@ class AndroSH:
 		                          help='Reinstall environment while preserving data')
 		setup_parser.add_argument('--force', action='store_true',
 		                          help='Force overwrite without confirmation')
+
+		# Backup command
+		backup_parser = subparsers.add_parser("backup", help="Backup an existing environment")
+		backup_parser.add_argument('name', help='Name of the environment to backup')
+		backup_parser.add_argument('destination', nargs='?', help=f'Backup destination directory (default: {self.backup_directory})', default=self.backup_directory)
+		backup_parser.add_argument('-z', '--gzip', help='filter the archive through gzip', action='store_true')
 
 		# Remove command
 		remove_parser = subparsers.add_parser('remove', help='Remove an existing environment')
@@ -680,6 +689,30 @@ class AndroSH:
 		if self.db.exists(self.distro_dir) and not args.resetup:
 			self.console.warning(f"Distro '{self.distro_dir}' already exists. Use --resetup to reinstall.")
 			sys.exit(1)
+
+	def backup_distro(self, args) -> None:
+		self.console.debug(f"Backup distro called with args: {vars(args)}")
+		distro_dir = f"{Path(args.base_dir) / args.name / 'rootfs'}"
+
+		if not self.busybox.exists(distro_dir):
+			self.console.error(f"Distro '{args.name}' does not exist at {distro_dir}")
+			sys.exit(1)
+
+		backup_directory = args.destination
+		if not self.busybox.exists(backup_directory):
+			if not self.busybox.mkdir(backup_directory, parents=True):
+				raise AndroSH_err(f"Creating {backup_directory} failed.")
+
+		backup_name = time.strftime(f"{args.name}_%Y-%m-%d{'.tar.gz' if args.gzip else '.tar'}")
+		file = f"{Path(backup_directory) / backup_name}"
+		compress_flag = 'z' if args.gzip else ''
+		cmd = f"tar -{compress_flag}cf {file} -C {distro_dir} ."
+		result = self.busybox._run_command(cmd)
+		if result.returncode != 0:
+			raise AndroSH_err(result.stderr)
+
+		self.console.success(f"The backup created successfully to {file}")
+
 
 	def remove_distro(self, args) -> None:
 		self.console.debug(f"Remove distro called with args: {vars(args)}")
