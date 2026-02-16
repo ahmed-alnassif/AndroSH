@@ -117,7 +117,7 @@ fi
 
 if [ $# -gt 0 ]; then
     # shellcheck disable=SC2086
-    $PROOT_BIN $ARGS "$@"
+    $PROOT_BIN $ARGS /bin/sh -c "$*"
 else
     # shellcheck disable=SC2086
     $PROOT_BIN $ARGS /bin/sh -c "if command -v {{chsh}} >/dev/null 2>&1; then exec {{chsh}} --login; else exec sh; fi"
