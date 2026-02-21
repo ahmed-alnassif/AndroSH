@@ -154,9 +154,11 @@ class Rish:
 	def check_rish(self):
 		self.console.verbose("Checking rish application")
 		result = self.run("id")
+		if self.shizuku_not_running in (result.stdout or result.stderr).lower():
+			result.returncode = 1
 		self.console.debug(escape(repr(result)))
 		if result.returncode != 0:
-			self.console.error(f"[red]Failed to establish connection with Shizuku API[/red]: {escape(repr(result.stderr))}")
+			self.console.error(f"[red]Failed to establish connection with Shizuku API[/red]: {escape(repr(result.stderr or result.stdout))}")
 			self.console.print("")
 			self.console.print("[yellow]ACTION REQUIRED[/yellow]")
 			self.console.print("• Verify Shizuku service is currently running")
@@ -179,6 +181,7 @@ class Rish:
 		self.console = console_instance if console_instance else console()
 		self.resources = r_path
 		self.assets_path = "Assets"
+		self.shizuku_not_running = "Server is not running".lower()
 		self.app_id = app_id
 		self.app_id_bool = app_id_bool
 		self.timeout = None
