@@ -14,12 +14,18 @@
 [![Distributions](https://img.shields.io/badge/distros-9+-yellow)](https://github.com/ahmed-alnassif/AndroSH)
 [![Status](https://img.shields.io/badge/status-active-brightgreen)](https://github.com/ahmed-alnassif/AndroSH)
 
----
-
+<img src="https://raw.githubusercontent.com/ahmed-alnassif/AndroSH/refs/heads/main/Assets/Screenshots/AndroSH-mobile.png" alt="AndroSH Mobile Showcase" width="90%" />
 
 </div>
 
 ## 🚀 Quick Start
+
+>[!Note]
+>Ensure Shizuku is installed and running before proceeding. 
+>
+>New users should follow the [📥 Detailed Installation](#-detailed-installation) guide.
+>
+>The project includes troubleshooting help and Shizuku setup instructions if needed.
 
 ```bash
 apt update; apt install -y python git # Termux
@@ -43,9 +49,8 @@ androsh launch demo
   - [🚀 Advanced Android System Integration](#-advanced-android-system-integration)
   - [🛠️ Professional Command Line Interface](#-professional-command-line-interface)
   - [📊 Database-Driven Architecture](#-database-driven-architecture)
-  - [🎪 Enhanced User Experience](#-enhanced-user-experience)
+ - [🎨 Premium User Experience](#-premium-user-experience)
   - [🔧 Advanced Management Suite](#-advanced-management-suite)
-- [🎨 Premium User Experience](#-premium-user-experience)
 - [🏗️ Technical Architecture](#-technical-architecture)
   - [System Integration Framework](#system-integration-framework)
   - [Technical Innovations](#technical-innovations)
@@ -154,32 +159,6 @@ ip route show
 
 ### 🛠️ Professional Command Line Interface
 
-```
-❯ androsh --help
-usage: main.py [-h] [--verbose | --debug | --quiet]
-               [--base-dir BASE_DIR]
-               [--resources-dir RESOURCES_DIR] [--time-style]
-               [--chsh CHSH]
-               {setup,remove,launch,rish,clean,install,list,lsd,download,distro}
-               ...
-
-AndroSH - Professional Multi-Distribution Linux Environments
-for Android
-
-positional arguments:
-  {setup,remove,launch,rish,clean,install,list,lsd,download,distro}
-                        Command to execute
-    setup               Deploy a new Linux environment
-    remove              Remove an existing environment
-    launch              Start an existing environment
-    rish                Start adb shell/shizuku rish
-    clean               Clean environment temporary files
-    install             Install for global system access
-    list                Show available distributions
-    lsd                 List installed environments
-    download            Download distribution files
-    distro              Distribution management suite
-```
 [Show full command help](Assets/docs/AndroSH_Help.md)
 
 ### 📊 Database-Driven Architecture
@@ -189,9 +168,12 @@ positional arguments:
 - **Rapid Query Execution**: 60% faster distribution listing
 - **Transaction Integrity**: Reliable operation tracking
 
-### 🎪 Enhanced User Experience
+### 🎨 Premium User Experience
 
 - **Professional ASCII Interface**: Brand-consistent terminal experience
+- **Information Hierarchy**: Color-coded success/warning/error messages, and time style `--time-style`
+- **Data Organization**: Clean table layouts for complex information
+- **Visual Appeal**: Professional terminal aesthetics
 - **Multi-Level Verbose Control**: Granular output management (`--verbose`/`--quiet`)
 - **Intelligent Default Configuration**: Automated optimization settings
 - **Comprehensive Error Handling**: Professional troubleshooting feedback
@@ -212,14 +194,6 @@ androsh clean development
 cd AndroSH
 python main.py install
 ```
-## 🎨 Premium User Experience
-
-### Professional ASCII Art Interface
-Every AndroSH command features custom-designed ASCII art and organized table displays:
-
-- **Information Hierarchy**: Color-coded success/warning/error messages, and time style `--time-style`
-- **Data Organization**: Clean table layouts for complex information
-- **Visual Appeal**: Professional terminal aesthetics
 
 ### Example Output Showcase:
 
@@ -310,6 +284,9 @@ pip install -r requirements.txt
 ## 🚀 Usage Examples
 
 ### 1. Environment Deployment
+
+>[!Tip]
+> After entering this command the project will check Shizuku and give you the instructions to setup it correctly if needed.
 
 ```bash
 androsh setup production --distro debian --type stable
