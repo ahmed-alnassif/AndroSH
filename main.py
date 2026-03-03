@@ -95,7 +95,8 @@ class AndroSH:
 							"fedora",
 							"void",
 							"manjaro",
-							"chimera"
+							"chimera",
+							"opensuse"
 						]
 
 
