@@ -2,7 +2,6 @@ name: AndroSH Help Docs Generator
 
 on:
   push:
-    branches: [ "main" ]
   workflow_dispatch:
     inputs:
       reason:
@@ -137,7 +136,7 @@ jobs:
         fi
         mv AndroSH_Help.md Assets/docs/AndroSH_Help.md
         git add Assets/docs/AndroSH_Help.md
-        git commit -m "docs: update AndroSH command line reference [skip ci]
+        git commit -m "docs: update AndroSH command line reference
         
         Co-authored-by: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
         git push

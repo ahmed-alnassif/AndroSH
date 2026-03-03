@@ -5,9 +5,7 @@ name: Tests
 
 on:
   push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
   workflow_dispatch:  # Added manual trigger
     inputs:
       reason:
