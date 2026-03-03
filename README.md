@@ -11,7 +11,7 @@
 [![License](https://img.shields.io/badge/license-GPLv3-orange)](LICENSE)
 [![Verified Binaries](https://img.shields.io/badge/binaries-verified-success)](#-technical-components--trust)
 [![Platform](https://img.shields.io/badge/platform-Android-success)](https://www.android.com)
-[![Distributions](https://img.shields.io/badge/distros-9+-yellow)](https://github.com/ahmed-alnassif/AndroSH)
+[![Distributions](https://img.shields.io/badge/distros-10+-yellow)](https://github.com/ahmed-alnassif/AndroSH)
 [![Status](https://img.shields.io/badge/status-active-brightgreen)](https://github.com/ahmed-alnassif/AndroSH)
 
 <img src="https://raw.githubusercontent.com/ahmed-alnassif/AndroSH/refs/heads/main/Assets/Screenshots/AndroSH-mobile.png" alt="AndroSH Mobile Showcase" width="90%" />
@@ -20,7 +20,7 @@
 
 ## 🚀 Quick Start
 
->[!Note]
+>[!Important]
 >Ensure Shizuku is installed and running before proceeding. 
 >
 >New users should follow the [📥 Detailed Installation](#-detailed-installation) guide.
@@ -89,7 +89,7 @@ androsh launch demo
 
 ## ⚡ Quick Features
 
-- 🐳 **Multi-Distro**: Run multiple Linux distributions simultaneously (Arch, Fedora, Alpine, Debian, Ubuntu, Kali, Void, Manjaro, Chimera)
+- 🐳 **Multi-Distro**: Run multiple Linux distributions simultaneously (Arch, Fedora, Alpine, Debian, Ubuntu, Kali, Void, Manjaro, Chimera, OpenSUSE)
 - 🔧 **Shizuku**: Full Android system integration without root
 - 💾 **SQLite Backed**: Fast, reliable environment management
 - 🚀 **Optimized**: 40% faster startup than alternatives
@@ -108,6 +108,7 @@ androsh launch demo
 ![Void Linux](https://img.shields.io/badge/Void-Supported-478061?logo=voidlinux&logoColor=white)
 ![Manjaro](https://img.shields.io/badge/Manjaro-Supported-35BF5C?logo=manjaro&logoColor=white)
 ![Chimera Linux](https://img.shields.io/badge/Chimera-Supported-000000?logo=linux&logoColor=white)
+![OpenSUSE](https://img.shields.io/badge/OpenSUSE-Supported-35BF5C?logo=opensuse&logoColor=white)
 
 All listed distributions are fully supported using verified rootfs sources
 and run in isolated proot environments without requiring root access.
@@ -120,7 +121,7 @@ AndroSH is a deployment platform that enables seamless execution of **multiple L
 
 | Capability | AndroSH | Traditional Solutions |
 |------------|---------|---------------------|
-| **Multi-Distribution Architecture** | ✅ **Archlinux, Fedora, Alpine, Debian, Ubuntu, Kali NetHunter, Void Linux, Manjaro, and Chimera Linux** | ❌ Single distribution |
+| **Multi-Distribution Architecture** | ✅ **Archlinux, Fedora, Alpine, Debian, Ubuntu, Kali NetHunter, Void Linux, Manjaro, OpenSUSE, and Chimera Linux** | ❌ Single distribution |
 | **Management** | ✅ SQLite database + professional CLI | ❌ Manual file management |
 | **Android System Integration** | ✅ Full system command execution via ADB/Shizuku | ❌ Isolated containers only |
 | **Scalable Environments** | ✅ Multiple isolated instances | ❌ Single instance limitation |
