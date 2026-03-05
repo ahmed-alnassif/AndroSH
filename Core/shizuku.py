@@ -43,7 +43,7 @@ class Rish:
 			dex_path.chmod(stat.S_IREAD)  # Set read-only
 
 		return str(dex_path)
-	
+
 	def rish(self, command: list):
 		env = os.environ.copy()
 		if not os.environ.get("RISH_APPLICATION_ID") or self.app_id_bool:
@@ -63,23 +63,23 @@ class Rish:
 			timeout=self.timeout
 		)
 		return result
-	
+
 	def run(self, command_string, timeout=None):
 		self.timeout = timeout
-		
+
 		wrapped_cmd = f"{command_string} 2>&1; echo RISH_EXIT_CODE:$?"
 		args = ['-c', wrapped_cmd]
 		result = self.rish(args)
-		
+
 		output = result.stdout + result.stderr
-		
+
 		if 'RISH_EXIT_CODE:' in output:
 			parts = output.split('RISH_EXIT_CODE:', 1)
-			
+
 			before = parts[0].rstrip()
-			
+
 			after = parts[1].strip()
-	
+
 			exit_code = 0
 			if after:
 				exit_code_str = after.split()[0]
@@ -88,30 +88,35 @@ class Rish:
 				except ValueError:
 					self.console.error(f"RISH_EXIT_CODE: {exit_code_str}")
 					exit_code = 1
-	
+
 			if after and exit_code_str:
 				rest_start = len(exit_code_str)
 				rest = after[rest_start:].lstrip()
 			else:
 				rest = ""
-	
+
 			if before and rest:
 				clean_output = f"{before}\n{rest}"
 			elif before:
 				clean_output = before
 			else:
 				clean_output = rest
-	
+
 		else:
 			clean_output = output.rstrip()
 			exit_code = 0
-	
+
 		result.returncode = exit_code
 		result.stdout = clean_output if exit_code == 0 else ""
 		result.stderr = clean_output if exit_code != 0 else ""
-		
+
+		if self.shizuku_not_running_msg in (result.stdout or result.stderr).lower():
+			result.stderr = result.stdout or result.stderr
+			result.stdout = ""
+			result.returncode = 1
+
 		#self.console.debug(f"_run_command result: {result}")
-		
+
 		return result
 
 	def drun(self, command_string):
@@ -154,8 +159,6 @@ class Rish:
 	def check_rish(self):
 		self.console.verbose("Checking rish application")
 		result = self.run("id")
-		if self.shizuku_not_running in (result.stdout or result.stderr).lower():
-			result.returncode = 1
 		self.console.debug(escape(repr(result)))
 		if result.returncode != 0:
 			self.console.error(f"[red]Failed to establish connection with Shizuku API[/red]: {escape(repr(result.stderr or result.stdout))}")
@@ -181,7 +184,7 @@ class Rish:
 		self.console = console_instance if console_instance else console()
 		self.resources = r_path
 		self.assets_path = "Assets"
-		self.shizuku_not_running = "Server is not running".lower()
+		self.shizuku_not_running_msg = "Server is not running".lower()
 		self.app_id = app_id
 		self.app_id_bool = app_id_bool
 		self.timeout = None
