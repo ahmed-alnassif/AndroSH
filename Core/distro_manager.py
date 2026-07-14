@@ -117,7 +117,7 @@ class TermuxDistribution(Distribution):
 		# Fetch from GitHub
 		try:
 			self.is_offline()
-			script_url = f"https://raw.githubusercontent.com/termux/proot-distro/refs/heads/master/distro-plugins/{distro_name}.sh"
+			script_url = f"https://raw.githubusercontent.com/termux/proot-distro/v4.36.0/distro-plugins/{distro_name}.sh"
 			response = self.session.get(script_url)
 			response.raise_for_status()
 
