@@ -281,6 +281,32 @@ class DebianDistribution(TermuxDistribution):
 		return super().supports_architecture(termux_arch)
 
 
+class DebianBookwormDistribution(TermuxDistribution):
+	def get_name(self) -> str:
+		return "debian-12"
+
+	def _get_script_url(self) -> str:
+		return "https://raw.githubusercontent.com/termux/proot-distro/v4.26.0/distro-plugins/debian.sh"
+
+	def _map_architecture(self, arch: str) -> str:
+		termux_arch_map = {
+				'arm64': 'aarch64',
+				'arm': 'arm',
+				'x86_64': 'x86_64',
+				'x86': 'i686'
+        }
+		return termux_arch_map.get(arch, arch)
+
+	def get_display_info(self) -> Dict[str, Any]:
+		base_info = super().get_display_info()
+		base_info.update({
+				'name': 'Debian 12 (Bookworm)',
+				'description': 'Stable release for 32-bit devices.',
+				'source': 'Termux/proot-distro v4.26.0'
+		})
+		return base_info
+
+
 class UbuntuDistribution(TermuxDistribution):
 	def get_name(self) -> str:
 		return "ubuntu"
@@ -297,6 +323,31 @@ class UbuntuDistribution(TermuxDistribution):
 	def supports_architecture(self, arch: str) -> bool:
 		termux_arch = self._map_architecture(arch)
 		return super().supports_architecture(termux_arch)
+
+
+class UbuntuLTSDistribution(TermuxDistribution):
+	def get_name(self) -> str:
+		return "ubuntu-lts"
+
+	def _get_script_url(self) -> str:
+		return "https://raw.githubusercontent.com/termux/proot-distro/v4.29.0/distro-plugins/ubuntu.sh"
+
+	def _map_architecture(self, arch: str) -> str:
+		termux_arch_map = {
+				'arm64': 'aarch64',
+				'arm': 'arm',
+				'x86_64': 'x86_64'
+		}
+		return termux_arch_map.get(arch, arch)
+
+	def get_display_info(self) -> Dict[str, Any]:
+		base_info = super().get_display_info()
+		base_info.update({
+				'name': 'Ubuntu 24.04 LTS (Noble)',
+				'description': 'LTS release (Noble).',
+				'source': 'Termux/proot-distro v4.29.0'
+		})
+		return base_info
 
 
 class ArchLinuxDistribution(TermuxDistribution):
@@ -330,10 +381,34 @@ class FedoraDistribution(TermuxDistribution):
 			'x86_64': 'x86_64'
 		}
 		return termux_arch_map.get(arch, arch)
-
-	def supports_architecture(self, arch: str) -> bool:
+def supports_architecture(self, arch: str) -> bool:
 		termux_arch = self._map_architecture(arch)
 		return super().supports_architecture(termux_arch)
+
+
+class Fedora42Distribution(TermuxDistribution):
+	def get_name(self) -> str:
+		return "fedora-42"
+
+	def _get_script_url(self) -> str:
+		return "https://raw.githubusercontent.com/termux/proot-distro/v4.25.0/distro-plugins/fedora.sh"
+
+	def _map_architecture(self, arch: str) -> str:
+		termux_arch_map = {
+				'arm64': 'aarch64',
+				'x86_64': 'x86_64'
+		}
+		return termux_arch_map.get(arch, arch)
+
+	def get_display_info(self) -> Dict[str, Any]:
+		base_info = super().get_display_info()
+		base_info.update({
+				'name': 'Fedora 42',
+				'description': 'Version 42 (stable on Android 15+).',
+				'source': 'Termux/proot-distro v4.25.0'
+		})
+		return base_info
+
 
 class VoidDistribution(TermuxDistribution):
 	def get_name(self) -> str:
@@ -904,7 +979,10 @@ class DistributionManager:
 			"void",
 			"manjaro",
 			"chimera",
-			"opensuse"
+			"opensuse",
+			"debian-12",
+			"ubuntu-lts",
+			"fedora-42"
 		]
 		self.termux_distros_list = [
 			DebianDistribution,
@@ -914,7 +992,10 @@ class DistributionManager:
 			VoidDistribution,
 			ManjaroDistribution,
 			ChimeraDistribution,
-			OpenSUSE_Distribution
+			OpenSUSE_Distribution,
+			DebianBookwormDistribution,
+			UbuntuLTSDistribution,
+			Fedora42Distribution
 		]
 
 		self.distributions: Dict[str, Distribution] = self._initialize_distributions()
