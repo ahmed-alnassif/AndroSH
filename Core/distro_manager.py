@@ -103,6 +103,12 @@ class Distribution(ABC):
 class TermuxDistribution(Distribution):
 	"""Base class for Termux/proot-distro based distributions"""
 
+	def _get_script_url(self) -> str:
+		"""Return the URL of the distribution script.
+			Override this method to use a specific version."""
+		distro_name = self.get_name()
+		return f"https://raw.githubusercontent.com/termux/proot-distro/v4.38.0/distro-plugins/{distro_name}.sh"
+
 	def _load_distro_data(self) -> None:
 		"""Load distribution data from GitHub or cache"""
 		distro_name = self.get_name()
@@ -117,7 +123,7 @@ class TermuxDistribution(Distribution):
 		# Fetch from GitHub
 		try:
 			self.is_offline()
-			script_url = f"https://raw.githubusercontent.com/termux/proot-distro/v4.36.0/distro-plugins/{distro_name}.sh"
+			script_url = self._get_script_url()
 			response = self.session.get(script_url)
 			response.raise_for_status()
 
