@@ -96,7 +96,10 @@ class AndroSH:
 							"void",
 							"manjaro",
 							"chimera",
-							"opensuse"
+							"opensuse",
+							"debian-12",
+							"ubuntu-lts",
+							"fedora-42"
 						]
 
 
