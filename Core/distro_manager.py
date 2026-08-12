@@ -311,6 +311,9 @@ class UbuntuDistribution(TermuxDistribution):
 	def get_name(self) -> str:
 		return "ubuntu"
 
+	def _get_script_url(self) -> str:
+		return "https://raw.githubusercontent.com/termux/proot-distro/v4.30.1/distro-plugins/ubuntu.sh"
+
 	def _map_architecture(self, arch: str) -> str:
 		"""Map standard architecture to Termux-specific names"""
 		termux_arch_map = {
@@ -381,10 +384,10 @@ class FedoraDistribution(TermuxDistribution):
 			'x86_64': 'x86_64'
 		}
 		return termux_arch_map.get(arch, arch)
-def supports_architecture(self, arch: str) -> bool:
+
+	def supports_architecture(self, arch: str) -> bool:
 		termux_arch = self._map_architecture(arch)
 		return super().supports_architecture(termux_arch)
-
 
 class Fedora42Distribution(TermuxDistribution):
 	def get_name(self) -> str:
@@ -408,7 +411,6 @@ class Fedora42Distribution(TermuxDistribution):
 				'source': 'Termux/proot-distro v4.25.0'
 		})
 		return base_info
-
 
 class VoidDistribution(TermuxDistribution):
 	def get_name(self) -> str:
