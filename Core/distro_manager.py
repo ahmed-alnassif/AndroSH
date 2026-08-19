@@ -104,8 +104,7 @@ class TermuxDistribution(Distribution):
 	"""Base class for Termux/proot-distro based distributions"""
 
 	def _get_script_url(self) -> str:
-		"""Return the URL of the distribution script.
-			Override this method to use a specific version."""
+		"""Return the URL of the distribution script. Override this method to use a specific version."""
 		distro_name = self.get_name()
 		return f"https://raw.githubusercontent.com/termux/proot-distro/v4.38.0/distro-plugins/{distro_name}.sh"
 
@@ -260,11 +259,9 @@ class TermuxDistribution(Distribution):
 			raise
 		return file_name
 
-
 class DebianDistribution(TermuxDistribution):
 	def get_name(self) -> str:
 		return "debian"
-
 
 	def _map_architecture(self, arch: str) -> str:
 		"""Map standard architecture to Termux-specific names"""
@@ -280,7 +277,6 @@ class DebianDistribution(TermuxDistribution):
 		termux_arch = self._map_architecture(arch)
 		return super().supports_architecture(termux_arch)
 
-
 class DebianBookwormDistribution(TermuxDistribution):
 	def get_name(self) -> str:
 		return "debian-12"
@@ -290,19 +286,19 @@ class DebianBookwormDistribution(TermuxDistribution):
 
 	def _map_architecture(self, arch: str) -> str:
 		termux_arch_map = {
-				'arm64': 'aarch64',
-				'arm': 'arm',
-				'x86_64': 'x86_64',
-				'x86': 'i686'
-        }
+			'arm64': 'aarch64',
+			'arm': 'arm',
+			'x86_64': 'x86_64',
+			'x86': 'i686'
+		}
 		return termux_arch_map.get(arch, arch)
 
 	def get_display_info(self) -> Dict[str, Any]:
 		base_info = super().get_display_info()
 		base_info.update({
-				'name': 'Debian 12 (Bookworm)',
-				'description': 'Stable release for 32-bit devices.',
-				'source': 'Termux/proot-distro v4.26.0'
+			'name': 'Debian 12 (Bookworm)',
+			'description': 'Stable release',
+			'source': 'Termux/proot-distro v4.26.0'
 		})
 		return base_info
 
@@ -337,18 +333,18 @@ class UbuntuLTSDistribution(TermuxDistribution):
 
 	def _map_architecture(self, arch: str) -> str:
 		termux_arch_map = {
-				'arm64': 'aarch64',
-				'arm': 'arm',
-				'x86_64': 'x86_64'
+			'arm64': 'aarch64',
+			'arm': 'arm',
+			'x86_64': 'x86_64'
 		}
 		return termux_arch_map.get(arch, arch)
 
 	def get_display_info(self) -> Dict[str, Any]:
 		base_info = super().get_display_info()
 		base_info.update({
-				'name': 'Ubuntu 24.04 LTS (Noble)',
-				'description': 'LTS release (Noble).',
-				'source': 'Termux/proot-distro v4.29.0'
+			'name': 'Ubuntu 24.04 LTS (Noble)',
+			'description': 'LTS release (Noble).',
+			'source': 'Termux/proot-distro v4.29.0'
 		})
 		return base_info
 
@@ -398,17 +394,17 @@ class Fedora42Distribution(TermuxDistribution):
 
 	def _map_architecture(self, arch: str) -> str:
 		termux_arch_map = {
-				'arm64': 'aarch64',
-				'x86_64': 'x86_64'
+			'arm64': 'aarch64',
+			'x86_64': 'x86_64'
 		}
 		return termux_arch_map.get(arch, arch)
 
 	def get_display_info(self) -> Dict[str, Any]:
 		base_info = super().get_display_info()
 		base_info.update({
-				'name': 'Fedora 42',
-				'description': 'Version 42 (stable on Android 15+).',
-				'source': 'Termux/proot-distro v4.25.0'
+			'name': 'Fedora 42',
+			'description': 'Version 42 (stable on Android 15+).',
+			'source': 'Termux/proot-distro v4.25.0'
 		})
 		return base_info
 
@@ -485,7 +481,7 @@ class AlpineDistribution(Distribution):
 	"""Alpine Linux distribution"""
 
 	def __init__(self, fm: PyFManager, downloader: FileDownloader, console,
-	             resources: str, db, check_storage_func=None, **kwargs):
+			resources: str, db, check_storage_func=None, **kwargs):
 		super().__init__(fm, downloader, console, resources, db, check_storage_func, **kwargs)
 		self.supported_archs = ['x86_64', 'x86', 'aarch64', 'armv7', 'armhf']
 		self.available_flavors = {}  # Will be populated from metadata
@@ -744,7 +740,7 @@ class KaliNethunterDistribution(Distribution):
 	"""Kali Nethunter distribution implementation"""
 
 	def __init__(self, fm: PyFManager, downloader: FileDownloader, console,
-	             resources: str, db, check_storage_func=None, **kwargs):
+			resources: str, db, check_storage_func=None, **kwargs):
 		super().__init__(fm, downloader, console, resources, db, check_storage_func, **kwargs)
 		self.supported_archs = ['amd64', 'arm64', 'armhf', 'i386']
 		self.supported_types = ["minimal", "nano", "full"]
