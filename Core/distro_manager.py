@@ -123,7 +123,7 @@ class TermuxDistribution(Distribution):
 		try:
 			self.is_offline()
 			script_url = self._get_script_url()
-			response = self.session.get(script_url)
+			response = self.session.get(script_url, timeout=30)
 			response.raise_for_status()
 
 			script_content = response.text
@@ -539,7 +539,7 @@ class AlpineDistribution(Distribution):
 				self.console.verbose(f"Loaded Alpine metadata for {alpine_arch} from cache")
 			else:
 				self.is_offline()
-				response = self.session.get(metadata_url)
+				response = self.session.get(metadata_url, timeout=30)
 				response.raise_for_status()
 				raw_metadata = yaml.safe_load(response.text)
 
@@ -808,7 +808,7 @@ class KaliNethunterDistribution(Distribution):
 
 		try:
 			self.is_offline()
-			response = self.session.get(self.base_url + "/")
+			response = self.session.get(self.base_url + "/", timeout=30)
 			response.raise_for_status()
 
 			self.file_sizes = self._parse_html_directory(response.text)
@@ -854,7 +854,7 @@ class KaliNethunterDistribution(Distribution):
 		self.console.verbose(f"Fetching checksums from: {checksum_url}")
 
 		try:
-			response = self.session.get(checksum_url)
+			response = self.session.get(checksum_url, timeout=30)
 			response.raise_for_status()
 
 			checksums = {}
