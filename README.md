@@ -9,7 +9,7 @@
 [![Version](https://img.shields.io/badge/version-26.07.14-blue)](https://github.com/ahmed-alnassif/AndroSH/releases)
 [![Python](https://img.shields.io/badge/python-3.8+-green)](https://python.org)
 [![License](https://img.shields.io/badge/license-GPLv3-orange)](LICENSE)
-[![Verified Binaries](https://img.shields.io/badge/binaries-verified-success)](#-technical-components--trust)
+[![Verified Binaries](https://img.shields.io/badge/binaries-verified-success)](https://github.com/ahmed-alnassif/proot)
 [![Platform](https://img.shields.io/badge/platform-Android-success)](https://www.android.com)
 [![Distributions](https://img.shields.io/badge/distros-10+-yellow)](https://github.com/ahmed-alnassif/AndroSH)
 [![Status](https://img.shields.io/badge/status-active-brightgreen)](https://github.com/ahmed-alnassif/AndroSH)
@@ -418,18 +418,18 @@ AndroSH integrates established open-source components to ensure compatibility an
 
 | Component | Source Project | Purpose |
 |-----------|----------------|---------|
-| **Enhanced PRoot** | [Xed-Editor/Karbon-PackagesX](https://github.com/Xed-Editor/Karbon-PackagesX) | Shizuku-compatible virtualization |
+| **PRoot** | [ahmed-alnassif/proot](https://github.com/ahmed-alnassif/proot) | Automated builds with statically linked talloc for Android |
 | **BusyBox NDK** | [Magisk-Modules-Repo/busybox-ndk](https://github.com/Magisk-Modules-Repo/busybox-ndk) | Essential Unix utilities for Android |
 
 ### Component Rationale
 
-**Enhanced PRoot**: Required for Shizuku integration and Android permission delegation (Termux PRoot incompatible)
+**PRoot**: Custom automated builds from Termux source with static linking, optimized for Android compatibility
 
 **BusyBox NDK**: Provides consistent command availability (tar, grep, awk) across fragmented Android versions
 
 ### Source Transparency
 
-- [Enhanced PRoot sources](https://github.com/ahmed-alnassif/proot-bin)
+- [PRoot Builder](https://github.com/ahmed-alnassif/proot) - Automated build workflow
 - [BusyBox NDK sources](https://github.com/ahmed-alnassif/busybox)
 - [AndroSH core](https://github.com/ahmed-alnassif/AndroSH)
 
