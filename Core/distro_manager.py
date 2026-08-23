@@ -523,7 +523,7 @@ class AlpineDistribution(Distribution):
 		return base_info
 
 	def _load_alpine_metadata(self) -> None:
-		"""Load Alpine metadata from YAML and populate available flavors"""
+
 		if self.available_flavors:
 			return
 
@@ -532,25 +532,11 @@ class AlpineDistribution(Distribution):
 		metadata_url = f"https://dl-cdn.alpinelinux.org/alpine/latest-stable/releases/{alpine_arch}/latest-releases.yaml"
 
 		try:
-			# Try cache first
-			cached_metadata = self.db.get(f"alpine_metadata_{alpine_arch}")
-			if cached_metadata:
-				self.metadata = cached_metadata
-				self.console.verbose(f"Loaded Alpine metadata for {alpine_arch} from cache")
-			else:
-				self.is_offline()
-				response = self.session.get(metadata_url)
-				response.raise_for_status()
-				raw_metadata = yaml.safe_load(response.text)
+			self.is_offline()
+			response = self.session.get(metadata_url)
+			response.raise_for_status()
+			raw_metadata = yaml.safe_load(response.text)
 
-				# Clean the metadata before caching
-				self.metadata = self._clean_metadata(raw_metadata)
-
-				# Cache the cleaned metadata
-				self.db.add(f"alpine_metadata_{alpine_arch}", self.metadata)
-				self.console.verbose(f"Fetched and cached Alpine metadata for {alpine_arch}")
-
-			# Populate available flavors
 			if self.metadata:
 				for item in self.metadata:
 					flavor = item.get('flavor', '')
@@ -563,37 +549,8 @@ class AlpineDistribution(Distribution):
 						}
 
 		except Exception as e:
-			self.console.warning(f"Failed to load Alpine metadata: {e}")
-			# Fallback to basic flavors if metadata loading fails
-			self.available_flavors = {
-				'alpine-minirootfs': {'title': 'Mini root filesystem',
-				                      'desc': 'Minimal root filesystem for containers and chroots',
-				                      'file_extension': '.tar.gz', 'is_tarball': True},
-				'alpine-standard': {'title': 'Standard', 'desc': 'Alpine as it was intended', 'file_extension': '.iso',
-				                    'is_tarball': False},
-				'alpine-virt': {'title': 'Virtual', 'desc': 'Optimized for virtual systems', 'file_extension': '.iso',
-				                'is_tarball': False},
-				'alpine-uboot': {'title': 'Generic U-Boot', 'desc': 'Includes U-Boot bootloader',
-				                 'file_extension': '.tar.gz', 'is_tarball': True},
-				'alpine-netboot': {'title': 'Netboot', 'desc': 'Kernel and initramfs for netboot',
-				                   'file_extension': '.tar.gz', 'is_tarball': True},
-				'alpine-rpi': {'title': 'Raspberry Pi', 'desc': 'For Raspberry Pi devices', 'file_extension': '.tar.gz',
-				               'is_tarball': True}
-			}
-
-	def _clean_metadata(self, metadata):
-		"""Clean metadata by converting non-serializable objects"""
-		import datetime
-		cleaned = []
-		for item in metadata:
-			cleaned_item = {}
-			for key, value in item.items():
-				if isinstance(value, (datetime.date, datetime.datetime)):
-					cleaned_item[key] = value.isoformat()
-				else:
-					cleaned_item[key] = value
-			cleaned.append(cleaned_item)
-		return cleaned
+			self.console.error(f"Failed to load Alpine metadata: {e}")
+			raise
 
 	def _get_file_extension(self, filename: str) -> str:
 		"""Extract file extension from filename"""
@@ -608,16 +565,13 @@ class AlpineDistribution(Distribution):
 		return '.tar.gz'  # default
 
 	def _is_tarball(self, filename: str) -> bool:
-		"""Check if file is a tarball (not ISO)"""
 		return any(filename.endswith(ext) for ext in ['.tar.gz', '.tar.xz', '.img.gz'])
 
 	def _get_flavor_info(self, distro_type: str) -> Dict[str, str]:
-		"""Get information about a specific Alpine flavor"""
 		self._load_alpine_metadata()
 		return self.available_flavors.get(distro_type, {})
 
 	def _find_metadata_for_flavor(self, arch: str, distro_type: str) -> Optional[Dict[str, Any]]:
-		"""Find metadata for specific architecture and flavor"""
 		if not self.metadata:
 			self._load_alpine_metadata()
 
@@ -661,7 +615,6 @@ class AlpineDistribution(Distribution):
 			raise ValueError(
 				f"Architecture {arch} not supported for Alpine. Available: {', '.join(self.supported_archs)}")
 
-		# Load metadata to validate type
 		self._load_alpine_metadata()
 
 		if distro_type not in self.available_flavors:
@@ -672,7 +625,6 @@ class AlpineDistribution(Distribution):
 		if not flavor_info.get('is_tarball', True):
 			self.console.warning(f"Note: {distro_type} is an ISO image, not a tarball")
 
-		# Find metadata for this flavor and architecture
 		distro_metadata = self._find_metadata_for_flavor(alpine_arch, distro_type)
 		if not distro_metadata:
 			raise ValueError(f"No download available for {distro_type} on architecture {arch}")
@@ -684,12 +636,9 @@ class AlpineDistribution(Distribution):
 
 		file_path = f"{self.resources}/{file_name}"
 
-
-		# Verify checksum (prefer sha512, fallback to sha256)
 		expected_hash = distro_metadata.get("sha512") or distro_metadata.get("sha256")
 		hash_type = "sha512" if distro_metadata.get("sha512") else "sha256"
 
-		# Check if already downloaded
 		if self.fm.exists(file_path):
 			download_needed = False
 			if expected_hash and\
@@ -700,15 +649,13 @@ class AlpineDistribution(Distribution):
 			if not download_needed:
 				self.console.info(f"Alpine {distro_type} already downloaded")
 				return file_name
-		
-		# Build download URL
+
 		version = distro_metadata.get("version")
 		if not version:
 			raise Exception("The version hasn't been detected.")
 
 		url = f"https://dl-cdn.alpinelinux.org/alpine/latest-stable/releases/{alpine_arch}/{distro_metadata['file']}"
 
-		# Show file size if available
 		file_size = self.get_file_size(alpine_arch, distro_type)
 		if file_size != "Unknown":
 			self.console.info(f"Download size: {file_size}")
@@ -724,7 +671,7 @@ class AlpineDistribution(Distribution):
 				if not self._verify_checksum(file_path, expected_hash, hash_type):
 					self.console.warning("Checksum verification failed, retrying download")
 					self.fm.remove(file_path)
-					self.download(file_name, distro_type)  # Retry download
+					self.download(file_name, distro_type)
 				else:
 					self.console.verbose("Checksum verification passed")
 			else:
@@ -734,7 +681,6 @@ class AlpineDistribution(Distribution):
 			self.console.error(f"Failed to download Alpine {distro_type}: {e}")
 			raise
 		return file_name
-
 
 class KaliNethunterDistribution(Distribution):
 	"""Kali Nethunter distribution implementation"""
