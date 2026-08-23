@@ -351,9 +351,6 @@ class AndroSH:
 		self.console.debug("Detecting system architecture")
 		machine_arch = platform.machine().lower()
 		arch = self.ARCH_MAPPING.get(machine_arch)
-		if arch == "x86":
-			self.console.error("Sorry this architecture not supported right now.")
-			sys.exit(1)
 
 		if arch is None:
 			message = f"Unknown architecture: {machine_arch}"
