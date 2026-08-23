@@ -89,7 +89,6 @@ class Distribution(ABC):
 				f"Checksum verification failed. Expected: {expected_hash[:16]}..., Got: {actual_hash[:16] if actual_hash else 'None'}")
 			return False
 
-
 class TermuxDistribution(Distribution):
 	"""Base class for Termux/proot-distro based distributions"""
 
@@ -222,17 +221,18 @@ class TermuxDistribution(Distribution):
 		return file_name
 
 class DebianDistribution(TermuxDistribution):
+
 	def get_name(self) -> str:
 		return "debian"
 
 	def _map_architecture(self, arch: str) -> str:
-		"""Map standard architecture to Termux-specific names"""
 		termux_arch_map = {
 			'arm64': 'aarch64',
 			'arm': 'arm',
 			'x86_64': 'x86_64',
 			'x86': 'i686'
 		}
+
 		return termux_arch_map.get(arch, arch)
 
 	def supports_architecture(self, arch: str) -> bool:
@@ -240,6 +240,7 @@ class DebianDistribution(TermuxDistribution):
 		return super().supports_architecture(termux_arch)
 
 class DebianBookwormDistribution(TermuxDistribution):
+
 	def get_name(self) -> str:
 		return "debian-12"
 
@@ -253,6 +254,7 @@ class DebianBookwormDistribution(TermuxDistribution):
 			'x86_64': 'x86_64',
 			'x86': 'i686'
 		}
+
 		return termux_arch_map.get(arch, arch)
 
 	def get_display_info(self) -> Dict[str, Any]:
@@ -262,10 +264,11 @@ class DebianBookwormDistribution(TermuxDistribution):
 			'description': 'Stable release',
 			'source': 'Termux/proot-distro v4.26.0'
 		})
+
 		return base_info
 
-
 class UbuntuDistribution(TermuxDistribution):
+
 	def get_name(self) -> str:
 		return "ubuntu"
 
@@ -273,20 +276,20 @@ class UbuntuDistribution(TermuxDistribution):
 		return "https://raw.githubusercontent.com/termux/proot-distro/v4.30.1/distro-plugins/ubuntu.sh"
 
 	def _map_architecture(self, arch: str) -> str:
-		"""Map standard architecture to Termux-specific names"""
 		termux_arch_map = {
 			'arm64': 'aarch64',
 			'arm': 'arm',
 			'x86_64': 'x86_64'
 		}
+
 		return termux_arch_map.get(arch, arch)
 
 	def supports_architecture(self, arch: str) -> bool:
 		termux_arch = self._map_architecture(arch)
 		return super().supports_architecture(termux_arch)
 
-
 class UbuntuLTSDistribution(TermuxDistribution):
+
 	def get_name(self) -> str:
 		return "ubuntu-lts"
 
@@ -299,6 +302,7 @@ class UbuntuLTSDistribution(TermuxDistribution):
 			'arm': 'arm',
 			'x86_64': 'x86_64'
 		}
+
 		return termux_arch_map.get(arch, arch)
 
 	def get_display_info(self) -> Dict[str, Any]:
@@ -308,22 +312,22 @@ class UbuntuLTSDistribution(TermuxDistribution):
 			'description': 'LTS release (Noble).',
 			'source': 'Termux/proot-distro v4.29.0'
 		})
+
 		return base_info
 
-
 class ArchLinuxDistribution(TermuxDistribution):
+
 	def get_name(self) -> str:
 		return "archlinux"
 
-
 	def _map_architecture(self, arch: str) -> str:
-		"""Map standard architecture to Termux-specific names"""
 		termux_arch_map = {
 			'arm64': 'aarch64',
 			'arm': 'arm',
 			'x86_64': 'x86_64',
 			'x86': 'i686'
 		}
+
 		return termux_arch_map.get(arch, arch)
 
 	def supports_architecture(self, arch: str) -> bool:
@@ -331,16 +335,16 @@ class ArchLinuxDistribution(TermuxDistribution):
 		return super().supports_architecture(termux_arch)
 
 class FedoraDistribution(TermuxDistribution):
+
 	def get_name(self) -> str:
 		return "fedora"
 
-
 	def _map_architecture(self, arch: str) -> str:
-		"""Map standard architecture to Termux-specific names"""
 		termux_arch_map = {
 			'arm64': 'aarch64',
 			'x86_64': 'x86_64'
 		}
+
 		return termux_arch_map.get(arch, arch)
 
 	def supports_architecture(self, arch: str) -> bool:
@@ -348,6 +352,7 @@ class FedoraDistribution(TermuxDistribution):
 		return super().supports_architecture(termux_arch)
 
 class Fedora42Distribution(TermuxDistribution):
+
 	def get_name(self) -> str:
 		return "fedora-42"
 
@@ -359,6 +364,7 @@ class Fedora42Distribution(TermuxDistribution):
 			'arm64': 'aarch64',
 			'x86_64': 'x86_64'
 		}
+
 		return termux_arch_map.get(arch, arch)
 
 	def get_display_info(self) -> Dict[str, Any]:
@@ -368,21 +374,22 @@ class Fedora42Distribution(TermuxDistribution):
 			'description': 'Version 42 (stable on Android 15+).',
 			'source': 'Termux/proot-distro v4.25.0'
 		})
+
 		return base_info
 
 class VoidDistribution(TermuxDistribution):
+
 	def get_name(self) -> str:
 		return "void"
 
-
 	def _map_architecture(self, arch: str) -> str:
-		"""Map standard architecture to Termux-specific names"""
 		termux_arch_map = {
 			'arm64': 'aarch64',
 			'arm': 'arm',
 			'x86_64': 'x86_64',
 			'x86': 'i686'
 		}
+
 		return termux_arch_map.get(arch, arch)
 
 	def supports_architecture(self, arch: str) -> bool:
@@ -393,12 +400,11 @@ class ManjaroDistribution(TermuxDistribution):
 	def get_name(self) -> str:
 		return "manjaro"
 
-
 	def _map_architecture(self, arch: str) -> str:
-		"""Map standard architecture to Termux-specific names"""
 		termux_arch_map = {
 			'arm64': 'aarch64'
 		}
+
 		return termux_arch_map.get(arch, arch)
 
 	def supports_architecture(self, arch: str) -> bool:
@@ -406,16 +412,16 @@ class ManjaroDistribution(TermuxDistribution):
 		return super().supports_architecture(termux_arch)
 
 class ChimeraDistribution(TermuxDistribution):
+
 	def get_name(self) -> str:
 		return "chimera"
 
-
 	def _map_architecture(self, arch: str) -> str:
-		"""Map standard architecture to Termux-specific names"""
 		termux_arch_map = {
 			'arm64': 'aarch64',
 			'x86_64': 'x86_64'
 		}
+
 		return termux_arch_map.get(arch, arch)
 
 	def supports_architecture(self, arch: str) -> bool:
@@ -423,16 +429,16 @@ class ChimeraDistribution(TermuxDistribution):
 		return super().supports_architecture(termux_arch)
 
 class OpenSUSE_Distribution(TermuxDistribution):
+
 	def get_name(self) -> str:
 		return "opensuse"
 
-
 	def _map_architecture(self, arch: str) -> str:
-		"""Map standard architecture to Termux-specific names"""
 		termux_arch_map = {
 			'arm64': 'aarch64',
 			'x86_64': 'x86_64'
 		}
+
 		return termux_arch_map.get(arch, arch)
 
 	def supports_architecture(self, arch: str) -> bool:
@@ -440,7 +446,6 @@ class OpenSUSE_Distribution(TermuxDistribution):
 		return super().supports_architecture(termux_arch)
 
 class AlpineDistribution(Distribution):
-	"""Alpine Linux distribution"""
 
 	def __init__(self, fm: PyFManager, downloader: FileDownloader, console,
 			resources: str, db, check_storage_func=None, **kwargs):
@@ -460,6 +465,7 @@ class AlpineDistribution(Distribution):
 			'x86_64': 'x86_64',
 			'x86': 'x86'
 		}
+
 		return alpine_arch_map.get(arch, arch)
 
 	def supports_architecture(self, arch: str) -> bool:
@@ -482,6 +488,7 @@ class AlpineDistribution(Distribution):
 			'supported_types': self.get_supported_types(),
 			'source': 'Alpine Official'
 		})
+
 		return base_info
 
 	def _load_alpine_metadata(self) -> None:
@@ -543,6 +550,7 @@ class AlpineDistribution(Distribution):
 						item.get('flavor') == distro_type and
 						self._is_tarball(item.get('file', ''))):
 					return item
+
 		return None
 
 	def get_file_size(self, arch: str, distro_type: str) -> str:
@@ -642,6 +650,7 @@ class AlpineDistribution(Distribution):
 		except Exception as e:
 			self.console.error(f"Failed to download Alpine {distro_type}: {e}")
 			raise
+
 		return file_name
 
 class KaliNethunterDistribution(Distribution):
