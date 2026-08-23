@@ -528,14 +528,14 @@ class AlpineDistribution(Distribution):
 			return
 
 		arch = self._get_architecture()
-		alpine_arch = self._map_architecture(arch)  # Use mapped architecture for URL
+		alpine_arch = self._map_architecture(arch)
 		metadata_url = f"https://dl-cdn.alpinelinux.org/alpine/latest-stable/releases/{alpine_arch}/latest-releases.yaml"
 
 		try:
 			self.is_offline()
 			response = self.session.get(metadata_url)
 			response.raise_for_status()
-			raw_metadata = yaml.safe_load(response.text)
+			self.metadata = yaml.safe_load(response.text)
 
 			if self.metadata:
 				for item in self.metadata:
