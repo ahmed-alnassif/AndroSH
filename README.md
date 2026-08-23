@@ -1,8 +1,8 @@
-# AndroSH — Run Linux Distributions on Android (No Root, ADB/Shizuku Powered)
+# AndroSH - Run Linux Distributions on Android (No Root, ADB/Shizuku Powered)
 
 <div align="center">
 
-**Run and manage full Linux distributions on your Android device — no root required.**
+**Run and manage full Linux distributions on your Android device - no root required.**
 
 [![Tests](https://github.com/ahmed-alnassif/AndroSH/actions/workflows/tests.yml/badge.svg)](https://github.com/ahmed-alnassif/AndroSH/actions/workflows/tests.yml)
 [![GitHub Stars](https://img.shields.io/github/stars/ahmed-alnassif/AndroSH)](https://github.com/ahmed-alnassif/AndroSH/stargazers)
@@ -37,7 +37,7 @@
 ## Quick Start
 
 > [!Important]
-> **Before you start:** install and run [Shizuku](https://github.com/RikkaApps/Shizuku/releases/latest) first. If you're new to AndroSH, read the full [Installation](#installation) section below — it covers Shizuku setup and troubleshooting.
+> **Before you start:** install and run [Shizuku](https://github.com/RikkaApps/Shizuku/releases/latest) first. If you're new to AndroSH, read the full [Installation](#installation) section below - it covers Shizuku setup and troubleshooting.
 
 ```bash
 # In Termux
@@ -54,10 +54,10 @@ androsh launch demo
 ## Features
 
 - **Multi-distro**: run several Linux distributions side by side (Arch, Fedora, Alpine, Debian, Ubuntu, Kali, Void, Manjaro, Chimera, openSUSE)
-- **Deep Android integration**: full system command access via ADB/Shizuku, no root needed
+- **ADB/Shizuku-powered Linux**: run full Linux distributions through Android's elevated Shell layer, with direct Android system integration - no root required
 - **SQLite-backed**: fast, reliable tracking of your environments
-- **Isolated**: proot sandboxing with clear permission boundaries
-- **GUI support**: works with Termux:X11 for a full desktop environment — [setup guide](https://github.com/ahmed-alnassif/AndroSH/discussions/6#discussioncomment-15720947)
+- **Isolated**: each Linux environment runs through PRoot with userspace filesystem/process isolation
+- **GUI support**: works with Termux:X11 for a full desktop environment - [setup guide](https://github.com/ahmed-alnassif/AndroSH/discussions/6#discussioncomment-15720947)
 
 ## Supported Distributions
 
@@ -72,17 +72,17 @@ androsh launch demo
 ![Chimera Linux](https://img.shields.io/badge/Chimera-Supported-000000?logo=linux&logoColor=white)
 ![OpenSUSE](https://img.shields.io/badge/OpenSUSE-Supported-35BF5C?logo=opensuse&logoColor=white)
 
-Every distribution above ships from a verified rootfs source and runs in an isolated proot environment — no root required.
+Every distribution above ships from a verified rootfs source and runs in an isolated proot environment - no root required.
 
 ## Overview
 
-AndroSH lets you deploy and manage multiple Linux distributions on Android using `proot` virtualization combined with ADB/Shizuku for Android system integration. It's built for people who want a real, professional Linux workflow on their phone or tablet without unlocking the bootloader or rooting the device.
+AndroSH lets you deploy and manage multiple full Linux distributions on Android by running PRoot through the ADB/Shizuku execution layer. This provides elevated Android-side execution without root while retaining direct Android system integration from inside the Linux environments.
 
 | Capability | AndroSH | Typical Alternatives |
 |---|---|---|
 | Multiple distros at once | Yes | Usually one distro only |
 | Environment management | SQLite + CLI | Manual file handling |
-| Android system integration | Full command execution via ADB/Shizuku | Isolated container only |
+| Android system integration | ADB/Shizuku execution | Varies by solution |
 | Multiple isolated instances | Yes | Single instance |
 | Root required | No (ADB/Shizuku) | Often requires bootloader unlock |
 
@@ -97,14 +97,14 @@ AndroSH lets you deploy and manage multiple Linux distributions on Android using
 ## Architecture
 
 ```
-Android Device → ADB/Shizuku → Elevated Permissions → Proot Virtualization → Linux Environment(s)
+Android Device → ADB/Shizuku Execution Context→ Proot Virtualization → Linux Environment(s)
 ```
 
 ```mermaid
 graph TD
-    A[Android Device] --> B[ADB/Shizuku]
-    B --> C[Elevated Permissions]
-    C --> D[Proot Virtualization]
+    A[Android Device] --> B[ADB / Shizuku]
+    B --> C[Android Shell Execution Context]
+    C --> D[PRoot]
 
     D --> E[Alpine]
     D --> F[Debian]
@@ -116,9 +116,9 @@ graph TD
     G --> I
     H --> I
 
-    I --> K[Command Execution]
-    I --> L[File System Access]
-    I --> M[Network Access]
+    I --> K[Android Command Execution]
+    I --> L[Android Filesystem Access]
+    I --> M[Android Network Access]
 
     style D fill:#FF6B00,color:white
     style I fill:#4CAF50,color:white
@@ -250,7 +250,7 @@ androsh lsd
 
 ## Security & Privacy
 
-- **Permission boundaries**: elevation is scoped and controlled through ADB/Shizuku
+- **Android privilege boundary**: Android-side operations run within the permissions available to the ADB/Shizuku execution context; no Android root is required.
 - **Process isolation**: each environment runs sandboxed via proot
 - **Integrity checks**: SHA-256 checksums validate every download
 - **No telemetry**: zero data collection, everything stays local on your device
@@ -309,7 +309,7 @@ pip install -r requirements.txt
 
 ## License
 
-GPLv3 — free for commercial and research use.
+GPLv3 - free for commercial and research use.
 
 ## Author
 
@@ -326,6 +326,6 @@ GPLv3 — free for commercial and research use.
 
 <div align="center">
 
-*Professional Linux environments in your pocket — without compromising security.*
+*Professional Linux environments in your pocket - without requiring Android root.*
 
 </div>
