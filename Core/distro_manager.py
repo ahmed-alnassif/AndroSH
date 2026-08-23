@@ -11,10 +11,9 @@ from Core.errors_handler import Offline_err
 
 
 class Distribution(ABC):
-	"""Abstract base class for Linux distributions"""
 
 	def __init__(self, fm: PyFManager, downloader: FileDownloader, console,
-	             resources: str, db, check_storage_func=None, is_offline=None):
+				resources: str, db, check_storage_func=None, is_offline=None):
 		self.fm = fm
 		self.downloader = downloader
 		self.console = console
@@ -26,7 +25,6 @@ class Distribution(ABC):
 
 	@abstractmethod
 	def download(self, file_name: str = None, distro_type: str = "minimal") -> None:
-		"""Download the distribution"""
 		pass
 
 	def is_offline(self):
@@ -36,21 +34,17 @@ class Distribution(ABC):
 
 	@abstractmethod
 	def get_name(self) -> str:
-		"""Get distribution name"""
 		pass
 
 	@abstractmethod
 	def supports_architecture(self, arch: str) -> bool:
-		"""Check if architecture is supported"""
 		pass
 
 	@abstractmethod
 	def get_supported_types(self) -> list:
-		"""Get supported distribution types"""
 		pass
 
 	def get_display_info(self) -> Dict[str, Any]:
-		"""Get distribution display information"""
 		return {
 			'name': self.get_name().capitalize(),
 			'description': 'Linux distribution',
@@ -60,11 +54,9 @@ class Distribution(ABC):
 		}
 
 	def _get_architecture(self) -> str:
-		"""Get current system architecture mapped to 4 standard types"""
 		import platform
 		machine = platform.machine().lower()
 
-		# Simple mapping to only 4 architectures
 		arch_map = {
 			'aarch64': 'arm64',
 			'arm64': 'arm64',
@@ -85,11 +77,9 @@ class Distribution(ABC):
 
 	@abstractmethod
 	def _map_architecture(self, arch: str) -> str:
-		"""Map standard architecture to distribution-specific architecture name"""
 		pass
 
 	def _verify_checksum(self, file_path: str, expected_hash: str, hash_type: str = "sha256") -> bool:
-		"""Verify file checksum using PyFManager"""
 		actual_hash = self.fm.checksum(file_path, hash_type)
 		if actual_hash == expected_hash:
 			self.console.verbose("Checksum verification passed")
@@ -104,22 +94,12 @@ class TermuxDistribution(Distribution):
 	"""Base class for Termux/proot-distro based distributions"""
 
 	def _get_script_url(self) -> str:
-		"""Return the URL of the distribution script. Override this method to use a specific version."""
 		distro_name = self.get_name()
 		return f"https://raw.githubusercontent.com/termux/proot-distro/v4.38.0/distro-plugins/{distro_name}.sh"
 
 	def _load_distro_data(self) -> None:
-		"""Load distribution data from GitHub or cache"""
 		distro_name = self.get_name()
 
-		# Try to get from cache first
-		cached_data = self.db.get(f"distro_{distro_name}")
-		if cached_data:
-			self.distro_data = cached_data
-			self.console.verbose(f"Loaded {distro_name} data from cache")
-			return
-
-		# Fetch from GitHub
 		try:
 			self.is_offline()
 			script_url = self._get_script_url()
@@ -129,44 +109,32 @@ class TermuxDistribution(Distribution):
 			script_content = response.text
 			self.distro_data = self._parse_distro_script(script_content)
 
-			# Cache the data
-			self.db.add(f"distro_{distro_name}", self.distro_data)
-			self.console.verbose(f"Fetched and cached {distro_name} data from GitHub")
-
 		except Offline_err:
-			self.distro_data = {
-									'name': '',
-									'comment': '',
-									'tarballs': {}
-								}
+			self.console.error("You're offline")
+			raise
 
 		except Exception as e:
 			self.console.error(f"Failed to fetch {distro_name} data: {e}")
 			raise
 
 	def _parse_distro_script(self, script_content: str) -> Dict[str, Any]:
-		"""Parse Termux/proot-distro shell script to extract distribution data"""
 		data = {
 			'name': '',
 			'comment': '',
 			'tarballs': {}
 		}
 
-		# Extract DISTRO_NAME
 		name_match = re.search(r'DISTRO_NAME="([^"]+)"', script_content)
 		if name_match:
 			data['name'] = name_match.group(1)
 
-		# Extract DISTRO_COMMENT
 		comment_match = re.search(r'DISTRO_COMMENT="([^"]+)"', script_content)
 		if comment_match:
 			data['comment'] = comment_match.group(1)
 
-		# Extract TARBALL_URL and TARBALL_SHA256
 		url_matches = re.findall(r"TARBALL_URL\['([^']+)'\]=\"([^\"]+)\"", script_content)
 		sha_matches = re.findall(r"TARBALL_SHA256\['([^']+)'\]=\"([^\"]+)\"", script_content)
 
-		# Create tarball dictionary
 		for arch, url in url_matches:
 			if arch not in data['tarballs']:
 				data['tarballs'][arch] = {}
@@ -179,7 +147,6 @@ class TermuxDistribution(Distribution):
 		return data
 
 	def get_display_info(self) -> Dict[str, Any]:
-		"""Get distribution display information"""
 		base_info = super().get_display_info()
 		base_info.update({
 			'name': self.distro_data.get('name', self.get_name().capitalize()),
@@ -187,19 +154,17 @@ class TermuxDistribution(Distribution):
 			'supported_archs': list(self.distro_data.get('tarballs', {}).keys()),
 			'source': 'Termux/proot-distro'
 		})
+
 		return base_info
 
 	def supports_architecture(self, arch: str) -> bool:
-		"""Check if architecture is supported"""
 		termux_arch = self._map_architecture(arch)
 		return termux_arch in self.distro_data.get('tarballs', {})
 
 	def get_supported_types(self) -> List[str]:
-		"""Get supported distribution types"""
 		return ["stable"]
 
 	def download(self, file_name: str = None, distro_type: str = "stable") -> Optional[Any]:
-		"""Download the distribution"""
 		if self.check_storage:
 			self.check_storage()
 
@@ -214,7 +179,6 @@ class TermuxDistribution(Distribution):
 			raise ValueError(f"No tarball available for architecture {arch}")
 
 		if file_name is None:
-			# Extract filename from URL
 			file_name = tarball_info['url'].split('/')[-1]
 
 		self.console.info(f"Starting {self.distro_data['name']} download")
@@ -224,7 +188,6 @@ class TermuxDistribution(Distribution):
 		url = tarball_info['url']
 		expected_hash = tarball_info.get('sha256')
 
-		# Check if already downloaded
 		if self.fm.exists(file_path):
 			download_needed = False
 			if expected_hash and\
@@ -243,7 +206,6 @@ class TermuxDistribution(Distribution):
 			self.downloader.download_file(url, file_path)
 			self.console.verbose(f"Download completed: {file_path}")
 
-			# Verify checksum if available
 			if expected_hash:
 				if not self._verify_checksum(file_path, expected_hash, "sha256"):
 					self.console.warning("Checksum verification failed, retrying download")
