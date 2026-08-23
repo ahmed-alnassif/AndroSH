@@ -1,103 +1,65 @@
-# AndroSH - Run Linux Distributions on Android (No Root, ADB/Shizuku Powered)
+# AndroSH — Run Linux Distributions on Android (No Root, ADB/Shizuku Powered)
 
 <div align="center">
 
-**Professional-Grade Linux Distribution Management on Android Devices with ADB/Shizuku Integration**
+**Run and manage full Linux distributions on your Android device — no root required.**
 
 [![Tests](https://github.com/ahmed-alnassif/AndroSH/actions/workflows/tests.yml/badge.svg)](https://github.com/ahmed-alnassif/AndroSH/actions/workflows/tests.yml)
 [![GitHub Stars](https://img.shields.io/github/stars/ahmed-alnassif/AndroSH)](https://github.com/ahmed-alnassif/AndroSH/stargazers)
-[![Version](https://img.shields.io/badge/version-26.07.14-blue)](https://github.com/ahmed-alnassif/AndroSH/releases)
 [![Python](https://img.shields.io/badge/python-3.8+-green)](https://python.org)
 [![License](https://img.shields.io/badge/license-GPLv3-orange)](LICENSE)
-[![Verified Binaries](https://img.shields.io/badge/binaries-verified-success)](https://github.com/ahmed-alnassif/proot)
 [![Platform](https://img.shields.io/badge/platform-Android-success)](https://www.android.com)
-[![Distributions](https://img.shields.io/badge/distros-10+-yellow)](https://github.com/ahmed-alnassif/AndroSH)
-[![Status](https://img.shields.io/badge/status-active-brightgreen)](https://github.com/ahmed-alnassif/AndroSH)
 
 <img src="https://raw.githubusercontent.com/ahmed-alnassif/AndroSH/refs/heads/main/Assets/Screenshots/AndroSH-mobile.png" alt="AndroSH Mobile Showcase" width="90%" />
 
 </div>
 
-## 🚀 Quick Start
+## Table of Contents
 
->[!Important]
->Ensure Shizuku is installed and running before proceeding. 
->
->New users should follow the [📥 Detailed Installation](#-detailed-installation) guide.
->
->The project includes troubleshooting help and Shizuku setup instructions if needed.
+- [Quick Start](#quick-start)
+- [Features](#features)
+- [Supported Distributions](#supported-distributions)
+- [Overview](#overview)
+- [Screenshots](#screenshots)
+- [Architecture](#architecture)
+- [Installation](#installation)
+- [Updating](#updating)
+- [Usage](#usage)
+- [Use Cases](#use-cases)
+- [Security & Privacy](#security--privacy)
+- [Components & Sources](#components--sources)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
+- [Author](#author)
+- [Support](#support)
+
+## Quick Start
+
+> [!Important]
+> **Before you start:** install and run [Shizuku](https://github.com/RikkaApps/Shizuku/releases/latest) first. If you're new to AndroSH, read the full [Installation](#installation) section below — it covers Shizuku setup and troubleshooting.
 
 ```bash
-apt update; apt install -y python git # Termux
+# In Termux
+apt update && apt install -y python git
 git clone --depth 1 https://github.com/ahmed-alnassif/AndroSH.git
 cd AndroSH
 pip install -r requirements.txt
 python main.py install
+
 androsh setup demo --distro debian --type stable
 androsh launch demo
 ```
 
-## 📑 Table of Contents
+## Features
 
-- [🚀 Quick Start](#-quick-start)
-- [⚡ Quick Features](#-quick-features)
-- [🐧 Supported Linux Distributions](#-supported-linux-distributions)
-- [🚀 Overview](#-overview)
-  - [🏆 Competitive Advantage Matrix](#-competitive-advantage-matrix)
-- [🖼️ Visual Demo](#-visual-demo)
-- [🎯 Core Capabilities](#-core-capabilities)
-  - [🚀 Advanced Android System Integration](#-advanced-android-system-integration)
-  - [🛠️ Professional Command Line Interface](#-professional-command-line-interface)
-  - [📊 Database-Driven Architecture](#-database-driven-architecture)
- - [🎨 Premium User Experience](#-premium-user-experience)
-  - [🔧 Advanced Management Suite](#-advanced-management-suite)
-- [🏗️ Technical Architecture](#-technical-architecture)
-  - [System Integration Framework](#system-integration-framework)
-  - [Technical Innovations](#technical-innovations)
-- [📥 Detailed Installation](#-detailed-installation)
-  - [System Requirements](#system-requirements)
-  - [Required packages (Termux)](#required-packages-termux)
-  - [Rapid Deployment](#rapid-deployment)
-- [🔄 Updates](#-updates)
-- [🚀 Usage Examples](#-usage-examples)
-  - [1. Environment Deployment](#1-environment-deployment)
-  - [2. Environment Initialization](#2-environment-initialization)
-  - [3. Professional Management](#3-professional-management)
-- [💡 Use Cases](#-use-cases)
-  - [🎓 Educational Infrastructure](#-educational-infrastructure)
-  - [🔍 Security Research & Penetration Testing](#-security-research--penetration-testing)
-  - [🛠️ Development & CI/CD Environments](#-development--cicd-environments)
-  - [📱 Field Operations & Mobile Workstations](#-field-operations--mobile-workstations)
-- [🛡️ Security & Compliance](#-security--compliance)
-  - [Security Architecture](#security-architecture)
-  - [Privacy Assurance](#privacy-assurance)
-- [🛠️ Technical Components & Trust](#-technical-components--trust)
-  - [Verified Binary Sources](#verified-binary-sources)
-  - [Component Rationale](#component-rationale)
-  - [Source Transparency](#source-transparency)
-  - [Security & Verification](#security--verification)
-- [🔧 Troubleshooting Guide](#-troubleshooting-guide)
-  - [Shizuku Service Management](#shizuku-service-management)
-- [🤝 Contribution Framework](#-contribution-framework)
-  - [Development Collaboration](#development-collaboration)
-  - [Priority Development Areas](#priority-development-areas)
-  - [Development Environment](#development-environment)
-- [📜 License & Compliance](#-license--compliance)
-- [🏆 Project Leadership](#-project-leadership)
-- [🌟 Support](#-support)
-  - [Project Engagement](#project-engagement)
+- **Multi-distro**: run several Linux distributions side by side (Arch, Fedora, Alpine, Debian, Ubuntu, Kali, Void, Manjaro, Chimera, openSUSE)
+- **Deep Android integration**: full system command access via ADB/Shizuku, no root needed
+- **SQLite-backed**: fast, reliable tracking of your environments
+- **Isolated**: proot sandboxing with clear permission boundaries
+- **GUI support**: works with Termux:X11 for a full desktop environment — [setup guide](https://github.com/ahmed-alnassif/AndroSH/discussions/6#discussioncomment-15720947)
 
-## ⚡ Quick Features
-
-- 🐳 **Multi-Distro**: Run multiple Linux distributions simultaneously (Arch, Fedora, Alpine, Debian, Ubuntu, Kali, Void, Manjaro, Chimera, OpenSUSE)
-- 🔧 **Shizuku**: Full Android system integration without root
-- 💾 **SQLite Backed**: Fast, reliable environment management
-- 🚀 **Optimized**: 40% faster startup than alternatives
-- 🛡️ **Secure**: Proot isolation + permission boundaries
-- 📱 **Mobile-First**: Designed for Android workflows
--  🖼️ **Termux:X11 support** for graphical user interface (GUI) and desktop environment (DE), [setup guide](https://github.com/ahmed-alnassif/AndroSH/discussions/6#discussioncomment-15720947)
-
-## 🐧 Supported Linux Distributions
+## Supported Distributions
 
 ![Debian](https://img.shields.io/badge/Debian-Supported-A81D33?logo=debian&logoColor=white)
 ![Ubuntu](https://img.shields.io/badge/Ubuntu-Supported-E95420?logo=ubuntu&logoColor=white)
@@ -110,416 +72,260 @@ androsh launch demo
 ![Chimera Linux](https://img.shields.io/badge/Chimera-Supported-000000?logo=linux&logoColor=white)
 ![OpenSUSE](https://img.shields.io/badge/OpenSUSE-Supported-35BF5C?logo=opensuse&logoColor=white)
 
-All listed distributions are fully supported using verified rootfs sources
-and run in isolated proot environments without requiring root access.
+Every distribution above ships from a verified rootfs source and runs in an isolated proot environment — no root required.
 
-## 🚀 Overview
+## Overview
 
-AndroSH is a deployment platform that enables seamless execution of **multiple Linux distributions** on Android devices through advanced `proot` virtualization and **Android System Integration via ADB/Shizuku**. This solution provides Professional-level Linux environment management without compromising device security.
+AndroSH lets you deploy and manage multiple Linux distributions on Android using `proot` virtualization combined with ADB/Shizuku for Android system integration. It's built for people who want a real, professional Linux workflow on their phone or tablet without unlocking the bootloader or rooting the device.
 
-### 🏆 Competitive Advantage Matrix
+| Capability | AndroSH | Typical Alternatives |
+|---|---|---|
+| Multiple distros at once | Yes | Usually one distro only |
+| Environment management | SQLite + CLI | Manual file handling |
+| Android system integration | Full command execution via ADB/Shizuku | Isolated container only |
+| Multiple isolated instances | Yes | Single instance |
+| Root required | No (ADB/Shizuku) | Often requires bootloader unlock |
 
-| Capability | AndroSH | Traditional Solutions |
-|------------|---------|---------------------|
-| **Multi-Distribution Architecture** | ✅ **Archlinux, Fedora, Alpine, Debian, Ubuntu, Kali NetHunter, Void Linux, Manjaro, OpenSUSE, and Chimera Linux** | ❌ Single distribution |
-| **Management** | ✅ SQLite database + professional CLI | ❌ Manual file management |
-| **Android System Integration** | ✅ Full system command execution via ADB/Shizuku | ❌ Isolated containers only |
-| **Scalable Environments** | ✅ Multiple isolated instances | ❌ Single instance limitation |
-| **Performance Optimization** | ✅ 40% faster initialization | ❌ Slow startup processes |
-| **Security Compliance** | ✅ No root required + ADB/Shizuku API | ❌ Bootloader unlock needed |
+## Screenshots
 
-## 🖼️ Visual Demo
+| Command | Preview | What it shows |
+|---|:---:|---|
+| `androsh launch kali` | [View](/Assets/Screenshots/launch-kali.png) | Launching the Kali NetHunter environment |
+| `androsh list` | [View](/Assets/Screenshots/list-available.png) | All available distributions |
+| `androsh lsd` | [View](/Assets/Screenshots/list-installed.png) | Environments you've already installed |
 
-### Click to View Full Size
-
-| Command | Screenshot | Description |
-|:--------|:----------:|:------------|
-| `androsh launch kali` | [![Kali Launch](/Assets/Screenshots/launch-kali.png)](/Assets/Screenshots/launch-kali.png) | Launch Kali NetHunter environment |
-| `androsh list` | [![Available Distros](/Assets/Screenshots/list-available.png)](/Assets/Screenshots/list-available.png) | View all available distributions |
-| `androsh lsd` | [![Installed Environments](/Assets/Screenshots/list-installed.png)](/Assets/Screenshots/list-installed.png) | List installed environments |
-
-## 🎯 Core Capabilities
-
-### 🚀 Advanced Android System Integration
-
-AndroSH provides unprecedented Android-Linux integration capabilities through ADB and Shizuku:
-
-```bash
-# Execute Android system commands from Linux environment
-pm list packages -f
-
-# Access kernel-level information
-cat /proc/version
-
-# System property management
-getprop | grep version
-
-# Network configuration access
-ip route show
-```
-
-### 🛠️ Professional Command Line Interface
-
-[Show full command help](Assets/docs/AndroSH_Help.md)
-
-### 📊 Database-Driven Architecture
-
-- **SQLite Integration**: High-performance environment tracking
-- **Persistent Session Management**: State preservation across sessions
-- **Rapid Query Execution**: 60% faster distribution listing
-- **Transaction Integrity**: Reliable operation tracking
-
-### 🎨 Premium User Experience
-
-- **Professional ASCII Interface**: Brand-consistent terminal experience
-- **Information Hierarchy**: Color-coded success/warning/error messages, and time style `--time-style`
-- **Data Organization**: Clean table layouts for complex information
-- **Visual Appeal**: Professional terminal aesthetics
-- **Multi-Level Verbose Control**: Granular output management (`--verbose`/`--quiet`)
-- **Intelligent Default Configuration**: Automated optimization settings
-- **Comprehensive Error Handling**: Professional troubleshooting feedback
-
-### 🔧 Advanced Management Suite
-
-```bash
-# Environment deployment
-androsh setup development --distro ubuntu --type stable
-
-# Multi-instance management
-androsh list
-
-# Resource optimization
-androsh clean development
-
-# Global accessibility
-cd AndroSH
-python main.py install
-```
-
-### Example Output Showcase:
-
-```bash
-❯ androsh list
-# Shows beautiful distribution table with sizes and types
-
-❯ androsh lsd  
-# Displays installed environments with ASCII art header
-```
-
-## 🏗️ Technical Architecture
-
-### System Integration Framework
+## Architecture
 
 ```
-Android Device → ADB/Shizuku API → Elevated Permissions → Proot Virtualization → Multi-Distribution Linux Environment
+Android Device → ADB/Shizuku → Elevated Permissions → Proot Virtualization → Linux Environment(s)
 ```
 
 ```mermaid
 graph TD
-    A[Android Device] --> B[ADB/Shizuku API]
+    A[Android Device] --> B[ADB/Shizuku]
     B --> C[Elevated Permissions]
-    C --> D[PROOT Virtualization Layer]
-    
-    D --> E[Alpine Linux]
-    D --> F[Debian Stable]
-    D --> G[Ubuntu LTS]
+    C --> D[Proot Virtualization]
+
+    D --> E[Alpine]
+    D --> F[Debian]
+    D --> G[Ubuntu]
     D --> H[Kali NetHunter]
-    
+
     E --> I[Android System Integration]
     F --> I
     G --> I
     H --> I
-    
-    I --> K[Android Command Execution]
+
+    I --> K[Command Execution]
     I --> L[File System Access]
-    I --> M[Network Configuration]
-    
+    I --> M[Network Access]
+
     style D fill:#FF6B00,color:white
     style I fill:#4CAF50,color:white
 ```
 
-### Technical Innovations
-
-- **Multi-Distribution Architecture**: First to support multiple Linux distributions simultaneously
-- **Android System Integration**: Advanced permission bridging via ADB/Shizuku without root access
-- **Database-Backed Management**: Professional-Grade data persistence
-- **Self-Healing Deployment**: Automated error recovery and integrity verification
-
-## 📥 Detailed Installation
-
-### System Requirements
-
-- Android device with [Shizuku](https://github.com/RikkaApps/Shizuku/releases/latest) service
-- Python 3.8+ runtime environment
-- [Termux](https://github.com/termux/termux-app/releases/latest) or compatible terminal emulator
-- Minimum 2GB available storage
-
-### Required packages (Termux)
+From inside any distro, you can reach into the Android system directly:
 
 ```bash
-apt update
-apt install -y python git
+# List installed Android packages
+pm list packages -f
+
+# Kernel info
+cat /proc/version
+
+# Android system properties
+getprop | grep version
+
+# Network routes
+ip route show
 ```
 
-### Rapid Deployment
+## Installation
+
+### Requirements
+
+- Android device with [Shizuku](https://github.com/RikkaApps/Shizuku/releases/latest) installed and running
+- Python 3.8+
+- [Termux](https://github.com/termux/termux-app/releases/latest) or a compatible terminal emulator
+- At least 2 GB free storage
+
+### Setup
 
 ```bash
-# Repository acquisition
+# Install prerequisites in Termux
+apt update && apt install -y python git
+
+# Get AndroSH
 git clone --depth 1 https://github.com/ahmed-alnassif/AndroSH.git
 cd AndroSH
 
-# Dependency installation
+# Install dependencies
 pip install -r requirements.txt
 
-# Global accessibility configuration
+# Make the `androsh` command available globally
 python main.py install
 ```
 
-## 🔄 Updates
+> [!Tip]
+> when you run `androsh setup`, AndroSH automatically checks whether Shizuku is configured correctly and walks you through fixing it if not.
+
+## Updating
+
 ```bash
 cd AndroSH
 git pull
 pip install -r requirements.txt
 ```
 
-## 🚀 Usage Examples
+## Usage
 
-### 1. Environment Deployment
-
->[!Tip]
-> After entering this command the project will check Shizuku and give you the instructions to setup it correctly if needed.
+### Deploy an environment
 
 ```bash
 androsh setup production --distro debian --type stable
 ```
 
-### 2. Environment Initialization
+### Launch it
 
 ```bash
 androsh launch production
-# Root access in Debian environment
+# You're now root inside the Debian environment
 root@localhost:~# apt update && apt install python3 git
 ```
 
-### 3. Professional Management
+### Manage environments
 
 ```bash
-# Environment inventory
-androsh list
-
-# Maintenance operations
-androsh clean production
-
-# Environment removal
-androsh remove production --force
+androsh list                       # See what's available to install
+androsh lsd                        # See what's already installed
+androsh clean production           # Free up space / remove temp files
+androsh remove production --force  # Delete an environment
 ```
 
-## 💡 Use Cases
-
-### 🎓 Educational Infrastructure
+### Manage distributions directly
 
 ```bash
-# Deploy learning environment
-androsh setup classroom --distro ubuntu --type stable
-
-# Educational package installation
-apt install gcc python3-dev git curl wget
-```
-
-### 🔍 Security Research & Penetration Testing
-
-```bash
-# Kali NetHunter deployment
-androsh setup pentest --distro kali-nethunter --type full
-
-# Security toolkit installation
-apt install nmap metasploit-framework wireshark
-```
-
-### 🛠️ Development & CI/CD Environments
-
-```bash
-# Development workspace
-androsh setup devops --distro alpine --type alpine-minirootfs
-
-# Development stack deployment
-apk add build-base git nodejs npm docker-cli
-```
-
-### 📱 Field Operations & Mobile Workstations
-
-```bash
-# Portable development environment
-androsh setup field --distro debian --type stable
-
-# Essential tools
-apt install vim tmux htop net-tools
-```
-
-### Multi-Environment Isolation
-
-```bash
-# Development environments
-androsh setup frontend --distro ubuntu -t stable
-androsh setup backend --distro debian -t stable
-androsh setup security --distro kali-nethunter -t nano
-
-# Environment management
-androsh lsd
-```
-
-### Distribution Management Suite
-
-```bash
-# Available distributions
-androsh distro list
-
-# Distribution information
-androsh distro info ubuntu
-
-# Download management
+androsh distro list                                              # List available distros
+androsh distro info ubuntu                                       # Get details on a distro
 androsh distro download alpine --type alpine-minirootfs --file alpine-edge.tar.gz
 ```
 
-### Advanced Usage Examples
+### Full command reference
 
+See [AndroSH_Help.md](Assets/docs/AndroSH_Help.md) for every command and flag, including verbosity control (`--verbose` / `--quiet`) and timestamp formatting (`--time-style`).
+
+## Use Cases
+
+**Learning Linux**
 ```bash
-# Download specific distribution without setup
-androsh download alpine --type alpine-minirootfs
-
-# Distribution management suite
-androsh distro info ubuntu   # Get detailed distribution info
-
-# Clean management
-androsh clean kali-nethunter # Remove temporary files
+androsh setup classroom --distro ubuntu --type stable
+apt install gcc python3-dev git curl wget
 ```
 
-## 🛡️ Security & Compliance
-
-### Security Architecture
-
-- **Permission Isolation**: ADB/Shizuku-controlled elevation boundaries
-- **Environment Containment**: Proot-based process isolation
-- **Integrity Verification**: SHA-256 checksum validation
-- **Network Security**: Local-only operations post-deployment
-
-### Privacy Assurance
-
-- **Zero Data Collection**: No telemetry or analytics
-- **Local Storage**: All data remains on-device
-- **Transparent Operations**: Open-source verification
-- **Permission Auditing**: Clear permission boundaries
-
-## 🛠️ Technical Components & Trust
-
-### Verified Binary Sources
-
-AndroSH integrates established open-source components to ensure compatibility and performance across Android environments.
-
-| Component | Source Project | Purpose |
-|-----------|----------------|---------|
-| **PRoot** | [ahmed-alnassif/proot](https://github.com/ahmed-alnassif/proot) | Automated builds with statically linked talloc for Android |
-| **BusyBox NDK** | [Magisk-Modules-Repo/busybox-ndk](https://github.com/Magisk-Modules-Repo/busybox-ndk) | Essential Unix utilities for Android |
-
-### Component Rationale
-
-**PRoot**: Custom automated builds from Termux source with static linking, optimized for Android compatibility
-
-**BusyBox NDK**: Provides consistent command availability (tar, grep, awk) across fragmented Android versions
-
-### Source Transparency
-
-- [PRoot Builder](https://github.com/ahmed-alnassif/proot) - Automated build workflow
-- [BusyBox NDK sources](https://github.com/ahmed-alnassif/busybox)
-- [AndroSH core](https://github.com/ahmed-alnassif/AndroSH)
-
-### Security & Verification
-
-- SHA-256 checksum validation for all downloads
-- All dependencies traceable to upstream sources
-- Regular security updates and version synchronization
-
-## Troubleshooting Guide
-
+**Security research / penetration testing**
 ```bash
-# Environment recovery
+androsh setup pentest --distro kali-nethunter --type full
+apt install nmap metasploit-framework wireshark
+```
+
+**Lightweight dev environments**
+```bash
+androsh setup devops --distro alpine --type alpine-minirootfs
+apk add build-base git nodejs npm docker-cli
+```
+
+**On-the-go workstation**
+```bash
+androsh setup field --distro debian --type stable
+apt install vim tmux htop net-tools
+```
+
+**Running several environments at once**
+```bash
+androsh setup frontend --distro ubuntu -t stable
+androsh setup backend --distro debian -t stable
+androsh setup security --distro kali-nethunter -t nano
+androsh lsd
+```
+
+## Security & Privacy
+
+- **Permission boundaries**: elevation is scoped and controlled through ADB/Shizuku
+- **Process isolation**: each environment runs sandboxed via proot
+- **Integrity checks**: SHA-256 checksums validate every download
+- **No telemetry**: zero data collection, everything stays local on your device
+- **Open source**: every component is auditable
+
+## Components & Sources
+
+| Component | Source | Purpose |
+|---|---|---|
+| PRoot | [ahmed-alnassif/proot](https://github.com/ahmed-alnassif/proot) | Statically linked, Android-optimized automated builds |
+| BusyBox NDK | [Magisk-Modules-Repo/busybox-ndk](https://github.com/Magisk-Modules-Repo/busybox-ndk) | Core Unix utilities (tar, grep, awk, etc.) for Android |
+
+Build pipelines: [PRoot builder](https://github.com/ahmed-alnassif/proot) · [BusyBox NDK sources](https://github.com/ahmed-alnassif/busybox) · [AndroSH core](https://github.com/ahmed-alnassif/AndroSH)
+
+All dependencies are traceable to their upstream sources and kept in sync with security updates.
+
+## Troubleshooting
+
+**Reset a broken environment**
+```bash
 androsh setup <distro> --distro debian -t stable --resetup
+```
 
-# System cleanup
+**Clean up temp files**
+```bash
 androsh clean <distro>
+```
 
-# Global accessibility
+**Reinstall the global `androsh` command**
+```bash
 cd AndroSH
 python main.py install
 ```
 
-### Shizuku Service Management
+**Shizuku issues**
+- Confirm Shizuku is running and AndroSH is authorized in it
+- If problems persist, reboot the device to restore the Shizuku service
 
-- **Service Status**: Verify Shizuku is active and authorized
-- **Device Reboot**: System-level service restoration
+## Contributing
 
-## 🤝 Contribution Framework
+Contributions and security research are welcome. Current priority areas:
 
-### Development Collaboration
+- Performance optimization
+- Deployment tooling
+- Security hardening
 
-We welcome contributors and security researchers to enhance the platform.
-
-### Priority Development Areas
-
-- Enhanced performance optimization
-- Deployment Tooling
-- Security hardening features
-
-### Development Environment
+Set up a dev environment:
 
 ```bash
 git clone https://github.com/ahmed-alnassif/AndroSH.git
 cd AndroSH
-# Development environment setup
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## 📜 License & Compliance
+## License
 
-GPLv3 License - open source licensing for commercial and research use.
+GPLv3 — free for commercial and research use.
 
-## 🏆 Project Leadership
+## Author
 
-**Architected and Developed by Ahmed Al-Nassif**
-
+**Ahmed Al-Nassif**
 - GitHub: [@ahmed-alnassif](https://github.com/ahmed-alnassif)
-- Professional Portfolio: [Hashcat Android Integration](https://github.com/hashcat/hashcat/pull/4563)
 
-## 🌟 Support
+## Support
 
-### Project Engagement
-
-- ⭐ **Star this Project**
-- 🐛 **Report Issues**
-- 💡 **Suggest Features**
-- 🔄 **Share Use Cases**
+- Star the repo if you find it useful
+- Open an issue to report bugs
+- Suggest features or share how you're using AndroSH
 
 ---
 
 <div align="center">
 
-**💻 Transform Your Android Device into a Professional-Grade Linux Workstation**
+*Professional Linux environments in your pocket — without compromising security.*
 
 </div>
-
-```bash
-# Initialize your Professional-Grade environment today
-git clone --depth 1 https://github.com/ahmed-alnassif/AndroSH.git
-cd AndroSH && androsh setup enterprise --distro debian --type stable
-```
-
-<div align="center">
-
-*"Professional Linux environments in your pocket - without compromising security"*  
-**AndroSH Philosophy**
-
-</div>
-
-[📑 Back to ToC](#-table-of-contents)
