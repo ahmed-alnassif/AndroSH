@@ -2,21 +2,19 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-def create_session(user_agent: str = None, retries: int = 3, backoff_factor: float = 0.1):
-	"""
-	Create a requests session with custom user agent and retry strategy
-	
-	Args:
-		user_agent (str): Custom user agent string
-		retries (int): Number of retry attempts
-		backoff_factor (float): Backoff factor for retries
-	
-	Returns:
-		requests.Session: Configured session object
-	"""
+class TimeoutHTTPAdapter(HTTPAdapter):
+	def __init__(self, *args, timeout=30, **kwargs):
+		self.timeout = timeout
+		super().__init__(*args, **kwargs)
+
+	def send(self, request, **kwargs):
+		if kwargs.get("timeout") is None:
+			kwargs["timeout"] = self.timeout
+		return super().send(request, **kwargs)
+
+def create_session(user_agent: str = None, timeout: int = 30, retries: int = 3, backoff_factor: float = 0.1):
 	session = requests.Session()
 	
-	# Set default user agent if none provided
 	if user_agent is None:
 		user_agent = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Mobile Safari/537.36"
 	
@@ -27,14 +25,13 @@ def create_session(user_agent: str = None, retries: int = 3, backoff_factor: flo
 		"Connection": "keep-alive",
 	})
 	
-	# Configure retry strategy
 	retry_strategy = Retry(
 		total=retries,
 		backoff_factor=backoff_factor,
 		status_forcelist=[429, 500, 502, 503, 504],
 	)
 	
-	adapter = HTTPAdapter(max_retries=retry_strategy)
+	adapter = TimeoutHTTPAdapter(max_retries=retry_strategy, timeout=timeout)
 	session.mount("http://", adapter)
 	session.mount("https://", adapter)
 	
