@@ -35,23 +35,19 @@ class AndroSH:
 
 	ASSETS_URLS = {
 		"armhf": {
-			"proot": "https://github.com/ahmed-alnassif/proot-bin/raw/refs/heads/main/arm/proot",
-			"libtalloc.so.2": "https://github.com/ahmed-alnassif/proot-bin/raw/refs/heads/main/arm/libtalloc.so.2",
+			"proot-armhf.zip": "https://github.com/ahmed-alnassif/proot/releases/latest/download/proot-arm.zip",
 			"busybox": "https://github.com/ahmed-alnassif/busybox/raw/refs/heads/master/busybox-arm"
 		},
 		"aarch64": {
-			"proot": "https://github.com/ahmed-alnassif/proot-bin/raw/refs/heads/main/aarch64/proot",
-			"libtalloc.so.2": "https://github.com/ahmed-alnassif/proot-bin/raw/refs/heads/main/aarch64/libtalloc.so.2",
+			"proot-aarch64.zip": "https://github.com/ahmed-alnassif/proot/releases/latest/download/proot-aarch64.zip",
 			"busybox": "https://github.com/ahmed-alnassif/busybox/raw/refs/heads/master/busybox-arm64"
 		},
 		"x86": {
-			"proot": "https://github.com/ahmed-alnassif/proot-bin/raw/refs/heads/main/x86/proot",
-			"libtalloc.so.2": "https://github.com/ahmed-alnassif/proot-bin/raw/refs/heads/main/x86/libtalloc.so.2",
+			"proot-x86.zip": "https://github.com/ahmed-alnassif/proot/releases/latest/download/proot-x86.zip",
 			"busybox": "https://github.com/ahmed-alnassif/busybox/raw/refs/heads/master/busybox-x86"
 		},
 		"x86_64": {
-			"proot": "https://github.com/ahmed-alnassif/proot-bin/raw/refs/heads/main/x86_64/proot",
-			"libtalloc.so.2": "https://github.com/ahmed-alnassif/proot-bin/raw/refs/heads/main/x86_64/libtalloc.so.2",
+			"proot-x86_64.zip": "https://github.com/ahmed-alnassif/proot/releases/latest/download/proot-x86_64.zip",
 			"busybox": "https://github.com/ahmed-alnassif/busybox/raw/refs/heads/master/busybox-x86_64"
 		}
 	}
@@ -79,8 +75,6 @@ class AndroSH:
 		self.assets_path = "Assets"
 		self.wrapper_script = "AndroSH_wrapper.sh"
 		self.distro_file = None
-		self.proot = "proot"
-		self.talloc = "libtalloc.so.2"
 		self.sandbox_script = "proot.sh"
 		self.launch_command = str()
 		self.distro_type = "alpine-minirootfs"
@@ -129,6 +123,7 @@ class AndroSH:
 		self.busybox = BusyBoxManager(self.adb, self.console, self.busybox_dir)
 
 		# State variables
+		self.proot = f"proot-{self.architecture()}.zip"
 		self.is_setup = False
 		self.force_download = False
 		self.distro_dir = None
@@ -511,46 +506,21 @@ class AndroSH:
 			self.console.error(f"The distro directory already exists: {self.distro_dir}")
 			sys.exit(1)
 
-		bin = str(Path(self.distro_dir) / "bin")
-		lib = str(Path(self.distro_dir) / "lib")
-		self.console.verbose(f"Creating main directory: {self.distro_dir}")
-		if not self.busybox.mkdir(self.distro_dir, parents=True):
-			self.console.error(f"Failed to create directory: {self.distro_dir}")
-			sys.exit(1)
-		self.console.verbose(f"Creating a directory: {bin}")
-		if not self.busybox.mkdir(bin, parents=True):
-			self.console.error(f"Failed to create directory: {bin}")
-			sys.exit(1)
-		self.console.verbose(f"Creating a directory: {lib}")
-		if not self.busybox.mkdir(lib, parents=True):
-			self.console.error(f"Failed to create directory: {lib}")
+		self.console.verbose("Extracting proot from zip archive")
+
+		zip_path = f"{Path(self.resources) / self.proot}"
+		bin_dir = f"{Path(self.distro_dir) / 'bin'}"
+		self.busybox.mkdir(bin_dir, parents=True)
+
+		if not (self.fm.exists(zip_path) or self.adb.exists(zip_path)):
+			self.console.error(f"Zip not found: {zip_path}")
 			sys.exit(1)
 
-		self.console.verbose("Copying assets to distro directory")
-		for asset_file in [self.proot, self.talloc]:
-			src_path = f"{Path(self.resources) / asset_file}"
-			if asset_file == self.proot:
-				asset_file = str(Path("bin") / asset_file)
-			elif asset_file == self.talloc:
-				asset_file = str(Path("lib") / asset_file)
-			dst_path = f"{Path(self.distro_dir) / asset_file}"
+		unzip_cmd = f"unzip -o {zip_path} -d {bin_dir}"
+		result = self.busybox._run_command(unzip_cmd)
 
-			if not (self.fm.exists(src_path) or
-					self.adb.exists(src_path)):
-				self.console.error(f"Asset not found: {src_path}")
-				sys.exit(1)
-
-			if not self.busybox.copy(src_path, dst_path):
-				self.console.error(f"Failed to copy asset: {src_path} -> {dst_path}")
-				sys.exit(1)
-			else:
-				self.console.verbose(f"Copied asset: {asset_file}")
-
-		proot = str(Path("bin") / self.proot)
-		proot_path = f"{self.distro_dir / Path(proot)}"
-		self.console.verbose(f"Making proot executable: {proot_path}")
-		if not self.busybox.chmod(proot_path, "755"):
-			self.console.error(f"Failed to make proot executable: {proot_path}")
+		if result.returncode != 0:
+			self.console.error(f"Failed to extract zip: {result.stderr}")
 			sys.exit(1)
 
 		patched_dir = f"{self.distro_dir}/patched"
