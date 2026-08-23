@@ -523,6 +523,8 @@ class AndroSH:
 			self.console.error(f"Failed to extract zip: {result.stderr}")
 			sys.exit(1)
 
+		proot_path = f"{bin_dir}/proot"
+
 		patched_dir = f"{self.distro_dir}/patched"
 		self.console.verbose(f"Cleaning up patched directory: {patched_dir}")
 		self.busybox.remove(patched_dir, recursive=True)
@@ -543,7 +545,7 @@ class AndroSH:
 					self.console.info("Rootfs with root permissions detected.")
 					tmp = f"{linux_target / Path('tmp')}"
 					self.busybox.mkdir(tmp, parents=True)
-					self.busybox.proot_cmd = f"LD_LIBRARY_PATH={lib} PROOT_TMP_DIR={tmp} {proot_path} -0 "
+					self.busybox.proot_cmd = f"PROOT_TMP_DIR={tmp} {proot_path} -0 "
 					self.busybox.tar_err = None
 					rootfs_len = 2
 					if not self.busybox.tar_extract(linux_archive, linux_target):
