@@ -683,7 +683,6 @@ class AlpineDistribution(Distribution):
 		return file_name
 
 class KaliNethunterDistribution(Distribution):
-	"""Kali Nethunter distribution implementation"""
 
 	def __init__(self, fm: PyFManager, downloader: FileDownloader, console,
 			resources: str, db, check_storage_func=None, **kwargs):
@@ -691,19 +690,20 @@ class KaliNethunterDistribution(Distribution):
 		self.supported_archs = ['amd64', 'arm64', 'armhf', 'i386']
 		self.supported_types = ["minimal", "nano", "full"]
 		self.base_url = "https://kali.download/nethunter-images/current/rootfs"
-		self.file_sizes = {}  # Cache for file sizes
+		self.file_sizes = {}
 
 	def get_name(self) -> str:
 		return "kali-nethunter"
 
 	def _map_architecture(self, arch: str) -> str:
-		"""Map standard architecture to Kali-specific names"""
+
 		kali_arch_map = {
 			'arm64': 'arm64',
 			'arm': 'armhf',
 			'x86_64': 'amd64',
 			'x86': 'i386'
 		}
+
 		return kali_arch_map.get(arch, arch)
 
 	def supports_architecture(self, arch: str) -> bool:
@@ -722,6 +722,7 @@ class KaliNethunterDistribution(Distribution):
 			'supported_types': self.supported_types,
 			'source': 'Kali Official'
 		})
+
 		return base_info
 
 	def _parse_html_directory(self, html_content: str) -> Dict[str, str]:
@@ -735,7 +736,7 @@ class KaliNethunterDistribution(Distribution):
 			matches = re.findall(pattern, html_content, re.DOTALL)
 
 			for match in matches:
-				filename = match[0]  # Use the href value as it's more reliable
+				filename = match[0]
 				size = match[2].strip()
 				file_sizes[filename] = size
 
@@ -748,7 +749,7 @@ class KaliNethunterDistribution(Distribution):
 
 	def _fetch_file_sizes(self) -> Dict[str, str]:
 		"""Fetch and parse the directory listing to get file sizes"""
-		# Try cache first
+
 		if self.file_sizes:
 			return self.file_sizes
 
@@ -759,18 +760,17 @@ class KaliNethunterDistribution(Distribution):
 
 			self.file_sizes = self._parse_html_directory(response.text)
 
-			# Cache in database for offline use
 			self.db.add("kali_file_sizes", self.file_sizes)
 
 			return self.file_sizes
 
 		except Exception as e:
 			self.console.warning(f"Failed to fetch file sizes: {e}")
-			# Try to load from cache
 			cached_sizes = self.db.get("kali_file_sizes")
 			if cached_sizes:
 				self.file_sizes = cached_sizes
 				return self.file_sizes
+
 			return {}
 
 	def get_file_size(self, arch: str, distro_type: str) -> str:
@@ -826,16 +826,13 @@ class KaliNethunterDistribution(Distribution):
 
 	def _get_expected_filename(self, arch: str, distro_type: str) -> str:
 		"""Get the expected filename pattern from checksums"""
-		# The checksums use a different naming pattern with version
 		checksums = self._get_checksums()
 
-		# Look for matching files in checksums
 		pattern = f"kali-nethunter-*-rootfs-{distro_type}-{arch}.tar.xz"
 		for filename in checksums.keys():
 			if f"rootfs-{distro_type}-{arch}.tar.xz" in filename:
 				return filename
 
-		# Fallback to standard naming if not found
 		return f"kali-nethunter-rootfs-{distro_type}-{arch}.tar.xz"
 
 	def download(self, file_name: str = None, distro_type: str = "minimal") -> Optional[Any]:
@@ -853,13 +850,11 @@ class KaliNethunterDistribution(Distribution):
 		if distro_type not in self.supported_types:
 			raise ValueError(f"Type {distro_type} not supported. Available: {', '.join(self.supported_types)}")
 
-		# Get the actual filename from checksums
 		expected_filename = self._get_expected_filename(arch, distro_type)
 
 		if file_name is None:
 			file_name = expected_filename
 
-		# Get file size for user information
 		file_size = self.get_file_size(arch, distro_type)
 
 		self.console.info(f"Starting Kali Nethunter ({distro_type}) download process")
@@ -868,17 +863,14 @@ class KaliNethunterDistribution(Distribution):
 
 		file_path = f"{self.resources}/{file_name}"
 
-		# Check if already downloaded
 		if self.fm.exists(file_path):
 			self.console.info("Kali Nethunter already downloaded")
 			return file_name
 
-		# Get checksums first
 		checksums = self._get_checksums()
 		if not checksums:
 			self.console.warning("Could not fetch checksums, downloading without verification")
 
-		# Build download URL
 		url = self._get_download_url(kali_arch, distro_type)
 		self.console.verbose(f"Download URL: {url}")
 
@@ -886,13 +878,12 @@ class KaliNethunterDistribution(Distribution):
 			self.downloader.download_file(url, file_path)
 			self.console.verbose(f"Download completed: {file_path}")
 
-			# Verify checksum if available
 			if checksums and expected_filename in checksums:
 				expected_hash = checksums[expected_filename]
 				if not self._verify_checksum(file_path, expected_hash, "sha256"):
 					self.console.warning("Checksum verification failed, retrying download")
 					self.fm.remove(file_path)
-					self.download(file_name, distro_type)  # Retry download
+					self.download(file_name, distro_type)
 				else:
 					self.console.verbose("Checksum verification passed")
 			else:
@@ -901,8 +892,8 @@ class KaliNethunterDistribution(Distribution):
 		except Exception as e:
 			self.console.error(f"Failed to download Kali Nethunter: {e}")
 			raise
-		return file_name
 
+		return file_name
 
 class DistributionManager:
 	"""Manager class for handling multiple distributions"""
