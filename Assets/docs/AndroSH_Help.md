@@ -184,10 +184,11 @@ options:
 ### `python main.py list`
 
 ```
-usage: main.py list [-h]
+usage: main.py list [-h] [-d]
 
 options:
-  -h, --help  show this help message and exit
+  -h, --help     show this help message and exit
+  -d, --details  Show detailed distribution information
 ```
 
 ---
