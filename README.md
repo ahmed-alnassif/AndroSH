@@ -4,6 +4,8 @@
 
 **Run and manage full Linux distributions on your Android device - no root required.**
 
+<img src="Assets/docs/AndroSH.png" alt="AndroSH" width="90%" />
+
 [![Tests](https://github.com/ahmed-alnassif/AndroSH/actions/workflows/tests.yml/badge.svg)](https://github.com/ahmed-alnassif/AndroSH/actions/workflows/tests.yml)
 [![GitHub Stars](https://img.shields.io/github/stars/ahmed-alnassif/AndroSH)](https://github.com/ahmed-alnassif/AndroSH/stargazers)
 [![Latest Release](https://img.shields.io/github/v/release/ahmed-alnassif/AndroSH?label=Latest%20Release&color=00aa00)](https://github.com/ahmed-alnassif/AndroSH/releases)
