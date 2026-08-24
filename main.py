@@ -18,9 +18,7 @@ from Core.request import create_session
 from Core.shizuku import Rish
 from Core.template import template
 
-
 class AndroSH:
-
 
 	ARCH_MAPPING = {
 		"arm64-v8a": "aarch64",
