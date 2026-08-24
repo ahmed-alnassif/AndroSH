@@ -2,3 +2,4 @@
 /.venv
 /.idea/
 /Core/__pycache__/
+/Core/distributions/__pycache__
