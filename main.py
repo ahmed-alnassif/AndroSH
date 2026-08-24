@@ -52,12 +52,11 @@ class AndroSH:
 		}
 	}
 
-	# BusyBox SHA512 checksums
 	BUSYBOX_CHECKSUMS = {
-		"armhf":   "bee9d333c3df0c368a1a226b0db81e2d8a13c603d997d570373579d9e6910f94df902d9753d97ffe596a8d1f91632608181fe2bf1833d857cd7fc0c18d32a6d9",
+		"armhf": "bee9d333c3df0c368a1a226b0db81e2d8a13c603d997d570373579d9e6910f94df902d9753d97ffe596a8d1f91632608181fe2bf1833d857cd7fc0c18d32a6d9",
 		"aarch64": "403c0a113140941d025b40e071cc48ea746a3401688f0a034f06e7b7a75fb82a586f211cd36c1e26f8cfeb053ba3c98ae75febe4ff657a870482982867e4fa32",
-		"x86":	 "5d001b73340972017185a0ce100bcad993a4bc6bb4ade181aa1cf0038ec9568b52008276a6044b8d78f9dc4f0ab73fff389bbe68c06af50f805c1bfdf067da62",
-		"x86_64":  "2638541b434a3db8442e814724ab3f654668b2d75d0fbcb841ae52f4eff7c9b13303f6c461daeeaea1d3808ca6fad11775090a196dbfb7bb49203b97d66fbf95"
+		"x86": "5d001b73340972017185a0ce100bcad993a4bc6bb4ade181aa1cf0038ec9568b52008276a6044b8d78f9dc4f0ab73fff389bbe68c06af50f805c1bfdf067da62",
+		"x86_64": "2638541b434a3db8442e814724ab3f654668b2d75d0fbcb841ae52f4eff7c9b13303f6c461daeeaea1d3808ca6fad11775090a196dbfb7bb49203b97d66fbf95"
 	}
 
 	def __init__(self):
@@ -96,7 +95,6 @@ class AndroSH:
 							"fedora-42"
 						]
 
-
 		parser = self._setup_argparse()
 		args = parser.parse_args()
 		self.resources = args.resources_dir
@@ -106,7 +104,6 @@ class AndroSH:
 		self.log_level = self._determine_log_level(args)
 		self.console = console(self.log_level, self.time_style)
 
-		# Initialize other components
 		self.fm = PyFManager()
 		self.db = DB()
 		self.request = create_session()
@@ -114,15 +111,12 @@ class AndroSH:
 		self.rish = Rish(self.console, self.resources)
 		self.adb = ADBFileManager(self.rish, self.console)
 		self.distro_manager = DistributionManager(self.fm, self.downloader,
-												  self.console, self.resources,
-												  self.db, self.check_storage
+												self.console, self.resources,
+												self.db, self.check_storage
 		)
 
-
-		# Initialize BusyBox manager
 		self.busybox = BusyBoxManager(self.adb, self.console, self.busybox_dir)
 
-		# State variables
 		self.proot = f"proot-{self.architecture()}.zip"
 		self.is_setup = False
 		self.force_download = False
@@ -135,7 +129,6 @@ class AndroSH:
 		self.console.debug(f"AndroSH initialized with log_level={self.log_level}")
 		self.console.verbose(f"Arguments: {vars(args)}")
 
-		# Handle commands
 		if hasattr(args, 'command') and args.command:
 			self._handle_command(args)
 		else:
@@ -186,7 +179,7 @@ class AndroSH:
 			self.download_distro(args)
 
 	def _handle_distro_command(self, args):
-		"""Handle distro subcommands"""
+
 		if args.distro_command == 'list':
 			self.distro_manager.list_distros(show_details=getattr(args, 'details', False))
 		elif args.distro_command == 'download':
@@ -204,51 +197,43 @@ class AndroSH:
 
 		subparsers = parser.add_subparsers(dest='command', help='Command to execute', required=False)
 
-		# Setup command
 		setup_parser = subparsers.add_parser('setup', help='Deploy a new Linux environment')
 		setup_parser.add_argument('name', default=name,
-								  help=f'Environment name (default: {name})')
+								help=f'Environment name (default: {name})')
 		setup_parser.add_argument("-f", "--rootfs",
-								  help="Custom rootfs file, when used you don't need to add -d/-t arguments", default=None)
+								help="Custom rootfs file, when used you don't need to add -d/-t arguments", default=None)
 		setup_parser.add_argument('-d', '--distro', default=self.distro,
-								  choices=self.distros,
-								  help=f'Linux distribution (default: {self.distro})')
+								choices=self.distros,
+								help=f'Linux distribution (default: {self.distro})')
 		setup_parser.add_argument('-t', '--type', default=self.distro_type,
-								  help=f'Distribution variant (minimal, full, stable) - depends on distro (default: {self.distro_type})')
+								help=f'Distribution variant (minimal, full, stable) - depends on distro (default: {self.distro_type})')
 		setup_parser.add_argument('--hostname', default=name,
-								  help=f'Custom Hostname (default: {name})')
+								help=f'Custom Hostname (default: {name})')
 		setup_parser.add_argument('--resetup', action='store_true',
-								  help='Reinstall environment while preserving data')
+								help='Reinstall environment while preserving data')
 		setup_parser.add_argument('--force', action='store_true',
-								  help='Force overwrite without confirmation')
+								help='Force overwrite without confirmation')
 
-		# Backup command
 		backup_parser = subparsers.add_parser("backup", help="Backup an existing environment")
 		backup_parser.add_argument('name', help='Name of the environment to backup')
 		backup_parser.add_argument('destination', nargs='?', help=f'Backup destination directory (default: {self.backup_directory})', default=self.backup_directory)
 		backup_parser.add_argument('-z', '--gzip', help='filter the archive through gzip', action='store_true')
 
-		# Remove command
 		remove_parser = subparsers.add_parser('remove', help='Remove an existing environment')
 		remove_parser.add_argument('name', help='Name of the environment to remove')
 		remove_parser.add_argument('--force', action='store_true',
-								   help='Force removal without confirmation')
+									help='Force removal without confirmation')
 
-		# Launch command
 		launch_parser = subparsers.add_parser('launch', help='Start an existing environment')
 		launch_parser.add_argument('name', help='Name of the environment to launch')
 		launch_parser.add_argument("-c", "--command", dest="launch_command", help="launch command and exit", default="")
 
-		# Rish command
 		rish_parser = subparsers.add_parser('rish', help='Start adb shell/shizuku rish')
 		rish_parser.add_argument("-c", "--command", dest="rish_command", help="launch command and exit", default="")
 
-
-		# Clean command
 		clean_parser = subparsers.add_parser('clean', help='Clean environment temporary files')
 		clean_parser.add_argument('name', help='Environment name to clean')
 
-		# Install command
 		path = f"{Path(os.environ['PREFIX']) / 'bin'}" if os.environ.get("PREFIX") else None
 		install_parser = subparsers.add_parser('install', help='Install for global system access')
 		install_parser.add_argument('--path', default=path,
@@ -256,13 +241,11 @@ class AndroSH:
 		install_parser.add_argument('--name', default='androsh',
 									help='Command name for global access (default: androsh)')
 
-		# List command
 		list_parser = subparsers.add_parser('list', help='Show available distributions')
 		list_parser.add_argument('-d', '--details', action='store_true',
 								help='Show detailed distribution information')
 		subparsers.add_parser('lsd', help='List installed environments')
 
-		# Download command
 		download_parser = subparsers.add_parser('download', help='Download distribution files')
 		download_parser.add_argument('distro',
 									 choices=self.distros,
@@ -272,16 +255,13 @@ class AndroSH:
 		download_parser.add_argument('--file', '-f',
 									 help='Custom filename for downloaded archive')
 
-		# Distro management command
 		distro_parser = subparsers.add_parser('distro', help='Distribution management suite')
 		distro_subparsers = distro_parser.add_subparsers(dest='distro_command', help='Distro subcommand', required=True)
 
-		# distro list
 		distro_list_parser = distro_subparsers.add_parser('list', help='List available distributions')
 		distro_list_parser.add_argument('-d', '--details', action='store_true',
 										help='Show detailed distribution information')
 
-		# distro download
 		distro_download_parser = distro_subparsers.add_parser('download', help='Download distribution')
 		distro_download_parser.add_argument('distro_name',
 											choices=self.distros,
@@ -291,25 +271,21 @@ class AndroSH:
 		distro_download_parser.add_argument('--file', '-f',
 											help='Custom filename for the download')
 
-		# distro info
 		distro_info_parser = distro_subparsers.add_parser('info', help='Get distribution information')
 		distro_info_parser.add_argument('distro_name',
 										choices=self.distros,
 										help='Name of the distribution')
 
-		# distro urls
 		distro_subparsers.add_parser('urls', help='Show download URLs')
 
-		# Logging options
 		log_group = parser.add_mutually_exclusive_group()
 		log_group.add_argument('--verbose', '-v', action='store_true',
-							   help='Verbose output: detailed operation information')
+								help='Verbose output: detailed operation information')
 		log_group.add_argument('--debug', '-d', action='store_true',
-							   help='Debug output: all operations including system commands')
+								help='Debug output: all operations including system commands')
 		log_group.add_argument('--quiet', '-q', action='store_true',
-							   help='Quiet output: suppress non-essential information')
+								help='Quiet output: suppress non-essential information')
 
-		# Global arguments
 		parser.add_argument('--base-dir', default=self.root,
 							help=f'Base directory for environments (default: {self.root})')
 		parser.add_argument('--resources-dir', default=self.resources,
@@ -322,9 +298,8 @@ class AndroSH:
 		return parser
 
 	def download_distro(self, args):
-		"""Download a Linux distribution"""
 
-		if hasattr(args, 'distro_name'):  # distro download command
+		if hasattr(args, 'distro_name'):
 			distro_name = args.distro_name
 			distro_type = args.type
 			file_name = args.file
@@ -383,7 +358,7 @@ class AndroSH:
 			self.downloader.download_file(busybox_url, local_busybox_path)
 
 		actual_hash = self.fm.checksum(local_busybox_path) or \
-					  self.adb.checksum(local_busybox_path)
+						self.adb.checksum(local_busybox_path)
 		if actual_hash != expected_hash:
 			self.console.warning("BusyBox checksum mismatch!")
 			if not self.args.force:
@@ -407,7 +382,6 @@ class AndroSH:
 			self.console.error("Failed to make BusyBox executable")
 			return False
 
-		# Test BusyBox
 		if self.busybox.is_available():
 			self.console.success("BusyBox setup completed successfully")
 			return True
@@ -461,7 +435,6 @@ class AndroSH:
 
 		return result
 
-
 	def download_assets(self) -> None:
 		
 		self.console.info("Downloading architecture-specific assets")
@@ -493,7 +466,7 @@ class AndroSH:
 			self.console.info("All assets already downloaded")
 
 	def setup_sandbox(self) -> None:
-		
+
 		self.console.info("Starting machine setup process")
 
 		if not self.setup_busybox():
@@ -687,7 +660,6 @@ class AndroSH:
 
 		self.console.success(f"The backup created successfully to {file}")
 
-
 	def remove_distro(self, args) -> None:
 		self.console.debug(f"Remove distro called with args: {vars(args)}")
 		distro_dir = f"{Path(args.base_dir) / args.name}"
@@ -732,7 +704,6 @@ class AndroSH:
 		else:
 			self.rish.drun("-c \"if command -v bash >/dev/null 2>&1; then exec bash; else exec sh; fi\"")
 
-
 	def clean_distro(self, args) -> None:
 		self.console.debug(f"Clean distro called with args: {vars(args)}")
 		distro_dir = f"{Path(args.base_dir) / args.name}"
@@ -776,7 +747,6 @@ class AndroSH:
 			else:
 				return
 
-
 		self.console.success(f"Command '[bold green]{args.name}[/bold green]' is now available globally")
 		sys.exit()
 
@@ -817,11 +787,9 @@ class AndroSH:
 
 		self.console.print(table)
 
-		# Additional info
 		self.console.info(f"Total installed: [bold]{len(installed_distros)}[/bold] distros")
 		self.console.info("Use: [cyan]androsh launch <name>[/cyan] or [cyan]<path>[/cyan] to launch a distro")
 		self.console.info("Use: [cyan]androsh remove <name>[/cyan] or [cyan]<path>[/cyan] to remove a distro")
-
 
 if __name__ == '__main__':
 	c = console()
