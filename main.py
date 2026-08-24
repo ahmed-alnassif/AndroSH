@@ -56,7 +56,7 @@ class AndroSH:
 	BUSYBOX_CHECKSUMS = {
 		"armhf":   "bee9d333c3df0c368a1a226b0db81e2d8a13c603d997d570373579d9e6910f94df902d9753d97ffe596a8d1f91632608181fe2bf1833d857cd7fc0c18d32a6d9",
 		"aarch64": "403c0a113140941d025b40e071cc48ea746a3401688f0a034f06e7b7a75fb82a586f211cd36c1e26f8cfeb053ba3c98ae75febe4ff657a870482982867e4fa32",
-		"x86":     "5d001b73340972017185a0ce100bcad993a4bc6bb4ade181aa1cf0038ec9568b52008276a6044b8d78f9dc4f0ab73fff389bbe68c06af50f805c1bfdf067da62",
+		"x86":	 "5d001b73340972017185a0ce100bcad993a4bc6bb4ade181aa1cf0038ec9568b52008276a6044b8d78f9dc4f0ab73fff389bbe68c06af50f805c1bfdf067da62",
 		"x86_64":  "2638541b434a3db8442e814724ab3f654668b2d75d0fbcb841ae52f4eff7c9b13303f6c461daeeaea1d3808ca6fad11775090a196dbfb7bb49203b97d66fbf95"
 	}
 
@@ -114,8 +114,8 @@ class AndroSH:
 		self.rish = Rish(self.console, self.resources)
 		self.adb = ADBFileManager(self.rish, self.console)
 		self.distro_manager = DistributionManager(self.fm, self.downloader,
-		                                          self.console, self.resources,
-		                                          self.db, self.check_storage
+												  self.console, self.resources,
+												  self.db, self.check_storage
 		)
 
 
@@ -177,18 +177,18 @@ class AndroSH:
 		elif args.command == 'install':
 			self.install_script(args)
 		elif args.command == 'list':
-			self.distro_manager.list_distros()
+			self.distro_manager.list_distros(show_details=getattr(args, 'details', False))
 		elif args.command == 'lsd':
 			self.list_distros(args)
 		elif args.command == 'distro':
 			self._handle_distro_command(args)
 		elif args.command == 'download':
-			self.download_distro(args)  # Direct download command
+			self.download_distro(args)
 
 	def _handle_distro_command(self, args):
 		"""Handle distro subcommands"""
 		if args.distro_command == 'list':
-			self.distro_manager.list_distros(getattr(args, 'details', False))
+			self.distro_manager.list_distros(show_details=getattr(args, 'details', False))
 		elif args.distro_command == 'download':
 			self.download_distro(args)
 		elif args.distro_command == 'info':
@@ -207,20 +207,20 @@ class AndroSH:
 		# Setup command
 		setup_parser = subparsers.add_parser('setup', help='Deploy a new Linux environment')
 		setup_parser.add_argument('name', default=name,
-		                          help=f'Environment name (default: {name})')
+								  help=f'Environment name (default: {name})')
 		setup_parser.add_argument("-f", "--rootfs",
-		                          help="Custom rootfs file, when used you don't need to add -d/-t arguments", default=None)
+								  help="Custom rootfs file, when used you don't need to add -d/-t arguments", default=None)
 		setup_parser.add_argument('-d', '--distro', default=self.distro,
-		                          choices=self.distros,
-		                          help=f'Linux distribution (default: {self.distro})')
+								  choices=self.distros,
+								  help=f'Linux distribution (default: {self.distro})')
 		setup_parser.add_argument('-t', '--type', default=self.distro_type,
-		                          help=f'Distribution variant (minimal, full, stable) - depends on distro (default: {self.distro_type})')
+								  help=f'Distribution variant (minimal, full, stable) - depends on distro (default: {self.distro_type})')
 		setup_parser.add_argument('--hostname', default=name,
-		                          help=f'Custom Hostname (default: {name})')
+								  help=f'Custom Hostname (default: {name})')
 		setup_parser.add_argument('--resetup', action='store_true',
-		                          help='Reinstall environment while preserving data')
+								  help='Reinstall environment while preserving data')
 		setup_parser.add_argument('--force', action='store_true',
-		                          help='Force overwrite without confirmation')
+								  help='Force overwrite without confirmation')
 
 		# Backup command
 		backup_parser = subparsers.add_parser("backup", help="Backup an existing environment")
@@ -232,7 +232,7 @@ class AndroSH:
 		remove_parser = subparsers.add_parser('remove', help='Remove an existing environment')
 		remove_parser.add_argument('name', help='Name of the environment to remove')
 		remove_parser.add_argument('--force', action='store_true',
-		                           help='Force removal without confirmation')
+								   help='Force removal without confirmation')
 
 		# Launch command
 		launch_parser = subparsers.add_parser('launch', help='Start an existing environment')
@@ -252,23 +252,25 @@ class AndroSH:
 		path = f"{Path(os.environ['PREFIX']) / 'bin'}" if os.environ.get("PREFIX") else None
 		install_parser = subparsers.add_parser('install', help='Install for global system access')
 		install_parser.add_argument('--path', default=path,
-		                            help=f'Installation directory for global script (default: {path})')
+									help=f'Installation directory for global script (default: {path})')
 		install_parser.add_argument('--name', default='androsh',
-		                            help='Command name for global access (default: androsh)')
+									help='Command name for global access (default: androsh)')
 
 		# List command
-		subparsers.add_parser('list', help='Show available distributions')
+		list_parser = subparsers.add_parser('list', help='Show available distributions')
+		list_parser.add_argument('-d', '--details', action='store_true',
+								help='Show detailed distribution information')
 		subparsers.add_parser('lsd', help='List installed environments')
 
 		# Download command
 		download_parser = subparsers.add_parser('download', help='Download distribution files')
 		download_parser.add_argument('distro',
-		                             choices=self.distros,
-		                             help='Distribution to download')
+									 choices=self.distros,
+									 help='Distribution to download')
 		download_parser.add_argument('--type', required=True,
-		                             help='Distribution variant (required)')
+									 help='Distribution variant (required)')
 		download_parser.add_argument('--file', '-f',
-		                             help='Custom filename for downloaded archive')
+									 help='Custom filename for downloaded archive')
 
 		# Distro management command
 		distro_parser = subparsers.add_parser('distro', help='Distribution management suite')
@@ -277,23 +279,23 @@ class AndroSH:
 		# distro list
 		distro_list_parser = distro_subparsers.add_parser('list', help='List available distributions')
 		distro_list_parser.add_argument('-d', '--details', action='store_true',
-		                                help='Show detailed distribution information')
+										help='Show detailed distribution information')
 
 		# distro download
 		distro_download_parser = distro_subparsers.add_parser('download', help='Download distribution')
 		distro_download_parser.add_argument('distro_name',
-		                                    choices=self.distros,
-		                                    help='Name of the distribution')
+											choices=self.distros,
+											help='Name of the distribution')
 		distro_download_parser.add_argument('--type', '-t',
-		                                    help='Distribution variant (default depends on distro)')
+											help='Distribution variant (default depends on distro)')
 		distro_download_parser.add_argument('--file', '-f',
-		                                    help='Custom filename for the download')
+											help='Custom filename for the download')
 
 		# distro info
 		distro_info_parser = distro_subparsers.add_parser('info', help='Get distribution information')
 		distro_info_parser.add_argument('distro_name',
-		                                choices=self.distros,
-		                                help='Name of the distribution')
+										choices=self.distros,
+										help='Name of the distribution')
 
 		# distro urls
 		distro_subparsers.add_parser('urls', help='Show download URLs')
@@ -301,21 +303,21 @@ class AndroSH:
 		# Logging options
 		log_group = parser.add_mutually_exclusive_group()
 		log_group.add_argument('--verbose', '-v', action='store_true',
-		                       help='Verbose output: detailed operation information')
+							   help='Verbose output: detailed operation information')
 		log_group.add_argument('--debug', '-d', action='store_true',
-		                       help='Debug output: all operations including system commands')
+							   help='Debug output: all operations including system commands')
 		log_group.add_argument('--quiet', '-q', action='store_true',
-		                       help='Quiet output: suppress non-essential information')
+							   help='Quiet output: suppress non-essential information')
 
 		# Global arguments
 		parser.add_argument('--base-dir', default=self.root,
-		                    help=f'Base directory for environments (default: {self.root})')
+							help=f'Base directory for environments (default: {self.root})')
 		parser.add_argument('--resources-dir', default=self.resources,
-		                    help=f'Resources directory for downloads (default: {self.resources})')
+							help=f'Resources directory for downloads (default: {self.resources})')
 		parser.add_argument("--time-style", action="store_true",
-		                    help="Display time format")
+							help="Display time format")
 		parser.add_argument("--chsh", default=None,
-		                    help=f"Custom shell command (default: {self.custom_shell})")
+							help=f"Custom shell command (default: {self.custom_shell})")
 
 		return parser
 
@@ -326,7 +328,7 @@ class AndroSH:
 			distro_name = args.distro_name
 			distro_type = args.type
 			file_name = args.file
-		else:  # direct download command
+		else:
 			distro_name = args.distro
 			distro_type = args.type
 			file_name = getattr(args, 'file', None)
@@ -340,7 +342,6 @@ class AndroSH:
 			self.console.error(f"Failed to download {distro_name}: {e}")
 
 	def show_distro_info(self, args):
-		"""Show detailed information about a distribution"""
 		info = self.distro_manager.get_distribution_info(args.distro_name)
 		if info:
 			self.console.table(info, f"Distribution Info: {args.distro_name}")
@@ -382,7 +383,7 @@ class AndroSH:
 			self.downloader.download_file(busybox_url, local_busybox_path)
 
 		actual_hash = self.fm.checksum(local_busybox_path) or \
-		              self.adb.checksum(local_busybox_path)
+					  self.adb.checksum(local_busybox_path)
 		if actual_hash != expected_hash:
 			self.console.warning("BusyBox checksum mismatch!")
 			if not self.args.force:
@@ -783,14 +784,11 @@ class AndroSH:
 		self.console.debug("Listing installed distros")
 		distros = self.db.fetchall()
 
-		# Filter only installed distros (paths that exist in base_dir)
 		installed_distros = {}
 		for key, value in distros.items():
-			# Skip metadata and cache entries
 			if any(key.startswith(prefix) for prefix in ['distro_', 'alpine_metadata_', 'kali_file_sizes', 'done']):
 				continue
 
-			# Check if it's a valid distro path
 			if isinstance(value, dict) and 'name' in value and 'base_dir' in value:
 				installed_distros[key] = value
 
