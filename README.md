@@ -6,8 +6,9 @@
 
 [![Tests](https://github.com/ahmed-alnassif/AndroSH/actions/workflows/tests.yml/badge.svg)](https://github.com/ahmed-alnassif/AndroSH/actions/workflows/tests.yml)
 [![GitHub Stars](https://img.shields.io/github/stars/ahmed-alnassif/AndroSH)](https://github.com/ahmed-alnassif/AndroSH/stargazers)
+[![Latest Release](https://img.shields.io/github/v/release/ahmed-alnassif/AndroSH?label=Latest%20Release&color=00aa00)](https://github.com/ahmed-alnassif/AndroSH/releases)
 [![Python](https://img.shields.io/badge/python-3.8+-green)](https://python.org)
-[![License](https://img.shields.io/badge/license-GPLv3-orange)](LICENSE)
+[![License](https://img.shields.io/github/license/ahmed-alnassif/AndroSH?logo=gnu)](/LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Android-success)](https://www.android.com)
 
 <img src="https://raw.githubusercontent.com/ahmed-alnassif/AndroSH/refs/heads/main/Assets/Screenshots/AndroSH-mobile.png" alt="AndroSH Mobile Showcase" width="90%" />
