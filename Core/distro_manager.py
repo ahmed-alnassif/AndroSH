@@ -163,19 +163,19 @@ class DistributionManager:
 
 			for distro_name, distro in supported_distros.items():
 				info = distro.get_display_info()
-				self.console.success(f"[bold cyan]{info['name']}[/bold cyan] ({distro_name})")
-				self.console.info(f"  Description: {info.get('description', 'N/A')}")
-				self.console.info(f"  Source: {info.get('source', 'N/A')}")
-				self.console.info(f"  Architecture: {', '.join(info.get('supported_archs', []) or ['All'])}")
+				self.console.info(f"[bold green]{info['name']}[/bold green] ({distro_name})")
+				self.console.print(f"[bold][white]•[/white] [cyan]Description[/cyan][white]:[/bold][/white] [green]{info.get('description', 'N/A')}[/green]")
+				self.console.print(f"[bold][white]•[/white] [cyan]Source[/cyan][white]:[/bold][/white] [green]{info.get('source', 'N/A')}[/green]")
+				self.console.print(f"[bold][white]•[/white] [cyan]Architecture[/cyan][white]:[/bold][/white]\n [white]•[/white] [green]{'[/green]\n [white]•[/white] [green]'.join(info.get('supported_archs', []) or ['All'])}[/green]")
 
 				supported_types = info.get('supported_types', [])
 				if supported_types:
-					self.console.info("  Available types:")
+					self.console.print("[bold][white]•[/white] [cyan]Available types:[/cyan][white]:[/bold][/white]")
 					for distro_type in supported_types:
 						size = self._get_type_size(distro_name, distro, distro_type)
-						self.console.info(f"    • {distro_type}: {size}")
+						self.console.print(f"    [bold][white]•[/white] [cyan]{distro_type}[/cyan][white]:[/bold][/white] [green]{size}[/green]")
 				else:
-					self.console.info("  Available types: None")
+					self.console.print("[bold][white]•[/white] [cyan]Available types[/cyan][white]:[/bold][/white] [green]None[/green]")
 				self.console.divider()
 
 			return
