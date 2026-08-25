@@ -16,14 +16,14 @@ class DistributionManager:
 			"debian",
 			"ubuntu",
 			"archlinux",
-			"fedora",
+			"fedora-legacy",
 			"void",
 			"manjaro",
 			"chimera",
 			"opensuse",
 			"debian-12",
 			"ubuntu-lts",
-			"fedora-42"
+			"fedora"
 		]
 
 		self.termux_distros_list = [
