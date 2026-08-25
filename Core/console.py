@@ -85,8 +85,12 @@ class console:
 		if self.log_level.value >= LogLevel.NORMAL.value:
 			width = shutil.get_terminal_size().columns
 			fonts = pyfiglet.Figlet().getFonts()
-			fig = pyfiglet.Figlet(font=random.choice(fonts), justify="center", width=width)
-			logo = fig.renderText(name)
+			try:
+				fig = pyfiglet.Figlet(font=random.choice(fonts), justify="center", width=width)
+				logo = fig.renderText(name)
+			except:
+				self.banner()
+				return
 			print(logo)
 			d = \
 			f"Created by [bold green]{developer['name']}[/bold green]\n"+\
