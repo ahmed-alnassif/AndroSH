@@ -110,7 +110,7 @@ class Rish:
 		result.stdout = clean_output if exit_code == 0 else ""
 		result.stderr = clean_output if exit_code != 0 else ""
 
-		if self.shizuku_not_running_msg in (result.stdout or result.stderr).lower():
+		if any([ _ in (result.stdout or result.stderr).lower() for _ in self.shizuku_err_msgs]):
 			result.stderr = result.stdout or result.stderr
 			result.stdout = ""
 			result.returncode = 1
@@ -142,7 +142,6 @@ class Rish:
 				stdin=None
 			)
 
-			# Wait for completion
 			returncode = process.wait()
 
 			if returncode != 0:
@@ -160,11 +159,13 @@ class Rish:
 		self.console.verbose("Checking rish application")
 		result = self.run("id")
 		self.console.debug(escape(repr(result)))
+
 		if result.returncode != 0:
 			self.console.error(f"[red]Failed to establish connection with Shizuku API[/red]: {escape(repr(result.stderr or result.stdout))}")
 			self.console.print("")
 			self.console.print("[yellow]ACTION REQUIRED[/yellow]")
 			self.console.print("• Verify Shizuku service is currently running")
+			self.console.print(" • Request timeout issue? see: https://github.com/ahmed-alnassif/AndroSH/issues/31")
 			self.console.print("• Navigate to Shizuku app → Terminal apps → Export files")
 			self.console.print(f"• Ensure rish_shizuku.dex is placed in resources directory: {self.resources}")
 			self.console.print("")
@@ -174,7 +175,7 @@ class Rish:
 			self.console.print("The connection issue should now be resolved")
 			self.console.print("")
 			self.console.print("[blue]NOTE[/blue] Use debug mode for detailed diagnostics: androsh --debug \\[command]")
-			sys.exit(0)
+			sys.exit(1)
 
 	def __init__(self, console_instance = None,
 		r_path = None,
@@ -184,7 +185,10 @@ class Rish:
 		self.console = console_instance if console_instance else console()
 		self.resources = r_path
 		self.assets_path = "Assets"
-		self.shizuku_not_running_msg = "Server is not running".lower()
+		self.shizuku_err_msgs = [
+			"Server is not running".lower(),
+			"Request timeout.".lower()
+		]
 		self.app_id = app_id
 		self.app_id_bool = app_id_bool
 		self.timeout = None
