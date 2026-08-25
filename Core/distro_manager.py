@@ -166,7 +166,14 @@ class DistributionManager:
 				self.console.info(f"[bold green]{info['name']}[/bold green] ({distro_name})")
 				self.console.print(f"[bold][white]•[/white] [cyan]Description[/cyan][white]:[/bold][/white] [green]{info.get('description', 'N/A')}[/green]")
 				self.console.print(f"[bold][white]•[/white] [cyan]Source[/cyan][white]:[/bold][/white] [green]{info.get('source', 'N/A')}[/green]")
-				self.console.print(f"[bold][white]•[/white] [cyan]Architecture[/cyan][white]:[/bold][/white]\n [white]•[/white] [green]{'[/green]\n [white]•[/white] [green]'.join(info.get('supported_archs', []) or ['All'])}[/green]")
+
+				archs = info.get("supported_archs", []) or ["All"]
+				arch_display = "[/green]\n [white]•[/white] [green]".join(archs)
+
+				self.console.print(
+					f"[bold][white]•[/white] [cyan]Architecture[/cyan][white]:[/bold][/white]\n"
+					f" [white]•[/white] [green]{arch_display}[/green]"
+				)
 
 				supported_types = info.get('supported_types', [])
 				if supported_types:
