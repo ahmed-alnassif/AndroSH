@@ -70,7 +70,7 @@ Complete Linux workstations with Android system integration - no root required
 
 ```
 usage: main.py setup [-h] [-f ROOTFS]
-                     [-d {alpine,debian,ubuntu,kali-nethunter,archlinux,fedora,void,manjaro,chimera,opensuse,debian-12,ubuntu-lts,fedora-42}]
+                     [-d {alpine,debian,ubuntu,kali-nethunter,archlinux,fedora-legacy,void,manjaro,chimera,opensuse,debian-12,ubuntu-lts,fedora}]
                      [-t TYPE] [--hostname HOSTNAME] [--resetup] [--force]
                      name
 
@@ -82,7 +82,7 @@ options:
   -f ROOTFS, --rootfs ROOTFS
                         Custom rootfs file, when used you don't need to add
                         -d/-t arguments
-  -d {alpine,debian,ubuntu,kali-nethunter,archlinux,fedora,void,manjaro,chimera,opensuse,debian-12,ubuntu-lts,fedora-42}, --distro {alpine,debian,ubuntu,kali-nethunter,archlinux,fedora,void,manjaro,chimera,opensuse,debian-12,ubuntu-lts,fedora-42}
+  -d {alpine,debian,ubuntu,kali-nethunter,archlinux,fedora-legacy,void,manjaro,chimera,opensuse,debian-12,ubuntu-lts,fedora}, --distro {alpine,debian,ubuntu,kali-nethunter,archlinux,fedora-legacy,void,manjaro,chimera,opensuse,debian-12,ubuntu-lts,fedora}
                         Linux distribution (default: alpine)
   -t TYPE, --type TYPE  Distribution variant (minimal, full, stable) - depends
                         on distro (default: alpine-minirootfs)
@@ -208,10 +208,10 @@ options:
 
 ```
 usage: main.py download [-h] --type TYPE [--file FILE]
-                        {alpine,debian,ubuntu,kali-nethunter,archlinux,fedora,void,manjaro,chimera,opensuse,debian-12,ubuntu-lts,fedora-42}
+                        {alpine,debian,ubuntu,kali-nethunter,archlinux,fedora-legacy,void,manjaro,chimera,opensuse,debian-12,ubuntu-lts,fedora}
 
 positional arguments:
-  {alpine,debian,ubuntu,kali-nethunter,archlinux,fedora,void,manjaro,chimera,opensuse,debian-12,ubuntu-lts,fedora-42}
+  {alpine,debian,ubuntu,kali-nethunter,archlinux,fedora-legacy,void,manjaro,chimera,opensuse,debian-12,ubuntu-lts,fedora}
                         Distribution to download
 
 options:
