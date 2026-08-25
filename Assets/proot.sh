@@ -6,12 +6,16 @@ export PROOT_TMP_DIR={{dir}}/tmp
 export TERM=xterm-256color
 #export PROOT_NO_SECCOMP=1
 
-PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/games:/usr/local/bin:/usr/local/sbin:{{dir}}/bin:/system/bin:/system/xbin:/vendor/bin:/product/bin:/odm/bin:/system_ext/bin:\$PATH"
+EXTRA_PATHS="/bin:/sbin:/usr/bin:/usr/sbin:/usr/games:/usr/local/bin:/usr/local/sbin"
+ANDROID_PATHS="/system/bin:/system/xbin:/vendor/bin:/product/bin:/odm/bin:/system_ext/bin:$PATH"
+
+PATH="$EXTRA_PATHS:$ANDROID_PATHS:\$PATH"
 
 # shellcheck disable=SC1083
 PROOT_MAIN={{dir}}
 ROOTFS_DIR=$PROOT_MAIN/{{distro}}
-PROOT_BIN=$PROOT_MAIN/bin/proot
+PROOT_DIR={{proot}}
+PROOT_BIN=$PROOT_DIR/proot
 
 ARGS="--kill-on-exit"
 ARGS="$ARGS -w /root"
@@ -70,6 +74,9 @@ ARGS="$ARGS -b /proc/self/fd:/dev/fd"
 ARGS="$ARGS -b /proc/self/fd/0:/dev/stdin"
 ARGS="$ARGS -b /proc/self/fd/1:/dev/stdout"
 ARGS="$ARGS -b /proc/self/fd/2:/dev/stderr"
+ARGS="$ARGS -b $PROOT_BIN:/bin/proot"
+ARGS="$ARGS -b $PROOT_DIR/loader:/bin/loader"
+ARGS="$ARGS -b $PROOT_DIR/loader-m32:/bin/loader-m32"
 ARGS="$ARGS -b $PROOT_MAIN"
 ARGS="$ARGS -b /sys"
 #ARGS="$ARGS -b /cache"

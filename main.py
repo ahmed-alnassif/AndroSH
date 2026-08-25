@@ -64,10 +64,12 @@ class AndroSH:
 		self.custom_shell = "bash"
 		self.hostname = name
 		self.force_setup = False
-		self.root = f"/data/local/tmp/{name}/distros"
+		self.main_dir = f"/data/local/tmp/{name}"
+		self.proot_dir = f"{self.main_dir}/proot"
+		self.root = f"{self.main_dir}/distros"
 		self.resources = f"/sdcard/Download/{name}"
 		self.backup_directory = f"{self.resources}/backups"
-		self.busybox_dir = f"/data/local/tmp/{name}/busybox"
+		self.busybox_dir = f"{self.main_dir}/busybox"
 		self.busybox_path = f"{self.busybox_dir}/busybox"
 		self.assets_path = "Assets"
 		self.wrapper_script = "AndroSH_wrapper.sh"
@@ -414,7 +416,6 @@ class AndroSH:
 	def checksum(self, file_path: str, expected_hash: str, hash_type: str = "sha512") -> bool:
 		self.console.debug(f"Verifying checksum for: {file_path}")
 
-
 		actual_hash = self.fm.checksum(file_path, hash_type) or \
 		self.busybox.checksum(file_path, hash_type)
 		if actual_hash is None:
@@ -463,6 +464,38 @@ class AndroSH:
 		else:
 			self.console.info("All assets already downloaded")
 
+	def setup_proot(self) -> str:
+
+		proot_bin = f"{self.proot_dir}/proot"
+		loader = f"{self.proot_dir}/loader"
+
+		if not (self.busybox.exists(proot_bin) and
+				self.busybox.is_file(loader)):
+
+			zip_path = f"{Path(self.resources) / self.proot}"
+			if self.busybox.exists(loader) and self.busybox.is_dir(loader):
+				self.busybox.remove(self.proot_dir, recursive=True)
+				self.fm.remove(zip_path) or self.busybox.remove(zip_path)
+				self.console.error("You have an old proot, please resetup your distro or setup a new one and the framework will fix the issue")
+				sys.exit(1)
+
+			self.console.info("Extracting proot from zip archive")
+
+			if not (self.fm.exists(zip_path) or self.adb.exists(zip_path)):
+				self.console.error(f"Zip not found: {zip_path}")
+				sys.exit(1)
+
+			unzip_cmd = f"unzip -o {zip_path} -d {self.proot_dir}"
+			result = self.busybox._run_command(unzip_cmd)
+
+			if result.returncode != 0:
+				self.console.error(f"Failed to extract zip: {result.stderr}")
+				sys.exit(1)
+		else:
+			self.console.info("PRoot already installed")
+
+		return proot_bin
+
 	def setup_sandbox(self) -> None:
 
 		self.console.info("Starting machine setup process")
@@ -475,25 +508,7 @@ class AndroSH:
 			self.console.error(f"The distro directory already exists: {self.distro_dir}")
 			sys.exit(1)
 
-		self.console.verbose("Extracting proot from zip archive")
-
-		zip_path = f"{Path(self.resources) / self.proot}"
-		bin_dir = f"{Path(self.distro_dir) / 'bin'}"
-		self.busybox.mkdir(bin_dir, parents=True)
-
-		if not (self.fm.exists(zip_path) or self.adb.exists(zip_path)):
-			self.console.error(f"Zip not found: {zip_path}")
-			sys.exit(1)
-
-		unzip_cmd = f"unzip -o {zip_path} -d {bin_dir}"
-		result = self.busybox._run_command(unzip_cmd)
-
-		if result.returncode != 0:
-			self.console.error(f"Failed to extract zip: {result.stderr}")
-			sys.exit(1)
-
-		proot_path = f"{bin_dir}/proot"
-
+		proot_bin = self.setup_proot()
 		patched_dir = f"{self.distro_dir}/patched"
 		self.console.verbose(f"Cleaning up patched directory: {patched_dir}")
 		self.busybox.remove(patched_dir, recursive=True)
@@ -514,7 +529,7 @@ class AndroSH:
 					self.console.info("Rootfs with root permissions detected.")
 					tmp = f"{linux_target / Path('tmp')}"
 					self.busybox.mkdir(tmp, parents=True)
-					self.busybox.proot_cmd = f"PROOT_TMP_DIR={tmp} {proot_path} -0 "
+					self.busybox.proot_cmd = f"PROOT_TMP_DIR={tmp} {proot_bin} -0 "
 					self.busybox.tar_err = None
 					rootfs_len = 2
 					if not self.busybox.tar_extract(linux_archive, linux_target):
@@ -550,11 +565,13 @@ class AndroSH:
 		self.console.verbose(f"Distro path: {self.distro_dir}")
 
 		self.console.verbose("Generating machine script")
+		self.setup_proot()
 		template(
 			f"{Path(self.assets_path) / self.sandbox_script}",
 			f"{Path(self.resources) / self.sandbox_script}",
 			dir=self.distro_dir,
 			distro=self.rootfs_dir,
+			proot=self.proot_dir,
 			hostname=self.db.subget(self.distro_dir, "hostname") or name,
 			chsh=self.change_shell or self.db.subget(self.distro_dir, "chsh") or self.custom_shell
 		)
@@ -595,6 +612,7 @@ class AndroSH:
 			f"{Path(self.resources) / self.sandbox_script}",
 			dir=self.distro_dir,
 			distro=self.rootfs_dir,
+			proot=self.proot_dir,
 			hostname=self.hostname,
 			chsh=self.change_shell
 		)
