@@ -1,4 +1,5 @@
 import hashlib
+import shlex
 import shutil
 import tarfile
 import tempfile
@@ -39,7 +40,7 @@ class ADBFileManager:
 			return False
 
 		try:
-			result = self._run_command(f"test -e {repr(path.strip())} && echo exists || echo missing")
+			result = self._run_command(f"test -e {shlex.quote(path.strip())} && echo exists || echo missing")
 			success = (result.returncode == 0 and "exists" in (result.stdout or ""))
 			self._log_operation("exists", path, success)
 			return success
@@ -53,7 +54,7 @@ class ADBFileManager:
 			return False
 
 		try:
-			result = self._run_command(f"test -f {repr(path.strip())} && echo file || echo not_file")
+			result = self._run_command(f"test -f {shlex.quote(path.strip())} && echo file || echo not")
 			success = (result.returncode == 0 and "file" in (result.stdout or ""))
 			self._log_operation("is_file", path, success)
 			return success
@@ -67,7 +68,7 @@ class ADBFileManager:
 			return False
 
 		try:
-			result = self._run_command(f"test -d {repr(path.strip())} && echo dir || echo not_dir")
+			result = self._run_command(f"test -d {shlex.quote(path.strip())} && echo dir || echo not")
 			success = (result.returncode == 0 and "dir" in (result.stdout or ""))
 			self._log_operation("is_dir", path, success)
 			return success
@@ -81,7 +82,7 @@ class ADBFileManager:
 			return False
 
 		try:
-			cmd = f"mkdir {'-p ' if parents else ''}{repr(path.strip())}"
+			cmd = f"mkdir {'-p ' if parents else ''}{shlex.quote(path.strip())}"
 			result = self._run_command(cmd)
 			success = result.returncode == 0
 			self._log_operation("mkdir", path, success, f"parents={parents}")
@@ -101,7 +102,7 @@ class ADBFileManager:
 				flags += "r"
 			if force:
 				flags += "f"
-			cmd = f"rm {'-' + flags + ' ' if flags else ''}{repr(path.strip())}"
+			cmd = f"rm {'-' + flags + ' ' if flags else ''}{shlex.quote(path.strip())}"
 			result = self._run_command(cmd)
 			success = result.returncode == 0
 			self._log_operation("remove", path, success, f"recursive={recursive}, force={force}")
@@ -116,7 +117,7 @@ class ADBFileManager:
 			return False
 
 		try:
-			cmd = f"cp {'-r ' if recursive else ''}{repr(src.strip())} {repr(dst.strip())}"
+			cmd = f"cp {'-r ' if recursive else ''}{shlex.quote(src.strip())} {shlex.quote(dst.strip())}"
 			result = self._run_command(cmd)
 			success = result.returncode == 0
 			self._log_operation("copy", f"{src} -> {dst}", success, f"recursive={recursive}")
@@ -131,7 +132,7 @@ class ADBFileManager:
 			return False
 
 		try:
-			cmd = f"chmod {'-R ' if recursive else ''}{mode} {repr(path.strip())}"
+			cmd = f"chmod {'-R ' if recursive else ''}{mode} {shlex.quote(path.strip())}"
 			result = self._run_command(cmd)
 			success = result.returncode == 0
 			self._log_operation("chmod", path, success, f"mode={mode}, recursive={recursive}")
@@ -146,7 +147,7 @@ class ADBFileManager:
 			return None
 
 		try:
-			result = self._run_command(f"cat {repr(path.strip())}")
+			result = self._run_command(f"cat {shlex.quote(path.strip())}")
 			if result.stdout:
 				success = True
 				content = result.stdout
@@ -167,7 +168,7 @@ class ADBFileManager:
 
 		try:
 			escaped_content = content.replace("'", "'\"'\"'")
-			cmd = f"echo '{escaped_content}' > {repr(path.strip())}"
+			cmd = f"echo '{escaped_content}' > {shlex.quote(path.strip())}"
 			result = self._run_command(cmd)
 			success = result.returncode == 0
 			self._log_operation("write", path, success, f"chars_written={len(content)}")
@@ -182,7 +183,7 @@ class ADBFileManager:
 			return []
 
 		try:
-			result = self._run_command(f"ls -1 {repr(path.strip())} 2>/dev/null || echo")
+			result = self._run_command(f"ls -1 {shlex.quote(path.strip())} 2>/dev/null || echo")
 			output = result.stdout or ""
 			items = [item for item in output.splitlines() if item.strip()]
 			self._log_operation("list_dir", path, True, f"items_count={len(items)}")
@@ -197,7 +198,7 @@ class ADBFileManager:
 			return None
 
 		try:
-			result = self._run_command(f"{hash_type}sum {repr(path.strip())} 2>/dev/null")
+			result = self._run_command(f"{hash_type}sum {shlex.quote(path.strip())} 2>/dev/null")
 			output = result.stdout or ""
 
 			if result.returncode == 0 and output:
@@ -208,7 +209,7 @@ class ADBFileManager:
 					return checksum
 
 			if hash_type != "md5":
-				result = self._run_command(f"md5sum {repr(path.strip())} 2>/dev/null")
+				result = self._run_command(f"md5sum {shlex.quote(path.strip())} 2>/dev/null")
 				output = result.stdout or ""
 				if result.returncode == 0 and output:
 					parts = output.split()
@@ -299,7 +300,7 @@ class BusyBoxManager:
 		cmd = f"mkdir {'-p ' if parents else ''}"
 		if mode and self.has_applet('mkdir'):
 			cmd += f"-m {mode} "
-		cmd += f"{repr(path)}"
+		cmd += f"{shlex.quote(path)}"
 
 		result = self._run_command(cmd)
 		success = result.returncode == 0
@@ -318,20 +319,20 @@ class BusyBoxManager:
 		if recursive:
 			return self.remove(path, recursive=True)
 		else:
-			result = self._run_command(f"rmdir {repr(path)}")
+			result = self._run_command(f"rmdir {shlex.quote(path)}")
 			success = result.returncode == 0
 			self._log(f"rmdir: {path} (recursive={recursive})", success)
 			return success
 
 	def remove(self, path: str, recursive: bool = False, force: bool = True) -> bool:
-		cmd = f"rm {'-r ' if recursive else ''}{'-f ' if force else ''}{repr(path)}"
+		cmd = f"rm {'-r ' if recursive else ''}{'-f ' if force else ''}{shlex.quote(path)}"
 		result = self._run_command(cmd)
 		success = result.returncode == 0
 		self._log(f"remove: {path} (recursive={recursive}, force={force})", success)
 		return success
 
 	def copy(self, src: str, dst: str, recursive: bool = False, preserve: bool = True) -> bool:
-		cmd = f"cp {'-r ' if recursive else ''}{'-p ' if preserve else ''}{repr(src)} {repr(dst)}"
+		cmd = f"cp {'-r ' if recursive else ''}{'-p ' if preserve else ''}{shlex.quote(src)} {shlex.quote(dst)}"
 		result = self._run_command(cmd)
 		success = result.returncode == 0
 		self._log(f"copy: {src} -> {dst} (recursive={recursive})", success)
@@ -341,7 +342,7 @@ class BusyBoxManager:
 		if '*' in src or '?' in src:
 			cmd = f"sh -c 'mv {'-f ' if force else ''}{src} {dst}'"
 		else:
-			cmd = f"mv {'-f ' if force else ''}{repr(src)} {repr(dst)}"
+			cmd = f"mv {'-f ' if force else ''}{shlex.quote(src)} {shlex.quote(dst)}"
 
 		result = self._run_command(cmd)
 		success = result.returncode == 0
@@ -355,7 +356,7 @@ class BusyBoxManager:
 		return self.move(path, new_path)
 
 	def chmod(self, path: str, mode: str, recursive: bool = False) -> bool:
-		cmd = f"chmod {'-R ' if recursive else ''}{mode} {repr(path)}"
+		cmd = f"chmod {'-R ' if recursive else ''}{mode} {shlex.quote(path)}"
 		result = self._run_command(cmd)
 		success = result.returncode == 0
 		self._log(f"chmod: {path} {mode} (recursive={recursive})", success)
@@ -367,7 +368,7 @@ class BusyBoxManager:
 			return False
 
 		ownership = f"{owner}:{group}" if group else owner
-		cmd = f"chown {'-R ' if recursive else ''}{ownership} {repr(path)}"
+		cmd = f"chown {'-R ' if recursive else ''}{ownership} {shlex.quote(path)}"
 		result = self._run_command(cmd)
 		success = result.returncode == 0
 		self._log(f"chown: {path} {ownership} (recursive={recursive})", success)
@@ -383,25 +384,25 @@ class BusyBoxManager:
 		return self.chmod(path, "755")
 
 	def exists(self, path: str) -> bool:
-		result = self._run_command(f"test -e {repr(path)} && echo exists || echo missing")
+		result = self._run_command(f"test -e {shlex.quote(path)} && echo exists || echo missing")
 		success = result.returncode == 0 and "exists" in (result.stdout or "")
 		self._log(f"exists: {path}", success)
 		return success
 
 	def is_file(self, path: str) -> bool:
-		result = self._run_command(f"test -f {repr(path)} && echo file || echo not_file")
+		result = self._run_command(f"test -f {shlex.quote(path)} && echo file || echo not")
 		success = result.returncode == 0 and "file" in (result.stdout or "")
 		self._log(f"is_file: {path}", success)
 		return success
 
 	def is_dir(self, path: str) -> bool:
-		result = self._run_command(f"test -d {repr(path)} && echo dir || echo not_dir")
+		result = self._run_command(f"test -d {shlex.quote(path)} && echo dir || echo not")
 		success = result.returncode == 0 and "dir" in (result.stdout or "")
 		self._log(f"is_dir: {path}", success)
 		return success
 
 	def get_size(self, path: str) -> Optional[int]:
-		result = self._run_command(f"stat -c %s {repr(path)} 2>/dev/null || echo")
+		result = self._run_command(f"stat -c %s {shlex.quote(path)} 2>/dev/null || echo")
 		output = result.stdout or ""
 		if result.returncode == 0 and output.strip().isdigit():
 			size = int(output.strip())
@@ -411,7 +412,7 @@ class BusyBoxManager:
 		return None
 
 	def get_mtime(self, path: str) -> Optional[float]:
-		result = self._run_command(f"stat -c %Y {repr(path)} 2>/dev/null || echo")
+		result = self._run_command(f"stat -c %Y {shlex.quote(path)} 2>/dev/null || echo")
 		output = result.stdout or ""
 		if result.returncode == 0 and output.strip().isdigit():
 			mtime = float(output.strip())
@@ -425,7 +426,7 @@ class BusyBoxManager:
 			return None
 
 		try:
-			result = self._run_command(f"stat -c '%n|%s|%F|%U|%G|%a|%Y|%X|%Z' {repr(path)}")
+			result = self._run_command(f"stat -c '%n|%s|%F|%U|%G|%a|%Y|%X|%Z' {shlex.quote(path)}")
 			output = result.stdout or ""
 			if result.returncode == 0 and '|' in output:
 				parts = output.strip().split('|')
@@ -463,7 +464,7 @@ class BusyBoxManager:
 
 	def list_dir(self, path: str, pattern: str = "*") -> List[str]:
 		try:
-			cmd = f"ls -1 {repr(path)}/{pattern} 2>/dev/null || echo"
+			cmd = f"ls -1 {shlex.quote(path)}/{pattern} 2>/dev/null || echo"
 			result = self._run_command(cmd)
 			output = result.stdout or ""
 			items = [item for item in output.splitlines() if item.strip()]
@@ -476,9 +477,9 @@ class BusyBoxManager:
 	def find_files(self, root: str, pattern: str = "*", recursive: bool = True) -> List[str]:
 		try:
 			if recursive:
-				cmd = f"find {repr(root)} -name {repr(pattern)} -type f 2>/dev/null || echo"
+				cmd = f"find {shlex.quote(root)} -name {shlex.quote(pattern)} -type f 2>/dev/null || echo"
 			else:
-				cmd = f"find {repr(root)} -maxdepth 1 -name {repr(pattern)} -type f 2>/dev/null || echo"
+				cmd = f"find {shlex.quote(root)} -maxdepth 1 -name {shlex.quote(pattern)} -type f 2>/dev/null || echo"
 
 			result = self._run_command(cmd)
 			output = result.stdout or ""
@@ -493,7 +494,7 @@ class BusyBoxManager:
 		return self.list_dir(".", pattern)
 
 	def tar_extract(self, archive: str, target_dir: str, preserve_permissions: bool = True) -> bool:
-		cmd = f"tar -xf {repr(archive)} -C {repr(target_dir)}"
+		cmd = f"tar -xf {shlex.quote(archive)} -C {shlex.quote(target_dir)}"
 		if preserve_permissions:
 			cmd += " -p"
 		result = self._run_command(cmd)
@@ -511,7 +512,7 @@ class BusyBoxManager:
 			"": ""
 		}.get(compression.lower(), "")
 
-		cmd = f"tar -c{compression_flag}f {repr(archive)} {repr(source)}"
+		cmd = f"tar -c{compression_flag}f {shlex.quote(archive)} {shlex.quote(source)}"
 		result = self._run_command(cmd)
 		success = result.returncode == 0
 		self._log(f"tar_create: {source} -> {archive} (compression={compression})", success)
@@ -530,7 +531,7 @@ class BusyBoxManager:
 			self._log(f"Hash type {hash_type} not supported", False)
 			return None
 
-		result = self._run_command(f"{hash_cmd} {repr(path)}")
+		result = self._run_command(f"{hash_cmd} {shlex.quote(path)}")
 		if result.returncode == 0:
 			output = result.stdout or ""
 			parts = output.split()
@@ -546,7 +547,7 @@ class BusyBoxManager:
 		return actual_hash == expected_hash if actual_hash else False
 
 	def read_text(self, path: str, encoding: str = "utf-8") -> Optional[str]:
-		result = self._run_command(f"cat {repr(path)}")
+		result = self._run_command(f"cat {shlex.quote(path)}")
 		if result.returncode == 0:
 			output = result.stdout or ""
 			self._log(f"read_text: {path} -> {len(output)} chars", True)
@@ -556,7 +557,7 @@ class BusyBoxManager:
 
 	def write_text(self, path: str, content: str) -> bool:
 		escaped_content = content.replace("'", "'\"'\"'")
-		cmd = f"echo '{escaped_content}' > {repr(path)}"
+		cmd = f"echo '{escaped_content}' > {shlex.quote(path)}"
 		result = self._run_command(cmd)
 		success = result.returncode == 0
 		self._log(f"write_text: {path} -> {len(content)} chars", success)
@@ -567,7 +568,7 @@ class BusyBoxManager:
 			self._log("base64 applet not available for binary read", False)
 			return None
 
-		result = self._run_command(f"base64 {repr(path)}")
+		result = self._run_command(f"base64 {shlex.quote(path)}")
 		if result.returncode == 0:
 			output = result.stdout or ""
 			try:
@@ -581,7 +582,7 @@ class BusyBoxManager:
 
 	def append_text(self, path: str, content: str) -> bool:
 		escaped_content = content.replace("'", "'\"'\"'")
-		cmd = f"echo '{escaped_content}' >> {repr(path)}"
+		cmd = f"echo '{escaped_content}' >> {shlex.quote(path)}"
 		result = self._run_command(cmd)
 		success = result.returncode == 0
 		self._log(f"append_text: {path} -> +{len(content)} chars", success)
@@ -605,7 +606,7 @@ class BusyBoxManager:
 		return success
 
 	def clean_dir(self, path: str) -> bool:
-		cmd = f"rm -rf {repr(path)}/* {repr(path)}/.* 2>/dev/null && echo cleaned"
+		cmd = f"rm -rf {shlex.quote(path)}/* {shlex.quote(path)}/.* 2>/dev/null && echo cleaned"
 		result = self._run_command(cmd)
 		success = result.returncode == 0 or "cleaned" in (result.stdout or "")
 		self._log(f"clean_dir: {path}", success)
@@ -616,7 +617,7 @@ class BusyBoxManager:
 			self._log("ln applet not available", False)
 			return False
 
-		cmd = f"ln -sf {repr(target)} {repr(link_path)}"
+		cmd = f"ln -sf {shlex.quote(target)} {shlex.quote(link_path)}"
 		result = self._run_command(cmd)
 		success = result.returncode == 0
 		self._log(f"create_symlink: {target} -> {link_path}", success)
@@ -627,7 +628,7 @@ class BusyBoxManager:
 			self._log("readlink applet not available", False)
 			return None
 
-		result = self._run_command(f"readlink {repr(link_path)}")
+		result = self._run_command(f"readlink {shlex.quote(link_path)}")
 		if result.returncode == 0:
 			output = result.stdout or ""
 			self._log(f"read_symlink: {link_path} -> {output}", True)
@@ -638,7 +639,7 @@ class BusyBoxManager:
 		if not self.has_applet('df'):
 			return None
 
-		result = self._run_command(f"df -k {repr(path)}")
+		result = self._run_command(f"df -k {shlex.quote(path)}")
 		if result.returncode == 0:
 			output = result.stdout or ""
 			if len(output.splitlines()) > 1:
