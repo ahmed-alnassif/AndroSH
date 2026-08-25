@@ -6,7 +6,7 @@ class AlpineDistribution(Distribution):
 			resources: str, db, check_storage_func=None, **kwargs):
 		super().__init__(fm, downloader, console, resources, db, check_storage_func, **kwargs)
 		self.supported_archs = ['x86_64', 'x86', 'aarch64', 'armv7', 'armhf']
-		self.available_flavors = {}  # Will be populated from metadata
+		self.available_flavors = {}
 		self.metadata = None
 
 	def get_name(self) -> str:

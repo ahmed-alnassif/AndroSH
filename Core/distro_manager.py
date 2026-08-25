@@ -1,13 +1,3 @@
-import re
-import socket
-import yaml
-from abc import ABC, abstractmethod
-from typing import Optional, Dict, Any, List
-from Core.HiManagers import PyFManager
-from Core.console import Table, box
-from Core.downloader import FileDownloader
-from Core.request import create_session
-from Core.errors_handler import Offline_err
 from Core.distributions import *
 
 class DistributionManager:
@@ -50,11 +40,15 @@ class DistributionManager:
 			Fedora42Distribution
 		]
 
-		self.distributions: Dict[str, Distribution] = self._initialize_distributions()
+		self.distributions: Dict[str, Distribution] = {}
 		self.current_arch = self.get_current_architecture()
 
+	def load_distributions(self) -> None:
+		if not self.distributions:
+			self.distributions = self._initialize_distributions()
+
 	@staticmethod
-	def is_connected(host="1.1.1.1", port=53, timeout=2):
+	def is_connected(host="1.1.1.1", port=53, timeout=2) -> bool:
 		try:
 			socket.setdefaulttimeout(timeout)
 			socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
@@ -89,9 +83,11 @@ class DistributionManager:
 		return distributions
 
 	def get_distribution(self, name: str) -> Optional[Distribution]:
+		self.load_distributions()
 		return self.distributions.get(name.lower())
 
 	def list_available(self) -> List[str]:
+		self.load_distributions()
 		return list(self.distributions.keys())
 
 	def download(self, distro_name: str, file_name: str = None, distro_type: str = None) -> Optional[Any]:
@@ -120,7 +116,7 @@ class DistributionManager:
 		return distro.get_display_info()
 
 	def get_current_architecture(self) -> str:
-		return self.distributions['alpine']._get_architecture()
+		return Distribution._get_architecture()
 
 	def _get_arch_support_status(self, distro: Distribution) -> str:
 		current_arch = self.current_arch
@@ -152,6 +148,7 @@ class DistributionManager:
 
 	def list_distros(self, show_details: bool = False) -> None:
 		self.console.debug("Listing available distributions")
+		self.load_distributions()
 
 		supported_distros = {}
 		for distro_name, distro in self.distributions.items():
@@ -243,6 +240,7 @@ class DistributionManager:
 	def get_all_distro_urls(self) -> Dict[str, Dict[str, str]]:
 
 		self.console.debug("Fetching all distribution download URLs")
+		self.load_distributions()
 
 		all_urls = {}
 
@@ -283,6 +281,7 @@ class DistributionManager:
 		return all_urls
 
 	def print_all_distro_urls(self) -> None:
+		self.load_distributions()
 		urls = self.get_all_distro_urls()
 
 		if not urls:

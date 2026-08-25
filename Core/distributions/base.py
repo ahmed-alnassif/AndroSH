@@ -1,6 +1,8 @@
 import re
 import socket
+import platform
 import yaml
+
 from abc import ABC, abstractmethod
 from typing import Optional, Dict, Any, List
 from Core.HiManagers import PyFManager
@@ -52,8 +54,8 @@ class Distribution(ABC):
 			'source': 'Direct Download'
 		}
 
-	def _get_architecture(self) -> str:
-		import platform
+	@staticmethod
+	def _get_architecture() -> str:
 		machine = platform.machine().lower()
 
 		arch_map = {

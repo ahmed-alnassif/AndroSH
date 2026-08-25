@@ -1,4 +1,4 @@
-from .base import Distribution, TermuxDistribution
+from .base import *
 from .alpine import AlpineDistribution
 from .kali import KaliNethunterDistribution
 from .debian import DebianDistribution, DebianBookwormDistribution
