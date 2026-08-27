@@ -250,7 +250,10 @@ class AndroSH:
 		list_parser = subparsers.add_parser('list', help='Show available distributions')
 		list_parser.add_argument('-d', '--details', action='store_true',
 								help='Show detailed distribution information')
-		subparsers.add_parser('lsd', help='List installed environments')
+
+		lsd_parser = subparsers.add_parser('lsd', help='List installed environments')
+		lsd_parser.add_argument('-d', '--details', action='store_true',
+								help='Show detailed distribution information')
 
 		download_parser = subparsers.add_parser('download', help='Download distribution files')
 		download_parser.add_argument('distro',
@@ -815,6 +818,22 @@ class AndroSH:
 		if not installed_distros:
 			self.console.info("No distros installed yet")
 			self.console.info("Use: [cyan]androsh setup <name>[/cyan] to install a distro")
+			return
+
+		if args.details:
+
+			for path, info in installed_distros.items():
+				name = info.get('name', 'Unknown')
+				distro_type = info.get('distro', info.get('distro_dir', self.distro_dir))
+				date = info.get('date', 'Unknown')
+
+				self.console.info(f"[bold][cyan]Name[/cyan][white]:[/white][/bold] [bold green]{name}[/bold green]")
+				self.console.print(f"[bold][white]•[/white] [cyan]Path[/cyan][white]:[/white][/bold] [blue]{path}[/blue]")
+				self.console.print(f"[bold][white]•[/white] [cyan]Distribution Type[/cyan][white]:[/white][/bold] [green]{distro_type}[/green]")
+				self.console.print(f"[bold][white]•[/white] [cyan]Installed[/cyan][white]:[/white][/bold] [yellow]{date}[/yellow]")
+
+				self.console.divider()
+
 			return
 
 		table = Table(title="Installed Distros", box=box.ROUNDED)
