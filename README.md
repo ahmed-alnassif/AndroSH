@@ -294,11 +294,18 @@ python main.py install
 
 ## Contributing
 
-Contributions and security research are welcome. Current priority areas:
+Contributions of all kinds are welcome - code, documentation, bug reports, feature ideas, translations, testing, or just sharing feedback. Whether you're fixing a typo or adding support for a new distro, every contribution helps.
 
-- Performance optimization
-- Deployment tooling
-- Security hardening
+Ways to get involved:
+
+- **Code**: fix bugs, add features, improve performance
+- **Documentation**: improve the README, write guides, add examples
+- **Testing**: try AndroSH on different devices/Android versions and report what you find
+- **Bug reports**: open an issue with clear steps to reproduce
+- **Feature requests**: suggest ideas or workflows you'd like to see supported
+- **Community support**: help answer questions in issues/discussions
+
+No contribution is too small - if you're not sure where to start, open an issue and ask.
 
 Set up a dev environment:
 
@@ -321,9 +328,14 @@ GPLv3 - free for commercial and research use.
 
 ## Support
 
-- Star the repo if you find it useful
-- Open an issue to report bugs
-- Suggest features or share how you're using AndroSH
+- **Star the repo** if you find it useful - it helps others discover the project
+- **Share it** with friends, communities, or on social media if AndroSH has been useful to you
+- **Open an issue** to report bugs
+- **Start a discussion** to suggest features or ask questions
+- **Share your use case** - tell us how you're using AndroSH, it helps shape future development
+- **Spread the word** by writing about it, making a video, or recommending it wherever Android/Linux enthusiasts hang out
+
+Every bit of support, big or small, helps keep the project growing.
 
 ---
 
