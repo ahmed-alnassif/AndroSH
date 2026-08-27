@@ -155,9 +155,10 @@ class AndroSH:
 
 		if args.command == 'setup':
 			self.setup_distro(args)
-			self._execute_setup()
 		elif args.command == 'backup':
 			self.backup_distro(args)
+		elif args.command == 'restore':
+			self.restore_distro(args)
 		elif args.command == 'remove':
 			self.remove_distro(args)
 		elif args.command == 'launch':
@@ -218,6 +219,11 @@ class AndroSH:
 		backup_parser.add_argument('name', help='Name of the environment to backup')
 		backup_parser.add_argument('destination', nargs='?', help=f'Backup destination directory (default: {self.backup_directory})', default=self.backup_directory)
 		backup_parser.add_argument('-z', '--gzip', help='filter the archive through gzip', action='store_true')
+
+		restore_parser = subparsers.add_parser("restore", help="Restore an existing environment from backup")
+		restore_parser.add_argument('name', default=name, help=f'Environment name (default: {name})')
+		restore_parser.add_argument('distro', nargs='?', default='restored', help='Name for the restored environment (default: restored)')
+		restore_parser.add_argument('file', help='Backup file to restore from')
 
 		remove_parser = subparsers.add_parser('remove', help='Remove an existing environment')
 		remove_parser.add_argument('name', help='Name of the environment to remove')
@@ -510,9 +516,6 @@ class AndroSH:
 
 		proot_bin = self.setup_proot()
 		patched_dir = f"{self.distro_dir}/patched"
-		self.console.verbose(f"Cleaning up patched directory: {patched_dir}")
-		self.busybox.remove(patched_dir, recursive=True)
-
 		linux_archive = f"{self.resources / Path(self.distro_file)}"
 		linux_target = f"{self.distro_dir / Path(self.rootfs_dir)}"
 
@@ -551,6 +554,12 @@ class AndroSH:
 			self.busybox._run_command(f"sh -c 'for i in {content}; do mv $i {linux_target}; done'")
 			self.busybox.remove(f"{distro_root_path}", recursive=True)
 			self.console.verbose(f"Distro patch successful: {self.busybox.list_dir(linux_target)}")
+
+		if self.distro_type != "restored":
+			self.console.verbose(f"Cleaning up patched directory: {patched_dir}")
+			self.busybox.remove(patched_dir, recursive=True)
+		else:
+			self.busybox._run_command(f"touch {patched_dir}")
 
 		self.console.success("Sandbox setup completed successfully")
 
@@ -594,12 +603,14 @@ class AndroSH:
 			if not self.fm.exists(self.custom_rootfs):
 				raise AndroSH_err("Custom rootfs file does not exist")
 			self.distro_file = self.custom_rootfs
+
 		self.console.info("Downloading distro and required resources:")
 		if not self.custom_rootfs:
 			self.distro_file = self.distro_manager.download(self.distro, distro_type=self.distro_type)
 			if not self.distro_file:
 				self.console.error(f"Failed to download distro: {self.distro_file}")
 				sys.exit(1)
+
 		self.download_assets()
 
 		self.console.divider()
@@ -653,6 +664,8 @@ class AndroSH:
 			self.console.warning(f"Distro '{self.distro_dir}' already exists. Use --resetup to reinstall.")
 			sys.exit(1)
 
+		self._execute_setup()
+
 	def backup_distro(self, args) -> None:
 		self.console.debug(f"Backup distro called with args: {vars(args)}")
 		distro_dir = f"{Path(args.base_dir) / args.name / 'rootfs'}"
@@ -675,6 +688,24 @@ class AndroSH:
 			raise AndroSH_err(result.stderr)
 
 		self.console.success(f"The backup created successfully to {file}")
+
+	def restore_distro(self, args) -> None:
+		self.console.debug(f"Restore distro called with args: {vars(args)}")
+		self.distro = args.distro
+		self.distro_type = "restored"
+		self.distro_dir = f"{Path(args.base_dir) / args.name}"
+		self.base_dir = args.base_dir
+		self.dir_name = args.name if args.name else name
+		self.is_setup = True
+		self.force_setup = False
+		self.hostname = name
+		self.custom_rootfs = args.file
+
+		if self.db.exists(self.distro_dir) and not args.resetup:
+			self.console.warning(f"Distro '{self.distro_dir}' already exists.")
+			sys.exit(1)
+
+		self._execute_setup()
 
 	def remove_distro(self, args) -> None:
 		self.console.debug(f"Remove distro called with args: {vars(args)}")
