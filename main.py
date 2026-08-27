@@ -226,7 +226,7 @@ class AndroSH:
 		restore_parser.add_argument('file', help='Backup file to restore from')
 
 		remove_parser = subparsers.add_parser('remove', help='Remove an existing environment')
-		remove_parser.add_argument('name', help='Name of the environment to remove')
+		remove_parser.add_argument('name', nargs='+', help='Name(s) of the environment(s) to remove')
 		remove_parser.add_argument('--force', action='store_true',
 									help='Force removal without confirmation')
 
@@ -709,28 +709,31 @@ class AndroSH:
 
 	def remove_distro(self, args) -> None:
 		self.console.debug(f"Remove distro called with args: {vars(args)}")
-		distro_dir = f"{Path(args.base_dir) / args.name}"
+		for name in args.name:
 
-		if not self.db.exists(distro_dir) and not self.busybox.exists(distro_dir):
-			self.console.error(f"Distro '{distro_dir}' does not exist.")
-			sys.exit(1)
+			distro_dir = f"{Path(args.base_dir) / name}"
 
-		if not args.force:
-			confirm = self.console.input(f"Are you sure you want to remove '{distro_dir}'? [red]\\[y/N]:[/red] ")
-			if confirm.lower() != 'y':
-				self.console.warning("Removal cancelled.")
-				sys.exit()
+			if not self.db.exists(distro_dir) and not self.busybox.exists(distro_dir):
+				self.console.error(f"Distro '{distro_dir}' does not exist.")
+				sys.exit(1)
 
-		self.console.info(f"Removing distro: {distro_dir}")
+			if not args.force:
+				confirm = self.console.input(f"Are you sure you want to remove '{distro_dir}'? [red]\\[y/N]:[/red] ")
+				if confirm.lower() != 'y':
+					self.console.warning("Removal cancelled.")
+					sys.exit()
 
-		self.busybox.chmod(distro_dir, 777, recursive=True)
-		if not self.busybox.remove(distro_dir, recursive=True):
-			self.console.error(f"Failed to remove distro: {distro_dir}")
-			sys.exit(1)
+			self.console.info(f"Removing distro: {distro_dir}")
 
-		self.db.remove(distro_dir)
-		self.console.success("Distro removed successfully")
-		sys.exit()
+			self.busybox.chmod(distro_dir, 777, recursive=True)
+			if not self.busybox.remove(distro_dir, recursive=True):
+				self.console.error(f"Failed to remove distro: {distro_dir}")
+				sys.exit(1)
+
+			self.db.remove(distro_dir)
+			self.console.success("Distro removed successfully")
+
+		self.console.success(f"The {len(args.name)} selected distributions removed successfully")
 
 	def launch_distro(self, args) -> None:
 		self.console.debug(f"Launch distro called with args: {vars(args)}")
