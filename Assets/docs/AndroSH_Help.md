@@ -131,10 +131,10 @@ options:
 ### `python main.py remove`
 
 ```
-usage: main.py remove [-h] [--force] name
+usage: main.py remove [-h] [--force] name [name ...]
 
 positional arguments:
-  name        Name of the environment to remove
+  name        Name(s) of the environment(s) to remove
 
 options:
   -h, --help  show this help message and exit
