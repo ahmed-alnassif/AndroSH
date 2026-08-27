@@ -9,16 +9,17 @@
 ```
 usage: main.py [-h] [--verbose | --debug | --quiet] [--base-dir BASE_DIR]
                [--resources-dir RESOURCES_DIR] [--time-style] [--chsh CHSH]
-               {setup,backup,remove,launch,rish,clean,install,list,lsd,download,distro}
+               {setup,backup,restore,remove,launch,rish,clean,install,list,lsd,download,distro}
                ...
 
 AndroSH - Professional Multi-Distribution Linux Environments for Android
 
 positional arguments:
-  {setup,backup,remove,launch,rish,clean,install,list,lsd,download,distro}
+  {setup,backup,restore,remove,launch,rish,clean,install,list,lsd,download,distro}
                         Command to execute
     setup               Deploy a new Linux environment
     backup              Backup an existing environment
+    restore             Restore an existing environment from backup
     remove              Remove an existing environment
     launch              Start an existing environment
     rish                Start adb shell/shizuku rish
@@ -51,6 +52,7 @@ Complete Linux workstations with Android system integration - no root required
 |---------|-------------|
 | `setup` | Deploy a new Linux environment |
 | `backup` | Backup an existing environment |
+| `restore` | Restore an existing environment from backup |
 | `remove` | Remove an existing environment |
 | `launch` | Start an existing environment |
 | `rish` | Start adb shell/shizuku rish |
@@ -106,6 +108,22 @@ positional arguments:
 options:
   -h, --help   show this help message and exit
   -z, --gzip   filter the archive through gzip
+```
+
+---
+
+### `python main.py restore`
+
+```
+usage: main.py restore [-h] name [distro] file
+
+positional arguments:
+  name        Environment name (default: AndroSH)
+  distro      Name for the restored environment (default: restored)
+  file        Backup file to restore from
+
+options:
+  -h, --help  show this help message and exit
 ```
 
 ---
