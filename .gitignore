@@ -1,4 +1,5 @@
 /Assets/AndroSH.db
+/venv
 /.venv
 /.idea/
 /Core/__pycache__/
