@@ -1,0 +1,65 @@
+name: Release on Version Bump
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Core/__init__.py"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Extract version
+        id: version
+        run: |
+          VERSION=$(python -c "import re; print(re.search(r'version\s*=\s*\"([^\"]+)\"', open('Core/__init__.py').read()).group(1))")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check if tag already exists
+        id: check_tag
+        run: |
+          if git rev-parse "${{ steps.version.outputs.tag }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Get previous tag
+        id: prev_tag
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          PREV=$(git tag --sort=-creatordate | head -n 1)
+          echo "prev=$PREV" >> "$GITHUB_OUTPUT"
+
+      - name: Generate changelog
+        id: changelog
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          python scripts/generate_changelog.py \
+            --from "${{ steps.prev_tag.outputs.prev }}" \
+            --to HEAD \
+            --version "${{ steps.version.outputs.version }}" \
+            --prev-version "${{ steps.prev_tag.outputs.prev }}" \
+            --output changelog_body.md
+
+      - name: Create GitHub release
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v3.0.2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: AndroSH ${{ steps.version.outputs.tag }}
+          body_path: changelog_body.md
