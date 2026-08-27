@@ -49,7 +49,7 @@ jobs:
         id: changelog
         if: steps.check_tag.outputs.exists == 'false'
         run: |
-          python scripts/generate_changelog.py \
+          python .github/scripts/generate_changelog.py \
             --from "${{ steps.prev_tag.outputs.prev }}" \
             --to HEAD \
             --version "${{ steps.version.outputs.version }}" \
