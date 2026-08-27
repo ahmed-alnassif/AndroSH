@@ -48,12 +48,13 @@ jobs:
       - name: Generate changelog
         id: changelog
         if: steps.check_tag.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python .github/scripts/generate_changelog.py \
             --from "${{ steps.prev_tag.outputs.prev }}" \
             --to HEAD \
             --version "${{ steps.version.outputs.version }}" \
-            --prev-version "${{ steps.prev_tag.outputs.prev }}" \
             --output changelog_body.md
 
       - name: Create GitHub release
