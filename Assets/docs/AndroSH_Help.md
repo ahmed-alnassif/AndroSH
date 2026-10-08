@@ -70,7 +70,7 @@ Complete Linux workstations with Android system integration - no root required
 
 ```
 usage: main.py setup [-h] [-f ROOTFS]
-                     [-d {alpine,debian,ubuntu,kali-nethunter,archlinux,fedora,void,manjaro,chimera,opensuse,debian-12,ubuntu-lts,fedora-legacy}]
+                     [-d {alpine,debian,ubuntu,kali-nethunter,archlinux,archlinux-arm64,fedora,void,manjaro,chimera,opensuse,debian-12,ubuntu-lts,fedora-legacy}]
                      [-t TYPE] [--hostname HOSTNAME] [--resetup] [--force]
                      name
 
@@ -81,7 +81,7 @@ options:
   -h, --help            show this help message and exit
   -f, --rootfs ROOTFS   Custom rootfs file, when used you don't need to add
                         -d/-t arguments
-  -d, --distro {alpine,debian,ubuntu,kali-nethunter,archlinux,fedora,void,manjaro,chimera,opensuse,debian-12,ubuntu-lts,fedora-legacy}
+  -d, --distro {alpine,debian,ubuntu,kali-nethunter,archlinux,archlinux-arm64,fedora,void,manjaro,chimera,opensuse,debian-12,ubuntu-lts,fedora-legacy}
                         Linux distribution (default: alpine)
   -t, --type TYPE       Distribution variant (minimal, full, stable) - depends
                         on distro (default: alpine-minirootfs)
@@ -224,10 +224,10 @@ options:
 
 ```
 usage: main.py download [-h] --type TYPE [--file FILE]
-                        {alpine,debian,ubuntu,kali-nethunter,archlinux,fedora,void,manjaro,chimera,opensuse,debian-12,ubuntu-lts,fedora-legacy}
+                        {alpine,debian,ubuntu,kali-nethunter,archlinux,archlinux-arm64,fedora,void,manjaro,chimera,opensuse,debian-12,ubuntu-lts,fedora-legacy}
 
 positional arguments:
-  {alpine,debian,ubuntu,kali-nethunter,archlinux,fedora,void,manjaro,chimera,opensuse,debian-12,ubuntu-lts,fedora-legacy}
+  {alpine,debian,ubuntu,kali-nethunter,archlinux,archlinux-arm64,fedora,void,manjaro,chimera,opensuse,debian-12,ubuntu-lts,fedora-legacy}
                         Distribution to download
 
 options:
