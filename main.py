@@ -85,6 +85,7 @@ class AndroSH:
 							"ubuntu",
 							"kali-nethunter",
 							"archlinux",
+							"archlinux-arm64",
 							"fedora",
 							"void",
 							"manjaro",
