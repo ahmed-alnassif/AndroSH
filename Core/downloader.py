@@ -36,7 +36,8 @@ class FileDownloader:
 			expand=True,
 		)
 
-	def download_file(self, url: str, destination: str = None):
+	def download_file(self, url: str, destination: str = None, headers: dict = None, total_size: int = 0):
+		headers = dict(headers) if headers else {}
 		try:
 			if destination is None:
 				filename = url.split('/')[-1].split('?')[0]
@@ -46,21 +47,21 @@ class FileDownloader:
 					os.makedirs(os.path.dirname(destination), exist_ok=True)
 				filename = os.path.basename(destination)
 
-			total_size = 0
-			try:
-				with self.session.head(url, timeout=10) as response:
-					response.raise_for_status()
-					total_size = int(response.headers.get('content-length', 0))
-			except (requests.RequestException, ValueError):
+			if not total_size:
 				try:
-					headers = {'Range': 'bytes=0-0'}
-					with self.session.get(url, headers=headers, timeout=10, stream=True) as response:
-						if response.status_code == 206:
-							content_range = response.headers.get('content-range', '')
-							if '/' in content_range:
-								total_size = int(content_range.split('/')[-1])
+					with self.session.head(url, headers=headers, timeout=10, allow_redirects=True) as response:
+						response.raise_for_status()
+						total_size = int(response.headers.get('content-length', 0))
 				except (requests.RequestException, ValueError):
-					total_size = 0
+					try:
+						range_headers = {**headers, 'Range': 'bytes=0-0'}
+						with self.session.get(url, headers=range_headers, timeout=10, stream=True) as response:
+							if response.status_code == 206:
+								content_range = response.headers.get('content-range', '')
+								if '/' in content_range:
+									total_size = int(content_range.split('/')[-1])
+					except (requests.RequestException, ValueError):
+						total_size = 0
 
 			self.custom_console.info(f"File name: [bold blue]{filename}[/bold blue]")
 			self.progress.start()
@@ -71,7 +72,7 @@ class FileDownloader:
 				start=False
 			)
 
-			with self.session.get(url, stream=True, timeout=30) as response:
+			with self.session.get(url, headers=headers, stream=True, timeout=30) as response:
 				response.raise_for_status()
 
 				if total_size == 0:
