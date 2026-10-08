@@ -6,6 +6,9 @@ class DebianDistribution(DockerDistribution):
 	DISPLAY_NAME = "Debian"
 	DESCRIPTION = "Latest Debian stable release (Docker Hub)."
 
+	def get_supported_types(self) -> List[str]:
+		return ["stable"]
+
 	def get_name(self) -> str:
 		return "debian"
 
@@ -14,6 +17,9 @@ class DebianBookwormDistribution(DockerDistribution):
 	TAG = "bookworm"
 	DISPLAY_NAME = "Debian 12 (Bookworm)"
 	DESCRIPTION = "Stable release"
+
+	def get_supported_types(self) -> List[str]:
+		return ["stable"]
 
 	def get_name(self) -> str:
 		return "debian-12"

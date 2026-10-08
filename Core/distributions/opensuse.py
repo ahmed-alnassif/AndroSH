@@ -6,5 +6,8 @@ class OpenSUSE_Distribution(DockerDistribution):
 	DISPLAY_NAME = "openSUSE Tumbleweed"
 	DESCRIPTION = "Rolling release (Docker Hub)."
 
+	def get_supported_types(self) -> List[str]:
+		return ["rolling"]
+
 	def get_name(self) -> str:
 		return "opensuse"

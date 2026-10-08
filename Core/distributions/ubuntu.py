@@ -5,12 +5,18 @@ class UbuntuDistribution(DockerDistribution):
 	TAG = "rolling"
 	DESCRIPTION = "Latest Ubuntu release (Docker Hub)."
 
+	def get_supported_types(self) -> List[str]:
+		return ["rolling"]
+
 	def get_name(self) -> str:
 		return "ubuntu"
 
 class UbuntuLTSDistribution(DockerDistribution):
 	IMAGE = "ubuntu"
 	TAG = "latest"
+
+	def get_supported_types(self) -> List[str]:
+		return ["lts"]
 
 	def get_name(self) -> str:
 		return "ubuntu-lts"

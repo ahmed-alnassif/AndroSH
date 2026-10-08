@@ -6,5 +6,8 @@ class VoidDistribution(DockerDistribution):
 	DISPLAY_NAME = "Void Linux"
 	DESCRIPTION = "Void Linux (glibc) image (Docker Hub)."
 
+	def get_supported_types(self) -> List[str]:
+		return ["rolling"]
+
 	def get_name(self) -> str:
 		return "void"

@@ -6,5 +6,8 @@ class ChimeraDistribution(DockerDistribution):
 	DISPLAY_NAME = "Chimera Linux"
 	DESCRIPTION = "Chimera Linux image (Docker Hub)."
 
+	def get_supported_types(self) -> List[str]:
+		return ["rolling"]
+
 	def get_name(self) -> str:
 		return "chimera"

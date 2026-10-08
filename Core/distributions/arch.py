@@ -6,5 +6,8 @@ class ArchLinuxDistribution(DockerDistribution):
 	DISPLAY_NAME = "Arch Linux"
 	DESCRIPTION = "Official Arch Linux base image (Docker Hub)."
 
+	def get_supported_types(self) -> List[str]:
+		return ["rolling"]
+
 	def get_name(self) -> str:
 		return "archlinux"
