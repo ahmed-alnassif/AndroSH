@@ -85,14 +85,14 @@ class AndroSH:
 							"ubuntu",
 							"kali-nethunter",
 							"archlinux",
-							"fedora-legacy",
+							"fedora",
 							"void",
 							"manjaro",
 							"chimera",
 							"opensuse",
 							"debian-12",
 							"ubuntu-lts",
-							"fedora"
+							"fedora-legacy"
 						]
 
 		parser = self._setup_argparse()

@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from Core.distributions import *
 
 class DistributionManager:
@@ -12,21 +13,21 @@ class DistributionManager:
 		self.db = db
 		self.check_storage = check_storage_func
 
-		self.termux_distros_list_str = [
+		self.docker_distros_list_str = [
 			"debian",
 			"ubuntu",
 			"archlinux",
-			"fedora-legacy",
+			"fedora",
 			"void",
 			"manjaro",
 			"chimera",
 			"opensuse",
 			"debian-12",
 			"ubuntu-lts",
-			"fedora"
+			"fedora-legacy"
 		]
 
-		self.termux_distros_list = [
+		self.docker_distros_list = [
 			DebianDistribution,
 			UbuntuDistribution,
 			ArchLinuxDistribution,
@@ -37,7 +38,7 @@ class DistributionManager:
 			OpenSUSE_Distribution,
 			DebianBookwormDistribution,
 			UbuntuLTSDistribution,
-			Fedora42Distribution
+			FedoraLegacyDistribution
 		]
 
 		self.distributions: Dict[str, Distribution] = {}
@@ -61,24 +62,36 @@ class DistributionManager:
 		is_offline = not self.is_connected()
 		distributions = {}
 
-		termux_distros = list(zip(self.termux_distros_list_str, self.termux_distros_list))
+		docker_distros = list(zip(self.docker_distros_list_str, self.docker_distros_list))
 
 		direct_distros = [
 			('alpine', AlpineDistribution),
 			('kali-nethunter', KaliNethunterDistribution)
 		]
 
-		for distro_name, distro_class in termux_distros + direct_distros:
+		docker_names = set(self.docker_distros_list_str)
+
+		for distro_name, distro_class in docker_distros + direct_distros:
 			try:
 				distributions[distro_name] = distro_class(
 					self.fm, self.downloader, self.console,
 					self.resources, self.db, self.check_storage, is_offline=is_offline
 				)
-
-				if distro_name in self.termux_distros_list_str:
-					distributions[distro_name]._load_distro_data()
 			except Exception as e:
 				self.console.warning(f"Failed to initialize {distro_name}: {e}")
+
+		def load(name: str) -> None:
+			try:
+				distributions[name]._load_distro_data()
+			except Exception as e:
+				self.console.warning(f"Failed to load {name}: {e}")
+
+		to_load = [n for n in distributions if n in docker_names]
+		if is_offline:
+			self.console.error("You're offline, so the distribution lists can't be fetched")
+		elif to_load:
+			with ThreadPoolExecutor(max_workers=min(8, len(to_load))) as pool:
+				list(pool.map(load, to_load))
 
 		return distributions
 
@@ -97,7 +110,7 @@ class DistributionManager:
 				f"Distribution '{distro_name}' not supported. Available: {', '.join(self.list_available())}")
 
 		if distro_type is None:
-			if distro_name in self.termux_distros_list_str:
+			if distro_name in self.docker_distros_list_str:
 				distro_type = "stable"
 			else:
 				distro_type = "minimal"
@@ -128,7 +141,6 @@ class DistributionManager:
 			display_info = distro.get_display_info()
 
 			for distro_arch in display_info.get('supported_archs', []):
-				# Simple mapping for common cases
 				if distro_arch in ['aarch64', 'arm64']:
 					supported_standard.append('arm64')
 				elif distro_arch in ['armv7', 'armhf', 'arm']:
@@ -230,16 +242,8 @@ class DistributionManager:
 			elif distro_name == "alpine":
 				alpine_arch = distro._map_architecture(self.current_arch)
 				return distro.get_file_size(alpine_arch, distro_type)
-			elif distro_name in self.termux_distros_list_str:
-
-				size_map = {
-					'arm64': '40-300MB',
-					'arm': '40-300MB',
-					'x86': '40-300MB',
-					'x86_64': '40-300MB'
-				}
-
-				return size_map.get(self.current_arch, 'Unknown')
+			elif distro_name in self.docker_distros_list_str:
+				return distro.get_size(self.current_arch)
 		except:
 			pass
 		return "Unknown"
